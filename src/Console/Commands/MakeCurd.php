@@ -94,16 +94,16 @@ class MakeCurd extends Command
                     $fields .= "->nullable()";
                 }
                 if($field['default_value']){
-                    $fields .= "->default({$field['default_value']})";
+                    $fields .= "->default('{$field['default_value']}')";
                 }
 
-                $fields .= ';\n';
+                $fields .= ";\n";
             }
 
         $content_ready = str_replace('$fields', $fields, $content_with_table_name);
         $file_name = 'create_'.$table_name.'_table';
         $file_path = database_path('migrations/'.date('d_m_Y_His').'_'.$file_name.'.php');
-        file_put_contents($file_name,$content_ready);
+        dd(file_put_contents($file_path, $content_ready));
         dd($file_path);
         $this->info("The migration file '$file_name' is created Successfully");
         // }

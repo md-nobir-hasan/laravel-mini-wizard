@@ -1,0 +1,25 @@
+{
+    "name": "nobir/curd-by-command",
+    "description": "Everything in one command",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Nobir\\CurdByCommand\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Md. Nobir Hasan",
+            "email": "nobir.wd@gmail.com"
+        }
+    ],
+    "require": {},
+    "extra": {
+    "laravel": {
+        "providers": [
+            "nobir\\CurdByCommand\\CurdServiceProvider"
+        ]
+    }
+},
+}

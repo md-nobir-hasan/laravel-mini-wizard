@@ -1,9 +1,9 @@
 <?php
-namespace nobir\CurdByCommand;
+namespace Nobir\CurdByCommand;
 
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider;
-use nobir\CurdByCommand\Console\Commands\MakeCurd;
+use Nobir\CurdByCommand\Console\Commands\MakeCurd;
 
 Class CurdServiceProvider extends ServiceProvider{
 

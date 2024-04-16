@@ -1,6 +1,6 @@
 <?php
 
-namespace nobir\CurdByCommand\Console\Commands;
+namespace Nobir\CurdByCommand\Console\Commands;
 
 use Illuminate\Console\Command;
 

@@ -1,7 +1,12 @@
 {
-    "name": "nobir/curd-by-command",
+    "name": "nobir/laravel-curd-by-command",
     "description": "Everything in one command",
-    "type": "library",
+     "keywords": [
+        "laravel",
+        "curd",
+        "laravel-curd-by-command"
+    ],
+    "homepage": "https://github.com/md-nobir-hasan/laravel-curd-by-command.git",
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -20,7 +25,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "nobir\\CurdByCommand\\CurdServiceProvider"
+                "Nobir\\CurdByCommand\\CurdServiceProvider"
             ]
         }
     }

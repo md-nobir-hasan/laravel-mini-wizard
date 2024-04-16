@@ -14,12 +14,14 @@
             "email": "nobir.wd@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "php": ">=8.2"
+    },
     "extra": {
-    "laravel": {
-        "providers": [
-            "nobir\\CurdByCommand\\CurdServiceProvider"
-        ]
+        "laravel": {
+            "providers": [
+                "nobir\\CurdByCommand\\CurdServiceProvider"
+            ]
+        }
     }
-},
 }

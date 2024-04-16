@@ -1,5 +1,5 @@
 <?php
-namespace nobir\Console\Commands\MakeCurd;
+namespace nobir\CurdByCommand\Console\Commands;
 
 use Illuminate\Console\Command;
 
@@ -10,7 +10,7 @@ class MakeCurd extends Command
      *
      * @var string
      */
-    protected $signature = 'nobir make:curd';
+    protected $signature = 'nobir';
 
     /**
      * The console command description.

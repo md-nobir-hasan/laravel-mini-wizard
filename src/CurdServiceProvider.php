@@ -3,7 +3,7 @@ namespace nobir\CurdByCommand;
 
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider;
-use nobir\Console\Commands\MakeCurd\MakeCurd;
+use nobir\CurdByCommand\Console\Commands\MakeCurd;
 
 Class CurdServiceProvider extends ServiceProvider{
 

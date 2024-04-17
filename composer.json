@@ -1,10 +1,12 @@
 {
-    "name": "nobir/laravel-curd-by-command",
+    "name": "nobir/mini-wizard",
     "description": "Everything in one command",
      "keywords": [
-        "laravel",
-        "curd",
-        "laravel-curd-by-command"
+        "nobir",
+        "laravel-mini-wizard",
+        "mini-wizard",
+        "nobir-hasan",
+        "md-noibr-hasan"
     ],
     "homepage": "https://github.com/md-nobir-hasan/laravel-curd-by-command.git",
     "license": "MIT",

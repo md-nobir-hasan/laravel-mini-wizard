@@ -23,10 +23,11 @@ class MakeCurd extends Command
         'timestamp', 'timestampsTz', 'timestamps', 'tinyIncrements', 'tinyInteger', 'tinyText', 'unsignedBigInteger', 'unsignedInteger', 'unsignedMediumInteger',
         'unsignedSmallInteger', 'unsignedTinyInteger', 'ulidMorphs', 'uuidMorphs', 'ulid', 'uuid', 'year'
     ];
-    protected $data=[];
-    protected $migration_slot='';
-    protected $model_functions='';
-    protected $model_fillable='protected $fillable = ["';
+    protected $data = [];
+    protected $migration_slot = '';
+    protected $model_class_name;
+    protected $model_functions = '';
+    protected $model_fillable = 'protected $fillable = ["';
     protected $add_field_msg = 'Are you want to add a field?';
     /**
      * The console command description.
@@ -41,20 +42,19 @@ class MakeCurd extends Command
     public function handle()
     {
         //make ready the model and table names
-        $model_name = $this->argument('model');
-        $table_name = str($model_name)->snake()->plural();
+        $this->model_class_name = $this->argument('model');
 
         // Database fields collect from the command plate
         $data_fields_names = $this->collectFields();
 
         //Migraton creation
-        // if($this->confirm('Are you want to make Migration',true)){
-        //     $this->makeMigration($data_fields_names,$table_name->value());
-        // }
+        if ($this->confirm('Are you want to make Migration', true)) {
+            $this->makeMigration();
+        }
 
-        //Model create
-        if($this->confirm('Are you want to make Model',true)){
-            $this->makeModel($data_fields_names,$model_name);
+        //Model creation
+        if ($this->confirm('Are you want to make Model', true)) {
+            $this->makeModel();
         }
 
         $this->info('Process Terminate');
@@ -82,9 +82,8 @@ class MakeCurd extends Command
                 //default values
                 if ($this->confirm('Have any default values?')) {
                     $this->data[$i]['default_value'] = $this->ask('Default value is:');
-                }else{
+                } else {
                     $this->data[$i]['default_value'] = null;
-
                 }
 
                 $this->add_field_msg = 'Are you want to add another field?';
@@ -96,10 +95,16 @@ class MakeCurd extends Command
         $this->makeReady();
     }
 
-    protected function makeReady(){
-        foreach($this->data as $key => $datum){
+    protected function replaceFillableField($replaceable_field)
+    {
+        $field = str($replaceable_field)->snake()->value() . '_id';
+        $this->model_fillable = str_replace($replaceable_field, $field, $this->model_fillable);
+    }
+    protected function makeReady()
+    {
+        foreach ($this->data as $key => $datum) {
             //indentation currection
-            if($key != 1){
+            if ($key != 1) {
                 $this->migration_slot .= "\n\t\t\t";
                 $this->model_fillable .= ", ";
             }
@@ -118,7 +123,7 @@ class MakeCurd extends Command
                         $this->migration_slot .= "->default('{$datum['default_value']}')";
                     }
                     $this->migration_slot .= "->constrained()->cascadeOnUpdate()->cascadeOnDelete()";
-
+                    $this->replaceFillableField($datum['field_name']);
                     //for model
                     $this->model_functions .= "public function {$datum['field_name']}(){\n\t\treturn \$this->belongsTo({$datum['field_name']}::class);\n\t}";
                     break;
@@ -134,80 +139,46 @@ class MakeCurd extends Command
                     }
                     break;
             }
+            $this->migration_slot .= ';';
         }
         $this->model_fillable .= '"];';
     }
 
-    protected function makeMigration($data_fields,$table_name){
-        $stub_content = file_get_contents(__DIR__.'/../../stubs/migration.stub');
-        $content_with_table_name = str_replace('$table_name',$table_name,$stub_content);
-        $fields = '';
-        // if(count($data_fields)>0){
-            // foreach($data_fields as $key => $field){
-                //3 tab space added for currect indentation
-                // if($key != 1){
-                //     $fields .= "\t\t\t";
-                // }
+    //Migration creation
+    protected function makeMigration()
+    {
+        //creation table name
+        $table_name = str($this->model_class_name)->snake()->plural()->value();
 
-                //migration according to datatype
-                // switch($field['data_type']){
+        //Content extract from stub
+        $stub_content = file_get_contents(__DIR__ . '/../../stubs/migration.stub');
 
-                //     //Logic for Foreign Id For
-                //     case 'foreignIdFor':
-                //         $fields .= "\$table->{$field['data_type']}(App\Models\\{$field['field_name']}::class)";
-                //         if ($field['nullable']) {
-                //             $fields .= "->nullable()";
-                //         }
-                //         if ($field['default_value']) {
-                //             $fields .= "->default('{$field['default_value']}')";
-                //         }
-                //         $fields .= "->constrained()->cascadeOnUpdate()->cascadeOnDelete()";
-                //         break;
+        //Replace the table name
+        $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
 
-                //     //For all Common Data Type
-                //     default:
-                //         $fields .= "\$table->{$field['data_type']}('{$field['field_name']}')";
-                //         if ($field['nullable']) {
-                //             $fields .= "->nullable()";
-                //         }
-                //         if ($field['default_value']) {
-                //             $fields .= "->default('{$field['default_value']}')";
-                //         }
-                //         break;
-                // }
+        //setup the migration field
+        $content_ready = str_replace('$slot', $this->migration_slot, $content_with_table_name);
 
-
-
-
-
-
-                // $fields .= ";\n";
-            // }
-            // $fields = substr($fields,0,-1);
-
-        $content_ready = str_replace('$fields', $fields, $content_with_table_name);
-        $file_name = 'create_'.$table_name.'_table';
-        $file_path = database_path('migrations/'.date('Y_m_d_His').'_'.$file_name.'.php');
+        $file_name = date('Y_m_d_His') . '_' . 'create_' . $table_name . '_table.php';
+        $file_path = database_path('migrations/' . $file_name);
         file_put_contents($file_path, $content_ready);
         $this->info("The migration file '$file_name' is created Successfully in your migration folder");
-        // }
-
     }
 
-    protected function makeModel($data_fields,$file_name){
+    //Model creation
+    protected function makeModel()
+    {
+        $model_name = $this->model_class_name;
         //model content load from stub
-        $stub_content = file_get_contents(__DIR__.'/../../stubs/model.stub');
+        $stub_content = file_get_contents(__DIR__ . '/../../stubs/model.stub');
 
         //replace the model name
-        $content_with_name = str_replace('$model_name', $file_name, $stub_content);
+        $content_with_name = str_replace('$model_name', $model_name, $stub_content);
 
-        $full_content = str_replace('$slot', $this->model_fillable."\n\n\t".$this->model_functions, $content_with_name);
-        $file_name = $file_name.'.php';
-        $file_path = app_path('Models/'.$file_name);
+        $full_content = str_replace('$slot', $this->model_fillable . "\n\n\t" . $this->model_functions, $content_with_name);
+        $full_file_name = $model_name . '.php';
+        $file_path = app_path('Models/' . $full_file_name);
         file_put_contents($file_path, $full_content);
-        $this->info("The migration file '$file_name' is created Successfully in your migration folder");
-        // }
+        $this->info("The migration file '$full_file_name' is created Successfully in your migration folder");
     }
-
-
 }

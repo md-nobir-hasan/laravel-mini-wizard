@@ -88,24 +88,54 @@ class MakeCurd extends Command
         $content_with_table_name = str_replace('$table_name',$table_name,$stub_content);
         $fields = '';
         // if(count($data_fields)>0){
-            foreach($data_fields as $field){
-                $fields .= "\$table->{$field['data_type']}('{$field['field_name']}')";
-                if($field['nullable']){
-                    $fields .= "->nullable()";
+            foreach($data_fields as $key => $field){
+
+                //3 tab space added for currect indentation
+                if($key != 1){
+                    $fields .= "\t\t\t";
                 }
-                if($field['default_value']){
-                    $fields .= "->default('{$field['default_value']}')";
+
+                //migration according to datatype
+                switch($field['data_type']){
+
+                    //Logic for Foreign Id For
+                    case 'foreignIdFor':
+                        $fields .= "\$table->{$field['data_type']}(App\Models\\{$field['field_name']}::class)";
+                        if ($field['nullable']) {
+                            $fields .= "->nullable()";
+                        }
+                        if ($field['default_value']) {
+                            $fields .= "->default('{$field['default_value']}')";
+                        }
+                        $fields .= "->constrained()->cascadeOnUpdate()->cascadeOnDelete()";
+                        break;
+
+                    //For all Common Data Type
+                    default:
+                        $fields .= "\$table->{$field['data_type']}('{$field['field_name']}')";
+                        if ($field['nullable']) {
+                            $fields .= "->nullable()";
+                        }
+                        if ($field['default_value']) {
+                            $fields .= "->default('{$field['default_value']}')";
+                        }
+                        break;
                 }
+
+
+
+
+
 
                 $fields .= ";\n";
             }
+            $fields = substr($fields,0,-1);
 
         $content_ready = str_replace('$fields', $fields, $content_with_table_name);
         $file_name = 'create_'.$table_name.'_table';
-        $file_path = database_path('migrations/'.date('d_m_Y_His').'_'.$file_name.'.php');
-        dd(file_put_contents($file_path, $content_ready));
-        dd($file_path);
-        $this->info("The migration file '$file_name' is created Successfully");
+        $file_path = database_path('migrations/'.date('Y_m_d_His').'_'.$file_name.'.php');
+        file_put_contents($file_path, $content_ready);
+        $this->info("The migration file '$file_name' is created Successfully in your migration folder");
         // }
 
     }

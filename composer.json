@@ -6,7 +6,9 @@
         "laravel-mini-wizard",
         "mini-wizard",
         "nobir-hasan",
-        "md-noibr-hasan"
+        "md-noibr-hasan",
+        "laravel-curd-by-command",
+        "curd-by-command"
     ],
     "homepage": "https://github.com/md-nobir-hasan/laravel-curd-by-command.git",
     "license": "MIT",

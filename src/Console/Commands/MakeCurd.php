@@ -36,6 +36,11 @@ class MakeCurd extends Command
     protected $route_group_prefix = '';
     protected $route_group_name = '';
 
+    //properties for requests
+    protected $store_request = '';
+    protected $update_request = '';
+
+
     //properties for messages
     protected $add_field_msg = 'Are you want to add a field?';
     protected $skip_msg = '(Press enter to skip)';
@@ -291,10 +296,25 @@ class MakeCurd extends Command
             $full_content = str_replace('$route_name', $this->route_group_name, $content_with_prefix);
             file_put_contents($file_path, $full_content);
             $this->info("file '$file_path' is created Successfully");
+            $this->makeStoreRequests();
+            $this->makeUpdateRequests();
         }{
             $this->info('Controller creation skiped');
         }
+    }
 
+    protected function makeStoreRequests(){
+        $reqest_name = 'Store'.$this->model_class_name. 'Request';
+        $file_path = app_path("Http/Requests/$reqest_name.php");
+        //Controller content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'store-request.stub');
+
+        //replace the model name
+        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+
+        $full_content = str_replace('$route_name', $this->route_group_name, $content_with_prefix);
+        file_put_contents($file_path, $full_content);
+        $this->info("file '$file_path' is created Successfully");
     }
 }
 

@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\$model_name;
+use App\Http\Requests\$store_request_name;
+use App\Http\Requests\$update_request_name;
+
+class $Controller_name extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware(['can:Show $model_names']);
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $n['data'] = $model_name::orderBy('serial', 'desc')->paginate(10);
+        return view('$route_prefix$route_nameindex', $n);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $this->ccan('Create $model_names');
+        $n['serial'] = count(Video::all()) + 1;
+        return view('$route_prefix$route_namecreate', $n);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreVideoRequest $request)
+    {
+        $this->ccan('Create $model_names');
+
+        $data = $request->validated();
+        $status = Video::create($data);
+        if(!$status){
+            return redirect()->route('$route_group_name$route_nameindex')->with('success', "$request->title is created successfully");
+
+        }
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Video $Video)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Video $Video)
+    {
+        $this->ccan('Edit Videos');
+
+        $n['datum'] = $Video;
+        return view('$route_prefix$route_nameedit', $n);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateVideoRequest $request, Video $Video)
+    {
+        $this->ccan('Edit Videos');
+
+        $data = $request->validated();
+        if ($data['type'] == 'youtube') {
+            $data['url'] = str()->after($data['url'], 'v=');
+        }
+
+        $Video->update($data);
+        return redirect()->route('$route_group_name$route_nameindex')->with('success', "$request->title is Update successfully");
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Video $Video)
+    {
+        $this->ccan('Delete Videos');
+
+        $status = $Video->delete();
+
+        if ($status) {
+            request()->session()->flash('success', 'Video successfully deleted');
+        } else {
+            request()->session()->flash('error', 'Error while deleting Videos');
+        }
+        return back();
+    }
+}

@@ -25,6 +25,7 @@ class MakeCurd extends Command
     ];
     protected $data = [];
     protected $migration_slot = '';
+    protected $pakage_stub_path = __DIR__ . '/../../stubs/';
     protected $model_class_name;
     protected $model_functions = '';
     protected $model_fillable = 'protected $fillable = ["';
@@ -41,20 +42,30 @@ class MakeCurd extends Command
      */
     public function handle()
     {
-        //make ready the model and table names
+        //get the model name
         $this->model_class_name = $this->argument('model');
 
         // Database fields collect from the command plate
-        $data_fields_names = $this->collectFields();
+        $this->collectFields();
 
         //Migraton creation
-        if ($this->confirm('Are you want to make Migration', true)) {
-            $this->makeMigration();
-        }
+        // if ($this->confirm('Are you want to make Migration', true)) {
+        //     $this->makeMigration();
+        // }
 
         //Model creation
-        if ($this->confirm('Are you want to make Model', true)) {
-            $this->makeModel();
+        // if ($this->confirm('Are you want to make Model', true)) {
+        //     $this->makeModel();
+        // }
+
+        //Route creation
+        // if ($this->confirm('Are you want to make Route', true)) {
+        //     $this->makeRoute();
+        // }
+
+        //Resource Controller creation
+        if ($this->confirm('Are you want to make Resource Controller', true)) {
+          $this->makeController();
         }
 
         $this->info('Process Terminate');
@@ -100,6 +111,8 @@ class MakeCurd extends Command
         $field = str($replaceable_field)->snake()->value() . '_id';
         $this->model_fillable = str_replace($replaceable_field, $field, $this->model_fillable);
     }
+
+
     protected function makeReady()
     {
         foreach ($this->data as $key => $datum) {
@@ -151,7 +164,7 @@ class MakeCurd extends Command
         $table_name = str($this->model_class_name)->snake()->plural()->value();
 
         //Content extract from stub
-        $stub_content = file_get_contents(__DIR__ . '/../../stubs/migration.stub');
+        $stub_content = file_get_contents($this->pakage_stub_path.'migration.stub');
 
         //Replace the table name
         $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
@@ -170,7 +183,7 @@ class MakeCurd extends Command
     {
         $model_name = $this->model_class_name;
         //model content load from stub
-        $stub_content = file_get_contents(__DIR__ . '/../../stubs/model.stub');
+        $stub_content = file_get_contents($this->pakage_stub_path.'model.stub');
 
         //replace the model name
         $content_with_name = str_replace('$model_name', $model_name, $stub_content);
@@ -179,6 +192,77 @@ class MakeCurd extends Command
         $full_file_name = $model_name . '.php';
         $file_path = app_path('Models/' . $full_file_name);
         file_put_contents($file_path, $full_content);
-        $this->info("The migration file '$full_file_name' is created Successfully in your migration folder");
+        $this->info("The model file '$full_file_name' is created Successfully in your model folder");
+    }
+
+    //Route creation
+    protected function makeRoute()
+    {
+        $model_name = $this->model_class_name;
+        $controller_name = $model_name."Controller";
+        $route_name = str($model_name)->kebab()->value();
+
+        //Route slot creation
+        $route_slot = '';
+        $base_route = '';
+        $route_group_first_code = '';
+        $route_group_last_code = "";
+
+        //Route group preparation
+        $route_group = $this->confirm('Has the route group?', true);
+        if($route_group){
+            $route_group_first_code .= 'Route::';
+            if($middleware = $this->ask('Enter Middleware for the route group (Presss enter to skip)')){
+                $route_group_first_code .= "middleware('$middleware')->";
+            }
+            if($prefix = $this->ask('Enter prefix for the route group (Presss enter to skip)')){
+                $route_group_first_code .= "prefix('$prefix')->";
+            }
+            if($name = $this->ask('Enter name for the route group (Presss enter to skip)')){
+                $route_group_first_code .= "name('$name')->";
+            }
+            $route_group_first_code .= "group(function(){\n\t";
+            $route_group_last_code = "});\n";
+        }
+        //base route
+        $base_route .= "Route::resource('/$route_name','App\Http\Controllers\\{$controller_name}');\n";
+
+        //Full route
+        $route_slot = $route_group_first_code . $base_route.$route_group_last_code;
+
+        $file_path = base_path('routes/mini-wizard.php');
+        //route content load from stub if not exist
+        if(file_exists($file_path)){
+            $stub_content = file_get_contents($file_path);
+            if($route_group_first_code){
+                $replaceable_route_with_group = $route_group_first_code.$base_route;
+                $full_content = str_replace($route_group_first_code, $replaceable_route_with_group, $stub_content);
+            }else{
+                $full_content = $stub_content."\n".$route_slot;
+            }
+            file_put_contents($file_path, $full_content);
+            $this->info("The route file 'mini-wizard' is updated Successfully");
+        }else{
+            $stub_content = file_get_contents($this->pakage_stub_path.'route.stub');
+
+            $full_content = str_replace('$slot', $route_slot, $stub_content);
+
+            file_put_contents($file_path, $full_content);
+            $this->info("The route file 'mini-wizard' is created Successfully in your routes folder");
+
+            //including the mini-wizard.php file in the web.php
+            $web_file_path = base_path('/routes/web.php');
+            $web_route_content = file_get_contents($web_file_path);
+            $web_route_final_content = str_replace("<?php", "<?php \n require __DIR__ . '/mini-wizard.php';", $web_route_content);
+            file_put_contents($web_file_path,$web_route_final_content);
+            $this->info("The route file 'mini-wizard' is also included in web.php. So no tension.");
+
+        }
+    }
+
+    protected function makeController(){
+        $controller_name = $this->model_class_name.'Controller';
+        
     }
 }
+

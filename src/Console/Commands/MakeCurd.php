@@ -26,9 +26,17 @@ class MakeCurd extends Command
     protected $data = [];
     protected $migration_slot = '';
     protected $pakage_stub_path = __DIR__ . '/../../stubs/';
+
+    //Proterties for model
     protected $model_class_name;
     protected $model_functions = '';
     protected $model_fillable = 'protected $fillable = ["';
+
+    //properties for routes
+    protected $route_group_prefix = '';
+    protected $route_group_name = '';
+
+    //properties for messages
     protected $add_field_msg = 'Are you want to add a field?';
     /**
      * The console command description.
@@ -217,9 +225,11 @@ class MakeCurd extends Command
             }
             if($prefix = $this->ask('Enter prefix for the route group (Presss enter to skip)')){
                 $route_group_first_code .= "prefix('$prefix')->";
+                $this->route_group_prefix = $prefix;
             }
             if($name = $this->ask('Enter name for the route group (Presss enter to skip)')){
                 $route_group_first_code .= "name('$name')->";
+                $this->route_group_name = $name;
             }
             $route_group_first_code .= "group(function(){\n\t";
             $route_group_last_code = "});\n";
@@ -262,7 +272,8 @@ class MakeCurd extends Command
 
     protected function makeController(){
         $controller_name = $this->model_class_name.'Controller';
-        
+        $file_path = app_path("Http/Controllers/$controller_name");
+
     }
 }
 

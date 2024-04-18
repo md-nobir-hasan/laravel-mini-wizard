@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\$model_name;
-use App\Http\Requests\$store_request_name;
-use App\Http\Requests\$update_request_name;
+use App\Http\Requests\Store$model_nameRequest;
+use App\Http\Requests\Update$model_nameRequest;
 
-class $Controller_name extends Controller
+class $model_nameController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['can:Show $model_names']);
+        $this->middleware(['can:Show $model_name']);
     }
     /**
      * Display a listing of the resource.
@@ -18,7 +18,7 @@ class $Controller_name extends Controller
     public function index()
     {
         $n['data'] = $model_name::orderBy('serial', 'desc')->paginate(10);
-        return view('$route_prefix$route_nameindex', $n);
+        return view('$route_group_prefix$route_nameindex', $n);
     }
 
     /**
@@ -26,31 +26,30 @@ class $Controller_name extends Controller
      */
     public function create()
     {
-        $this->ccan('Create $model_names');
-        $n['serial'] = count(Video::all()) + 1;
-        return view('$route_prefix$route_namecreate', $n);
+        $this->ccan('Create $model_name');
+        $n['serial'] = $model_name::count();
+        return view('$route_group_prefix$route_namecreate', $n);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreVideoRequest $request)
+    public function store(Store$model_nameRequest $request)
     {
-        $this->ccan('Create $model_names');
+        $this->ccan('Create $model_name');
 
         $data = $request->validated();
-        $status = Video::create($data);
+        $status = $model_name::create($data);
         if(!$status){
-            return redirect()->route('$route_group_name$route_nameindex')->with('success', "$request->title is created successfully");
-
+            return redirect()->route('$route_group_name$route_nameindex')->with('error', "Something went wrong");
         }
-
+        return redirect()->route('$route_group_name$route_nameindex')->with('success', "$request->title is created successfully");
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Video $Video)
+    public function show($model_name $$model_name)
     {
         //
     }
@@ -58,43 +57,39 @@ class $Controller_name extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Video $Video)
+    public function edit($model_name $$model_name)
     {
-        $this->ccan('Edit Videos');
+        $this->ccan('Edit $model_name');
 
-        $n['datum'] = $Video;
-        return view('$route_prefix$route_nameedit', $n);
+        $n['datum'] = $$model_name;
+        return view('$route_group_prefix$route_nameedit', $n);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateVideoRequest $request, Video $Video)
+    public function update(Update$model_nameRequest $request, $model_name $$model_name)
     {
-        $this->ccan('Edit Videos');
+        $this->ccan('Edit $model_name');
 
         $data = $request->validated();
-        if ($data['type'] == 'youtube') {
-            $data['url'] = str()->after($data['url'], 'v=');
-        }
-
-        $Video->update($data);
+        $$model_name->update($data);
         return redirect()->route('$route_group_name$route_nameindex')->with('success', "$request->title is Update successfully");
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Video $Video)
+    public function destroy($model_namedeo $$model_name)
     {
-        $this->ccan('Delete Videos');
-
-        $status = $Video->delete();
+        $this->ccan('Delete $model_name');
+        $title = $$model_name->title
+        $status = $$model_name->delete();
 
         if ($status) {
-            request()->session()->flash('success', 'Video successfully deleted');
+            request()->session()->flash('success', '$title successfully deleted');
         } else {
-            request()->session()->flash('error', 'Error while deleting Videos');
+            request()->session()->flash('error', 'Error while deleting $model_names');
         }
         return back();
     }

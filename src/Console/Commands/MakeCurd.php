@@ -62,25 +62,25 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-        // //Migraton creation
-        // if ($this->confirm('Are you want to make Migration', true)) {
-        //     $this->makeMigration();
-        // }
+        //Migraton creation
+        if ($this->confirm('Are you want to make Migration', true)) {
+            $this->makeMigration();
+        }
 
-        // //Model creation
-        // if ($this->confirm('Are you want to make Model', true)) {
-        //     $this->makeModel();
-        // }
+        //Model creation
+        if ($this->confirm('Are you want to make Model', true)) {
+            $this->makeModel();
+        }
 
-        // //Route creation
-        // if ($this->confirm('Are you want to make Route', true)) {
-        //     $this->makeRoute();
-        // }
+        //Route creation
+        if ($this->confirm('Are you want to make Route', true)) {
+            $this->makeRoute();
+        }
 
-        // //Resource Controller creation
-        // if ($this->confirm('Are you want to make Resource Controller', true)) {
-        //   $this->makeController();
-        // }
+        //Resource Controller creation
+        if ($this->confirm('Are you want to make Resource Controller', true)) {
+          $this->makeController();
+        }
 
         //Store Request creation
         if ($this->confirm('Are you want to make Store Request', true)) {

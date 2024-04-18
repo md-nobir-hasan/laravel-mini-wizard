@@ -38,6 +38,7 @@ class MakeCurd extends Command
 
     //properties for messages
     protected $add_field_msg = 'Are you want to add a field?';
+    protected $skip_msg = '(Press enter to skip)';
     /**
      * The console command description.
      *
@@ -57,19 +58,19 @@ class MakeCurd extends Command
         $this->collectFields();
 
         //Migraton creation
-        // if ($this->confirm('Are you want to make Migration', true)) {
-        //     $this->makeMigration();
-        // }
+        if ($this->confirm('Are you want to make Migration', true)) {
+            $this->makeMigration();
+        }
 
         //Model creation
-        // if ($this->confirm('Are you want to make Model', true)) {
-        //     $this->makeModel();
-        // }
+        if ($this->confirm('Are you want to make Model', true)) {
+            $this->makeModel();
+        }
 
         //Route creation
-        // if ($this->confirm('Are you want to make Route', true)) {
-        //     $this->makeRoute();
-        // }
+        if ($this->confirm('Are you want to make Route', true)) {
+            $this->makeRoute();
+        }
 
         //Resource Controller creation
         if ($this->confirm('Are you want to make Resource Controller', true)) {
@@ -272,7 +273,27 @@ class MakeCurd extends Command
 
     protected function makeController(){
         $controller_name = $this->model_class_name.'Controller';
-        $file_path = app_path("Http/Controllers/$controller_name");
+        $file_path = app_path("Http/Controllers/$controller_name.php");
+        if(file_exists($file_path)){
+            $this->info("This controller $controller_name is exists");
+            $controller_name = $this->ask("Enter a controller name $this->skip_msg");
+
+        }
+        if($controller_name){
+            //Controller content load from stub
+            $stub_content = file_get_contents($this->pakage_stub_path . 'resource-controller.stub');
+
+            //replace the model name
+            $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+            $content_with_prefix = str_replace('$route_group_prefix', $this->route_group_prefix, $content_with_name);
+            // $full  = str_replace('$route_group_prefix', $this->route_group_prefix, $content_with_name);
+
+            $full_content = str_replace('$route_name', $this->route_group_name, $content_with_prefix);
+            file_put_contents($file_path, $full_content);
+            $this->info("file '$file_path' is created Successfully");
+        }{
+            $this->info('Controller creation skiped');
+        }
 
     }
 }

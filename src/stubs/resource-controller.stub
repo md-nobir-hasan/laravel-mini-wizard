@@ -83,11 +83,11 @@ class $model_nameController extends Controller
     public function destroy($model_namedeo $$model_name)
     {
         $this->ccan('Delete $model_name');
-        $title = $$model_name->title
+        $title = $$model_name->title;
         $status = $$model_name->delete();
 
         if ($status) {
-            request()->session()->flash('success', '$title successfully deleted');
+            request()->session()->flash('success', "$title successfully deleted");
         } else {
             request()->session()->flash('error', 'Error while deleting $model_names');
         }

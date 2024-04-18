@@ -22,6 +22,9 @@ class Update$model_nameRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title'=> ['required','string','max:255',"unique:$table_name,title,{$this->$model_name->id}"],
+            'status' => ['nullable','in:Active,Inactive'],
+            'serial' => ['nullable','integer'],
             $slot
         ];
     }

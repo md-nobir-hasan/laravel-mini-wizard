@@ -30,7 +30,7 @@ class MakeCurd extends Command
     //Proterties for model
     protected $model_class_name;
     protected $model_functions = '';
-    protected $model_fillable = 'protected $fillable = ["';
+    protected $model_fillable = '';
 
     //properties for routes
     protected $route_group_prefix = '';
@@ -86,9 +86,15 @@ class MakeCurd extends Command
         if ($this->confirm('Are you want to make Store Request', true)) {
           $this->makeStoreRequest();
         }
+
         //Update Request creation
         if ($this->confirm('Are you want to make Update Request', true)) {
           $this->makeUpdateRequest();
+        }
+
+        //View creation
+        if ($this->confirm('Are you want to make View', true)) {
+          $this->makeView();
         }
 
         $this->info('Process Terminate');
@@ -148,11 +154,10 @@ class MakeCurd extends Command
             //indentation currection
             if ($key != 1) {
                 $this->migration_slot .= "\n\t\t\t";
-                $this->model_fillable .= ", ";
                 $this->store_request_slot .= "\n\t\t\t";
             }
             //model fillable properties
-            $this->model_fillable .= "{$datum['field_name']}";
+            $this->model_fillable .= ", {$datum['field_name']}";
 
             //Requests vaildation rules
             $this->store_request_slot .= "'{$datum['field_name']}'=> [";
@@ -187,7 +192,6 @@ class MakeCurd extends Command
             $this->migration_slot .= ';';
             $this->store_request_slot .= '],';
         }
-        $this->model_fillable .= '"];';
     }
 
     protected function otherAtrributesCheck($datum){
@@ -233,8 +237,9 @@ class MakeCurd extends Command
 
         //replace the model name
         $content_with_name = str_replace('$model_name', $model_name, $stub_content);
+        $content_with_fillable_properties = str_replace('$fillable_properties', $this->model_fillable, $content_with_name);
 
-        $full_content = str_replace('$slot', $this->model_fillable . "\n\n\t" . $this->model_functions, $content_with_name);
+        $full_content = str_replace('$slot',$this->model_functions, $content_with_fillable_properties);
         $full_file_name = $model_name . '.php';
         $file_path = app_path('Models/' . $full_file_name);
         file_put_contents($file_path, $full_content);
@@ -344,7 +349,11 @@ class MakeCurd extends Command
         //replace the model name
         $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
 
-        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_name);
+        //table_name
+        $table_name = str($this->model_class_name)->kebab()->plural()->value();
+        $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
+
+        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
         file_put_contents($file_path, $full_content);
         $this->info("file '$file_path' is created Successfully");
     }
@@ -354,6 +363,35 @@ class MakeCurd extends Command
         $file_path = app_path("Http/Requests/$reqest_name.php");
         //Controller content load from stub
         $stub_content = file_get_contents($this->pakage_stub_path . 'update-request.stub');
+
+        //replace the model name
+        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+
+        //table_name
+        $table_name = str($this->model_class_name)->kebab()->plural()->value();
+        $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
+
+        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
+        file_put_contents($file_path, $full_content);
+        $this->info("file '$file_path' is created Successfully");
+    }
+
+    protected function makeView(){
+        $view_folder_name = '';
+        if($prefix = $this->route_group_prefix){
+            $view_folder_name .= '/'.$prefix;
+        }
+        if($name = $this->route_group_name){
+            $view_folder_name .= '/' . $name;
+        }
+
+        $index_view_path = resource_path("views$view_folder_name/index.php");
+        $create_view_path = resource_path("views$view_folder_name/create.php");
+        $edit_view_path = resource_path("views$view_folder_name/edit.php");
+
+        //Index file creation
+        //index view load content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'index.stub');
 
         //replace the model name
         $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);

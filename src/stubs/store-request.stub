@@ -22,6 +22,9 @@ class Store$model_nameRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title'=> ['required','string','max:255','unique:$table_name,title'],
+            'status' => ['nullable','in:Active,Inactive'],
+            'serial' => ['nullable','integer'],
             $slot
         ];
     }

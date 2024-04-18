@@ -17,7 +17,9 @@ class $model_nameController extends Controller
      */
     public function index()
     {
-        $n['data'] = $model_name::orderBy('serial', 'desc')->paginate(10);
+        $n['data'] = $model_name::orderBy('serial', 'desc')
+                                ->paginate(10);
+        $n['count'] = $model_name::all();
         return view('$route_group_prefix$route_nameindex', $n);
     }
 

@@ -37,8 +37,8 @@ class MakeCurd extends Command
     protected $route_group_name = '';
 
     //properties for requests
-    protected $store_request = '';
-    protected $update_request = '';
+    protected $store_request_slot = '';
+    protected $update_request_slot = '';
 
 
     //properties for messages
@@ -62,24 +62,33 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-        //Migraton creation
-        if ($this->confirm('Are you want to make Migration', true)) {
-            $this->makeMigration();
-        }
+        // //Migraton creation
+        // if ($this->confirm('Are you want to make Migration', true)) {
+        //     $this->makeMigration();
+        // }
 
-        //Model creation
-        if ($this->confirm('Are you want to make Model', true)) {
-            $this->makeModel();
-        }
+        // //Model creation
+        // if ($this->confirm('Are you want to make Model', true)) {
+        //     $this->makeModel();
+        // }
 
-        //Route creation
-        if ($this->confirm('Are you want to make Route', true)) {
-            $this->makeRoute();
-        }
+        // //Route creation
+        // if ($this->confirm('Are you want to make Route', true)) {
+        //     $this->makeRoute();
+        // }
 
-        //Resource Controller creation
-        if ($this->confirm('Are you want to make Resource Controller', true)) {
-          $this->makeController();
+        // //Resource Controller creation
+        // if ($this->confirm('Are you want to make Resource Controller', true)) {
+        //   $this->makeController();
+        // }
+
+        //Store Request creation
+        if ($this->confirm('Are you want to make Store Request', true)) {
+          $this->makeStoreRequest();
+        }
+        //Update Request creation
+        if ($this->confirm('Are you want to make Update Request', true)) {
+          $this->makeUpdateRequest();
         }
 
         $this->info('Process Terminate');
@@ -122,35 +131,46 @@ class MakeCurd extends Command
 
     protected function replaceFillableField($replaceable_field)
     {
+        //For migration file
         $field = str($replaceable_field)->snake()->value() . '_id';
         $this->model_fillable = str_replace($replaceable_field, $field, $this->model_fillable);
+
+        //In request file
+        $field = str($replaceable_field)->snake()->value() . '_id';
+        $this->store_request_slot = str_replace($replaceable_field, $field, $this->store_request_slot);
     }
 
 
     protected function makeReady()
     {
         foreach ($this->data as $key => $datum) {
+
             //indentation currection
             if ($key != 1) {
                 $this->migration_slot .= "\n\t\t\t";
                 $this->model_fillable .= ", ";
+                $this->store_request_slot .= "\n\t\t\t";
             }
             //model fillable properties
             $this->model_fillable .= "{$datum['field_name']}";
+
+            //Requests vaildation rules
+            $this->store_request_slot .= "'{$datum['field_name']}'=> [";
 
             switch ($datum['data_type']) {
                     //Logic for Foreign Id For
                 case 'foreignIdFor':
                     // for migration
                     $this->migration_slot .= "\$table->{$datum['data_type']}(App\Models\\{$datum['field_name']}::class)";
-                    if ($datum['nullable']) {
-                        $this->migration_slot .= "->nullable()";
-                    }
-                    if ($datum['default_value']) {
-                        $this->migration_slot .= "->default('{$datum['default_value']}')";
-                    }
+
+                    //Other attributes checking such as nullable, unique, foreign key id
+                    $this->otherAtrributesCheck($datum);
+
                     $this->migration_slot .= "->constrained()->cascadeOnUpdate()->cascadeOnDelete()";
+
+                    //Replace model class by the foreign id
                     $this->replaceFillableField($datum['field_name']);
+
                     //for model
                     $this->model_functions .= "public function {$datum['field_name']}(){\n\t\treturn \$this->belongsTo({$datum['field_name']}::class);\n\t}";
                     break;
@@ -158,19 +178,31 @@ class MakeCurd extends Command
                     //For all Common Data Type
                 default:
                     $this->migration_slot .= "\$table->{$datum['data_type']}('{$datum['field_name']}')";
-                    if ($datum['nullable']) {
-                        $this->migration_slot .= "->nullable()";
-                    }
-                    if ($datum['default_value']) {
-                        $this->migration_slot .= "->default('{$datum['default_value']}')";
-                    }
+
+                    //Other attributes checking such as nullable, unique, foreign key id
+                    $this->otherAtrributesCheck($datum);
                     break;
             }
+            // Ending of every variable
             $this->migration_slot .= ';';
+            $this->store_request_slot .= '],';
         }
         $this->model_fillable .= '"];';
     }
 
+    protected function otherAtrributesCheck($datum){
+        if ($datum['nullable']) {
+            $this->migration_slot .= "->nullable()";
+            //validation
+            $this->store_request_slot .= "'nullable'";
+        } else {
+            //validation
+            $this->store_request_slot .= "'required'";
+        }
+        if ($datum['default_value']) {
+            $this->migration_slot .= "->default('{$datum['default_value']}')";
+        }
+    }
     //Migration creation
     protected function makeMigration()
     {
@@ -296,14 +328,14 @@ class MakeCurd extends Command
             $full_content = str_replace('$route_name', $this->route_group_name, $content_with_prefix);
             file_put_contents($file_path, $full_content);
             $this->info("file '$file_path' is created Successfully");
-            $this->makeStoreRequests();
-            $this->makeUpdateRequests();
+            // $this->makeStoreRequest();
+            // $this->makeUpdateRequests();
         }{
             $this->info('Controller creation skiped');
         }
     }
 
-    protected function makeStoreRequests(){
+    protected function makeStoreRequest(){
         $reqest_name = 'Store'.$this->model_class_name. 'Request';
         $file_path = app_path("Http/Requests/$reqest_name.php");
         //Controller content load from stub
@@ -312,7 +344,21 @@ class MakeCurd extends Command
         //replace the model name
         $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
 
-        $full_content = str_replace('$route_name', $this->route_group_name, $content_with_prefix);
+        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_name);
+        file_put_contents($file_path, $full_content);
+        $this->info("file '$file_path' is created Successfully");
+    }
+
+    protected function makeUpdateRequest(){
+        $reqest_name = 'Update'.$this->model_class_name. 'Request';
+        $file_path = app_path("Http/Requests/$reqest_name.php");
+        //Controller content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'update-request.stub');
+
+        //replace the model name
+        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+
+        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_name);
         file_put_contents($file_path, $full_content);
         $this->info("file '$file_path' is created Successfully");
     }

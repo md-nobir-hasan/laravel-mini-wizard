@@ -104,18 +104,18 @@ class MakeCurd extends Command
         // }
 
         //View creation
-        if ($this->confirm('Are you want to make View', true)) {
-          $this->makeView();
-        }
+        // if ($this->confirm('Are you want to make View', true)) {
+        //   $this->makeView();
+        // }
 
         //seeder creation
         if ($this->confirm('Are you want to make Seeder', true)) {
           $this->makeSeeder();
         }
 
-        //Seeder creation
-        if ($this->confirm('Are you want to make Seeder', true)) {
-          $this->makeView();
+        //factory creation
+        if ($this->confirm('Are you want to make factory', true)) {
+          $this->makeFactory();
         }
 
         $this->info('Process Terminate');
@@ -178,10 +178,10 @@ class MakeCurd extends Command
                 $this->seeder_slot .= "\n\t\t\t\t";
             }
             //model fillable properties
-            $this->model_fillable .= "'{$datum['field_name']}' => '',";
+            $this->model_fillable .= ", '{$datum['field_name']}'";
 
             //seeder slot
-            $this->seeder_slot .= ", {$datum['field_name']}";
+            $this->seeder_slot .= "'{$datum['field_name']}'  => '', ";
 
             //Requests vaildation rules
             $this->store_request_slot .= "'{$datum['field_name']}'=> [";
@@ -573,12 +573,12 @@ class MakeCurd extends Command
         file_put_contents($file_path, $full_content);
         $this->info("file '$file_path' is created Successfully");
 
-        //seeder inplement in the Databaseseeder.php
+        //seeder inplement in the DatabaseSeeder.php
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        file_put_contents(")}//n",",\t$file_name::calss,\n\t\t)}//n");
-
-        $this->info("The seeder '$file_name' is set to DatabaseSeeder.php file just befor ')}//n'");
+        $database_seeder_content_with_seeder = str_replace("]);//n","\t$file_name::calss, \n\t\t]);//n",$database_seeder_content);
+        file_put_contents($database_seeder_path,$database_seeder_content_with_seeder);
+        $this->info("The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']);//n'");
     }
 
     protected function makeFactory()
@@ -588,23 +588,23 @@ class MakeCurd extends Command
         $file_path = database_path("factories/$file_name.php");
 
         //Controller content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'seeder.stub');
+        $stub_content = file_get_contents($this->pakage_stub_path . 'factory.stub');
 
         //replace the model name
         $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
-        $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
-
-        $full_content = str_replace('$slot', $this->seeder_slot, $content_with_table_name);
+        $full_content = str_replace('$slot', $this->seeder_slot, $content_with_name);
 
         file_put_contents($file_path, $full_content);
         $this->info("file '$file_path' is created Successfully");
 
-        //seeder inplement in the Databaseseeder.php
+        //the factory implement
+        $raws_num = (int)$this->ask('How many rows you want to insert');
+        $raws_num = $raws_num ? $raws_num : 1 ;
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        file_put_contents(")}//n", ",\t$file_name::calss,\n\t\t)}//n");
-
-        $this->info("The seeder '$file_name' is set to DatabaseSeeder.php file just befor ')}//n'");
+        $database_seeder_content_with_factory = str_replace("]);//n", "]);//n\n\n\t\t {$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
+        file_put_contents($database_seeder_path,$database_seeder_content_with_factory);
+        $this->info("The  '$file_name' is set to DatabaseSeeder.php file just after ']);//n'");
     }
 }
 

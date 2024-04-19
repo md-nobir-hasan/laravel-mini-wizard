@@ -1,6 +1,6 @@
 @extends('backend.layouts.master')
 @push('title')
-    $model_name
+    $page_title
 @endpush
 @section('main-content')
     <!-- DataTales Example -->
@@ -11,22 +11,27 @@
             </div>
         </div>
         <div class="py-3 card-header d-flex justify-content-between">
-            <h6 class="font-weight-bold text-primary">$model_name List</h6>
+            <h6 class="font-weight-bold text-primary">$page_title List</h6>
             <h6 class="font-weight-bold text-primary">Total: {{count($count)}} || Active: {{count($count->where('status','active'))}} || Inactive: {{count($count->where('status','inactive'))}}</h6>
-            @can('Create SSD')
-                <a href="{{ route('$route_name.create') }}" class="btn btn-primary btn-sm" data-toggle="tooltip"
-                    data-placement="bottom" title="Add $model_name"><i class="fas fa-plus"></i> Add $model_name</a>
+            @can('Create $model_name')
+                <a href="{{ route('$route_namecreate') }}" class="btn btn-primary btn-sm" data-toggle="tooltip"
+                    data-placement="bottom" title="Add $page_title"><i class="fas fa-plus"></i> Add $page_title</a>
             @endcan
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                @if (count($mdata) > 0)
+                @if (count($data) > 0)
                     <table class="table table-bordered table-striped" id="banner-dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
                                 <th>S.N.</th>
                                 <th>Title</th>
-                                @canany(['Edit SSD', 'Delete SSD'])
+                                $th_slot
+                                <th>Serial</th>
+                                <th>Status</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
+                                @canany(['Edit $model_name', 'Delete $model_name'])
                                     <th>Action</th>
                                 @endcanany
                             </tr>
@@ -35,25 +40,33 @@
                             <tr>
                                 <th>S.N.</th>
                                 <th>Title</th>
-                                @canany(['Edit SSD', 'Delete SSD'])
+                                $th_slot
+                                <th>Serial</th>
+                                <th>Status</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
+                                @canany(['Edit $model_name', 'Delete $model_name'])
                                     <th>Action</th>
                                 @endcanany
                             </tr>
                         </tfoot>
                         <tbody>
-                            @foreach ($mdata as $datum)
+                            @foreach ($data as $datum)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $datum->name }}</td>
+                                    <td>{{ $datum->title }}</td>
+                                    $td_slot
+                                    <td>{{ $datum->serial }}</td>
+                                    <td>{{ $datum->status }}</td>
                                     <td>
-                                        @can('Edit SSD')
-                                            <a href="{{ route('pa.ssd.edit', $datum->id) }}"
+                                        @can('Edit $model_name')
+                                            <a href="{{ route('$route_nameedit', $datum->id) }}"
                                                 class="float-left mr-1 btn btn-primary btn-sm"
                                                 style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip"
                                                 title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
                                         @endcan
-                                        @can('Delete SSD')
-                                            <form method="POST" action="{{ route('pa.ssd.destroy', [$datum->id]) }}">
+                                        @can('Delete $model_name')
+                                            <form method="POST" action="{{ route('$route_namedestroy', [$datum->id]) }}">
                                                 @csrf
                                                 @method('delete')
                                                 <button class="btn btn-danger btn-sm dltBtn" data-id={{ $datum->id }}
@@ -67,9 +80,9 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <span>{{ $mdata->links('vendor.pagination.bootstrap-5 ') }}</span>
+                    <span>{{ $data->links('vendor.pagination.bootstrap-5 ') }}</span>
                 @else
-                    <h6 class="text-center">No brands found!!! Please create brand</h6>
+                    <h6 class="text-center">No $page_titles found!!! Please create $page_title</h6>
                 @endif
             </div>
         </div>

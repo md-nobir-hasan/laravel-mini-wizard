@@ -9,4 +9,9 @@ Everything in one command
     4. Permissions name will be  (Show Photo, Create Photo, Edit Photo, Delete Photo), (Show OrderItem, Create  OrderItem, Edit OrderItem, Delete OrderItem).
     5. Requests name will be  (StorePhotoRequest, UpdatePhotoRequest), (StoreOrderItemRequest, UpdateOrderItemRequest).
     6. Every migration default contain title, status, serial field. You can modified these from the migration stub file.
+    7. For automatice implementation of seeder or factory you have to use )}//n in the seeder and database seeder. 
+
+### Improveable note
+    1. every datatype validation will added
+    2. every inpute filed in create and edit file will added
 

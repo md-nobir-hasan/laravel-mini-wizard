@@ -1,24 +1,46 @@
 @extends('backend.layouts.master')
 @push('title')
-    Update SSD
+    Update $page_title
 @endpush
-{{-- @section('title', 'E-SHOP || SSD Create') --}}
 @section('main-content')
     <div class="card">
-        <h5 class="card-header">Update SSD</h5>
+        <h5 class="card-header">Update $page_title</h5>
         <div class="card-body">
-            <form method="post" action="{{ route('pa.ssd.update',$datum->id) }}">
+            <form method="post" action="{{ route('$route_nameupdate',$datum->id) }}">
                 {{ csrf_field() }}
                 @method('PUT')
                 <div class="form-group">
-                    <label for="inputTitle" class="col-form-label">Name <span class="text-danger">*</span></label>
-                    <input id="inputTitle" type="text" name="name" placeholder="Enter title"
-                        value="{{$datum->name}}" class="form-control">
-                    @error('name')
+                    <label for="title" class="col-form-label">Title <span class="text-danger">*</span></label>
+                    <input id="title" type="text" name="title" placeholder="Enter Title"
+                        value="{{$datum->title ? $datum->title : old('title')}}" class="form-control">
+                    @error('title')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
 
+                $slot
+
+                {{--  serial --}}
+                <div class="form-group">
+                    <label for="serial" class="col-form-label">Serial <span class="text-danger">*</span></label>
+                    <input id="serial" type="number" name="serial" placeholder="Enter a Serial"
+                        value="{{ $datum->serial ? $datum->serial : old('serial') }}" class="form-control">
+                    @error('serial')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{--  status --}}
+                <div class="form-group">
+                    <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
+                    <select name="status" class="form-control">
+                        <option value="active" @selected($datum->status == 'Active')>Active</option>
+                        <option value="inactive" @selected($datum->status == 'Inactive')>Inactive</option>
+                    </select>
+                    @error('status')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
                 <div class="mb-3 form-group">
                     <button type="reset" class="btn btn-warning">Reset</button>
                     <button class="btn btn-success" type="submit">Update</button>

@@ -42,10 +42,18 @@ class $model_nameController extends Controller
 
         $data = $request->validated();
         $status = $model_name::create($data);
-        if(!$status){
-            return redirect()->route('$route_group_name$route_nameindex')->with('error', "Something went wrong");
+
+        //Redirection decission
+        if($request->redirect == 'back'){
+            $redirect_route = $route_group_name$route_nameindex;
+        }else{
+            $redirect_route = $route_group_name$route_namecreate;
         }
-        return redirect()->route('$route_group_name$route_nameindex')->with('success', "$request->title is created successfully");
+
+        if(!$status){
+            return redirect()->route($redirect_route)->with('error', "Something went wrong");
+        }
+        return redirect()->route($redirect_route)->with('success', "$request->title is created successfully");
     }
 
     /**

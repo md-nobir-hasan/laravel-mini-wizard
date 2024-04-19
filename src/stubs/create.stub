@@ -1,26 +1,52 @@
 @extends('backend.layouts.master')
 @push('title')
-    Add SSD
+    Add $page_title
 @endpush
-{{-- @section('title', 'E-SHOP || SSD Create') --}}
 @section('main-content')
     <div class="card">
-        <h5 class="card-header">Add SSD</h5>
+        <h5 class="card-header">Add $page_title</h5>
         <div class="card-body">
-            <form method="post" action="{{ route('pa.ssd.store') }}">
+            <form method="post" action="{{ route('$route_namestore') }}">
                 {{ csrf_field() }}
+
+                {{--  Title --}}
                 <div class="form-group">
-                    <label for="inputTitle" class="col-form-label">Name <span class="text-danger">*</span></label>
-                    <input id="inputTitle" type="text" name="name" placeholder="Enter Name of SSD"
-                        value="{{ old('name') }}" class="form-control">
-                    @error('name')
+                    <label for="title" class="col-form-label">Title <span class="text-danger">*</span></label>
+                    <input id="title" type="text" name="title" placeholder="Enter a title"
+                        value="{{ old('title') }}" class="form-control">
+                    @error('title')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                $slot
+
+                {{--  serial --}}
+                <div class="form-group">
+                    <label for="serial" class="col-form-label">Serial <span class="text-danger">*</span></label>
+                    <input id="serial" type="number" name="serial" placeholder="Enter a Serial"
+                        value="{{ old('serial') }}" class="form-control">
+                    @error('serial')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{--  status --}}
+                <div class="form-group">
+                    <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
+                    <select name="status" class="form-control">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                    @error('status')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
 
                 <div class="mb-3 form-group">
                     <button type="reset" class="btn btn-warning">Reset</button>
-                    <button class="btn btn-success" type="submit">Submit</button>
+                    <button class="btn btn-info" name='redirect' value='back' type="submit">Save and Back</button>
+                    <button class="btn btn-success" name='redirect' value='new' type="submit">Save and New</button>
                 </div>
             </form>
         </div>

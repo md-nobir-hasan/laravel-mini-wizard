@@ -4,6 +4,7 @@ namespace Nobir\CurdByCommand\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
 
 class MakeCurd extends Command
 {
@@ -35,10 +36,20 @@ class MakeCurd extends Command
     //properties for routes
     protected $route_group_prefix = '';
     protected $route_group_name = '';
+    protected $route_name = '';
+    protected $view_path = '';
+    protected $view_name = '';
 
     //properties for requests
     protected $store_request_slot = '';
     protected $update_request_slot = '';
+
+    //properties for sedder and factories
+    protected $seeder_slot = '';
+
+    //properties for views
+    protected $create_input_slot = '';
+    protected $edit_input_slot = '';
 
 
     //properties for messages
@@ -62,38 +73,48 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-        //Migraton creation
-        if ($this->confirm('Are you want to make Migration', true)) {
-            $this->makeMigration();
-        }
+        // //Migraton creation
+        // if ($this->confirm('Are you want to make Migration', true)) {
+        //     $this->makeMigration();
+        // }
 
-        //Model creation
-        if ($this->confirm('Are you want to make Model', true)) {
-            $this->makeModel();
-        }
+        // //Model creation
+        // if ($this->confirm('Are you want to make Model', true)) {
+        //     $this->makeModel();
+        // }
 
         //Route creation
-        if ($this->confirm('Are you want to make Route', true)) {
-            $this->makeRoute();
-        }
+        // if ($this->confirm('Are you want to make Route', true)) {
+        //     $this->makeRoute();
+        // }
 
-        //Resource Controller creation
-        if ($this->confirm('Are you want to make Resource Controller', true)) {
-          $this->makeController();
-        }
+        // //Resource Controller creation
+        // if ($this->confirm('Are you want to make Resource Controller', true)) {
+        //   $this->makeController();
+        // }
 
-        //Store Request creation
-        if ($this->confirm('Are you want to make Store Request', true)) {
-          $this->makeStoreRequest();
-        }
+        // //Store Request creation
+        // if ($this->confirm('Are you want to make Store Request', true)) {
+        //   $this->makeStoreRequest();
+        // }
 
-        //Update Request creation
-        if ($this->confirm('Are you want to make Update Request', true)) {
-          $this->makeUpdateRequest();
-        }
+        // //Update Request creation
+        // if ($this->confirm('Are you want to make Update Request', true)) {
+        //   $this->makeUpdateRequest();
+        // }
 
         //View creation
         if ($this->confirm('Are you want to make View', true)) {
+          $this->makeView();
+        }
+
+        //seeder creation
+        if ($this->confirm('Are you want to make Seeder', true)) {
+          $this->makeSeeder();
+        }
+
+        //Seeder creation
+        if ($this->confirm('Are you want to make Seeder', true)) {
           $this->makeView();
         }
 
@@ -146,7 +167,6 @@ class MakeCurd extends Command
         $this->store_request_slot = str_replace($replaceable_field, $field, $this->store_request_slot);
     }
 
-
     protected function makeReady()
     {
         foreach ($this->data as $key => $datum) {
@@ -155,9 +175,13 @@ class MakeCurd extends Command
             if ($key != 1) {
                 $this->migration_slot .= "\n\t\t\t";
                 $this->store_request_slot .= "\n\t\t\t";
+                $this->seeder_slot .= "\n\t\t\t\t";
             }
             //model fillable properties
-            $this->model_fillable .= ", {$datum['field_name']}";
+            $this->model_fillable .= "'{$datum['field_name']}' => '',";
+
+            //seeder slot
+            $this->seeder_slot .= ", {$datum['field_name']}";
 
             //Requests vaildation rules
             $this->store_request_slot .= "'{$datum['field_name']}'=> [";
@@ -165,6 +189,9 @@ class MakeCurd extends Command
             switch ($datum['data_type']) {
                     //Logic for Foreign Id For
                 case 'foreignIdFor':
+                    //Class name to field name converstion
+                    $field_name = str($datum['field_name'])->snake()->value() . '_id';
+
                     // for migration
                     $this->migration_slot .= "\$table->{$datum['data_type']}(App\Models\\{$datum['field_name']}::class)";
 
@@ -178,19 +205,60 @@ class MakeCurd extends Command
 
                     //for model
                     $this->model_functions .= "public function {$datum['field_name']}(){\n\t\treturn \$this->belongsTo({$datum['field_name']}::class);\n\t}";
+
+                    //for view
+                    $this->create_input_slot .= "<div class='form-group'>
+                                                    <label for='$field_name'>{$datum['field_name']}</label>star_slot
+                                                    <select name='$field_name' id='$field_name' class='form-control' required_slot>
+                                                        <option value=''>--Select any {$datum['field_name']}--</option>
+                                                        @foreach (\${$datum['field_name']} as \$key => \$$field_name)
+                                                            <option value='{{ \${$field_name}->id }}' @selected(\${$field_name}->id == old('$field_name'))>{{ \${$field_name}->title }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('$field_name')
+                                                        <span class='text-danger'>{{ \$message }}</span>
+                                                    @enderror
+                                                </div>";
                     break;
 
                     //For all Common Data Type
                 default:
+                    //field name to title
+                    $field_title = str($datum['field_name'])->headline()->value();
                     $this->migration_slot .= "\$table->{$datum['data_type']}('{$datum['field_name']}')";
 
                     //Other attributes checking such as nullable, unique, foreign key id
                     $this->otherAtrributesCheck($datum);
+
+                    //fore view
+                    $this->create_input_slot .= "<div class='form-group'>
+                                                            <label for='{$datum['field_name']}' class='col-form-label'>$field_title</label>star_slot
+                                                            <input id='{$datum['field_name']}' type='text' name='{$datum['field_name']}' placeholder='Exp:- Enter $field_title'
+                                                                value='{{ old('{$datum['field_name']}') }}' class='form-control required_slot'>
+                                                            @error('{$datum['field_name']}')
+                                                                <span class='text-danger'>{{ \$message }}</span>
+                                                            @enderror
+                                                        </div>";
+                    //value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'
                     break;
             }
+
+            //Replaceable base on nullable
+            $this->inputTextReplaceable($datum);
+
             // Ending of every variable
             $this->migration_slot .= ';';
             $this->store_request_slot .= '],';
+        }
+    }
+    protected function inputTextReplaceable($datum)
+    {
+        if($datum['nullable']){
+            $this->create_input_slot = str_replace('star_slot', ' ',$this->create_input_slot);
+            $this->create_input_slot = str_replace('required_slot', ' ',$this->create_input_slot);
+        }else{
+            $this->create_input_slot = str_replace('star_slot', '<span class="text-danger">*</span></label>', $this->create_input_slot);
+            $this->create_input_slot = str_replace('required_slot', 'required', $this->create_input_slot);
         }
     }
 
@@ -207,6 +275,7 @@ class MakeCurd extends Command
             $this->migration_slot .= "->default('{$datum['default_value']}')";
         }
     }
+
     //Migration creation
     protected function makeMigration()
     {
@@ -269,16 +338,24 @@ class MakeCurd extends Command
             if($prefix = $this->ask('Enter prefix for the route group (Presss enter to skip)')){
                 $route_group_first_code .= "prefix('$prefix')->";
                 $this->route_group_prefix = $prefix;
+                $this->view_name .= $prefix.'.';
+                $this->view_path .= $prefix.'/';
             }
             if($name = $this->ask('Enter name for the route group (Presss enter to skip)')){
                 $route_group_first_code .= "name('$name')->";
                 $this->route_group_name = $name;
+                $this->route_name .= $name.'.';
             }
             $route_group_first_code .= "group(function(){\n\t";
             $route_group_last_code = "});\n";
         }
         //base route
         $base_route .= "Route::resource('/$route_name','App\Http\Controllers\\{$controller_name}');\n";
+
+        //full route, folder and path setup
+        $this->route_name .= $route_name.'.';
+        $this->view_name .= $route_name.'.';
+        $this->view_path .= $route_name.'/';
 
         //Full route
         $route_slot = $route_group_first_code . $base_route.$route_group_last_code;
@@ -351,7 +428,7 @@ class MakeCurd extends Command
 
         //table_name
         $table_name = str($this->model_class_name)->kebab()->plural()->value();
-        $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
+        $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
 
         $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
         file_put_contents($file_path, $full_content);
@@ -369,7 +446,7 @@ class MakeCurd extends Command
 
         //table_name
         $table_name = str($this->model_class_name)->kebab()->plural()->value();
-        $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
+        $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
 
         $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
         file_put_contents($file_path, $full_content);
@@ -377,28 +454,157 @@ class MakeCurd extends Command
     }
 
     protected function makeView(){
-        $view_folder_name = '';
-        if($prefix = $this->route_group_prefix){
-            $view_folder_name .= '/'.$prefix;
-        }
-        if($name = $this->route_group_name){
-            $view_folder_name .= '/' . $name;
+
+        $index_view_path = resource_path("views/{$this->view_path}index.blade.php");
+        $create_view_path = resource_path("views/{$this->view_path}create.blade.php");
+        $edit_view_path = resource_path("views/{$this->view_path}edit.blade.php");
+
+        if(!file_exists($this->view_path)){
+            $directory = resource_path("views/$this->view_path");
+                mkdir($directory, 0755,true);
         }
 
-        $index_view_path = resource_path("views$view_folder_name/index.php");
-        $create_view_path = resource_path("views$view_folder_name/create.php");
-        $edit_view_path = resource_path("views$view_folder_name/edit.php");
+        $this->indexViewCreation($index_view_path);
+        $this->createViewCreation($create_view_path);
+        $this->editViewCreation($edit_view_path);
 
-        //Index file creation
+    }
+
+    protected function indexViewCreation($file_path){
+
+        $th_slot = $this->thSlotCreation();
+        $td_slot = $this->tdSlotCreation();
+
+        $page_title = str($this->model_class_name)->headline()->value();
+
         //index view load content load from stub
         $stub_content = file_get_contents($this->pakage_stub_path . 'index.stub');
 
         //replace the model name
-        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
 
-        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_name);
+        //replace the route name
+        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_model_name);
+        $content_with_page_name = str_replace('$page_title', $page_title, $content_with_route);
+        $content_with_th_slot = str_replace('$th_slot', $th_slot, $content_with_page_name);
+        $content_with_td_slot = str_replace('$td_slot', $td_slot, $content_with_th_slot);
+
+        $full_content = $content_with_td_slot;
         file_put_contents($file_path, $full_content);
         $this->info("file '$file_path' is created Successfully");
+    }
+
+    protected function createViewCreation($file_path){
+
+        $page_title = str($this->model_class_name)->headline()->value();
+
+        //create view load content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'create.stub');
+        //replace the model name
+        $content_with_modal_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        //replace the route name
+        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_modal_name);
+        $content_with_page_title = str_replace('$page_title', $page_title, $content_with_route);
+        $full_content = str_replace('$slot', $this->create_input_slot, $content_with_page_title);
+        file_put_contents($file_path, $full_content);
+        $this->info("file '$file_path' is created Successfully");
+    }
+
+    protected function editViewCreation($file_path){
+        $page_title = str($this->model_class_name)->headline()->value();
+
+        //edit view load content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'edit.stub');
+
+        //replace the model name
+        $content_with_page_title = str_replace('$page_title', $page_title, $stub_content);
+        //replace the route name
+        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_page_title);
+
+        foreach($this->data as $datum){
+            $this->edit_input_slot = str_replace("value='{{ old('{$datum['field_name']}') }}'","value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'",$this->create_input_slot);
+        }
+
+        $full_content = str_replace('$slot', $this->edit_input_slot, $content_with_route);
+        file_put_contents($file_path, $full_content);
+        $this->info("file '$file_path' is created Successfully");
+    }
+
+    protected function thSlotCreation(){
+        $table_heading = '';
+        foreach($this->data as $key => $datum){
+
+            //Indentation currection
+            if($key != 1){
+                $table_heading .= "\n\t\t\t\t\t\t\t\t";
+            }
+            $table_heading .= '<th>'.str($datum['field_name'])->headline()->value().'</th>';
+        }
+        return $table_heading;
+    }
+
+    protected function tdSlotCreation(){
+        $td = '';
+        foreach($this->data as $key => $datum){
+
+            //Indentation currection
+            if($key != 1){
+                $td .= "\n\t\t\t\t\t\t\t\t\t";
+            }
+            $td .= "<td> {{ \$datum->{$datum['field_name']} }}</td>";
+        }
+        return $td;
+    }
+
+    protected function makeSeeder(){
+        $file_name = $this->model_class_name . 'Seeder';
+        $table_name = str($this->model_class_name)->snake()->plural()->value();
+        $file_path = database_path("seeders/$file_name.php");
+
+        //Controller content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'seeder.stub');
+
+        //replace the model name
+        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
+
+        $full_content = str_replace('$slot', $this->seeder_slot, $content_with_table_name);
+
+        file_put_contents($file_path, $full_content);
+        $this->info("file '$file_path' is created Successfully");
+
+        //seeder inplement in the Databaseseeder.php
+        $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
+        $database_seeder_content = file_get_contents($database_seeder_path);
+        file_put_contents(")}//n",",\t$file_name::calss,\n\t\t)}//n");
+
+        $this->info("The seeder '$file_name' is set to DatabaseSeeder.php file just befor ')}//n'");
+    }
+
+    protected function makeFactory()
+    {
+        $file_name = $this->model_class_name . 'Factory';
+        $table_name = str($this->model_class_name)->snake()->plural()->value();
+        $file_path = database_path("factories/$file_name.php");
+
+        //Controller content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'seeder.stub');
+
+        //replace the model name
+        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
+
+        $full_content = str_replace('$slot', $this->seeder_slot, $content_with_table_name);
+
+        file_put_contents($file_path, $full_content);
+        $this->info("file '$file_path' is created Successfully");
+
+        //seeder inplement in the Databaseseeder.php
+        $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
+        $database_seeder_content = file_get_contents($database_seeder_path);
+        file_put_contents(")}//n", ",\t$file_name::calss,\n\t\t)}//n");
+
+        $this->info("The seeder '$file_name' is set to DatabaseSeeder.php file just befor ')}//n'");
     }
 }
 

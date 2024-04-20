@@ -221,7 +221,7 @@ class MakeCurd extends Command
         $this->store_request_slot = str_replace($replaceable_field, $field, $this->store_request_slot);
 
         //In seeder slot
-        $this->seeder_slot = str_replace($replaceable_field, $field, $this->seeder_slot);
+        $this->seeder_slot = str_replace("'$replaceable_field' => 'fsddf'", "'$field' => 1", $this->seeder_slot);
     }
 
     protected function makeReady()
@@ -239,7 +239,7 @@ class MakeCurd extends Command
             $this->model_fillable .= ", '{$datum['field_name']}'";
 
             //seeder slot
-            $this->seeder_slot .= "'{$datum['field_name']}'  => 'fsddf', ";
+            $this->seeder_slot .= "'{$datum['field_name']}' => 'fsddf',";
 
             //Requests vaildation rules
             $this->store_request_slot .= "'{$datum['field_name']}'=> [";
@@ -330,6 +330,7 @@ class MakeCurd extends Command
             $this->migration_slot .= ';';
             $this->store_request_slot .= '],';
         }
+
     }
 
     protected function inputTextReplaceable($datum)
@@ -718,7 +719,7 @@ class MakeCurd extends Command
         $raws_num = $raws_num ? $raws_num : 1;
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_factory = str_replace("]); //n", "]); //n\n\n\t\t\App\Models\FlowerTree{$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
+        $database_seeder_content_with_factory = str_replace("]); //n", "]); //n\n\n\t\t\App\Models\\{$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_factory);
         $this->info("{$this->warning_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']); //n'");
     }

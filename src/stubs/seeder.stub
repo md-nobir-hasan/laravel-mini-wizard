@@ -15,7 +15,7 @@ class $model_nameSeeder extends Seeder
     {
         DB::table('$table_name')->insert([
             [
-                'title' => fake()->unique()->title(),
+                'title' => fake()->title(),
                 $slot
                 'serial' => 25,
                 'status' => 'Active',

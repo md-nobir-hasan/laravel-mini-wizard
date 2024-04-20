@@ -24,8 +24,9 @@ class Store$model_nameRequest extends FormRequest
         return [
             'title'=> ['required','string','max:255','unique:$table_name,title'],
             'status' => ['nullable','in:Active,Inactive'],
+            $slot,
             'serial' => ['nullable','integer'],
-            $slot
+
         ];
     }
 }

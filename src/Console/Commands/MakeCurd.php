@@ -87,50 +87,50 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-        //Migraton creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
-            $this->makeMigration();
-        }
+        // //Migraton creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
+        //     $this->makeMigration();
+        // }
 
-        //Model creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
-            $this->makeModel();
-        }
+        // //Model creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
+        //     $this->makeModel();
+        // }
 
         // Route creation
         if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
             $this->makeRoute();
         }
 
-        //Resource Controller creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
-            $this->makeController();
-        }
+        // //Resource Controller creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
+        //     $this->makeController();
+        // }
 
-        //Store Request creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
-            $this->makeStoreRequest();
-        }
+        // //Store Request creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+        //     $this->makeStoreRequest();
+        // }
 
-        //Update Request creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
-            $this->makeUpdateRequest();
-        }
+        // //Update Request creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
+        //     $this->makeUpdateRequest();
+        // }
 
-        // View creation
-        if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
-            $this->makeView();
-        }
+        // // View creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
+        //     $this->makeView();
+        // }
 
-        //seeder creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
-            $this->makeSeeder();
-        }
+        // //seeder creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
+        //     $this->makeSeeder();
+        // }
 
-        //factory creation
-        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
-            $this->makeFactory();
-        }
+        // //factory creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+        //     $this->makeFactory();
+        // }
 
         $this->info('🎇💪💪💪  Process Terminate  💪💪💪🎇');
         $this->info("\n🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com  💞💞💓💗🎇");
@@ -385,10 +385,12 @@ class MakeCurd extends Command
         if (file_exists($file_path)) {
             $wimi_wizard_content = file_get_contents($file_path);
             if ($route_group_first_code) {
+                $this->info('route group ache');
                 if (strpos($wimi_wizard_content, $route_group_first_code) === false) {
-                    $replaceable_route_with_group = $route_group_first_code . $base_route.$route_group_last_code;
-                    $full_content = str_replace($route_group_first_code, $replaceable_route_with_group, $wimi_wizard_content);
+                    $this->info('ai route group name a route group ar aghe chilo na');
+                    $full_content = $wimi_wizard_content . "\n" . $route_slot;
                 } else {
+                    $this->info('ai route group name a route group ar aghe chilo');
                     $replaceable_route_with_group = $route_group_first_code . $base_route;
                     $full_content = str_replace($route_group_first_code, $replaceable_route_with_group, $wimi_wizard_content);
                 }
@@ -624,7 +626,7 @@ class MakeCurd extends Command
         //seeder inplement in the DatabaseSeeder.php
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_seeder = str_replace("]);//n", "\t$file_name::calss, \n\t\t]);//n", $database_seeder_content);
+        $database_seeder_content_with_seeder = str_replace("]);//n", "\t$file_name::class, \n\t\t]);//n", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_seeder);
         $this->info("{$this->info_icon} The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']);//n'");
     }
@@ -652,7 +654,7 @@ class MakeCurd extends Command
         $raws_num = $raws_num ? $raws_num : 1;
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_factory = str_replace("]);//n", "]);//n\n\n\t\t {$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
+        $database_seeder_content_with_factory = str_replace("]);//n", "]);//n\n\n\t\t\App\Models\FlowerTree{$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_factory);
         $this->info("{$this->info_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']);//n'");
     }

@@ -154,11 +154,11 @@ class MakeCurd extends Command
             Artisan::call('migrate:fresh --seed');
         }catch(\Exception $e){
             Artisan::call('migrate');
-          $this->ask('Seed can not be done. Please check your seeder or factory file');
+          $this->info('Seed can not be done. Please check your seeder or factory file');
         };
 
-        $this->info("\n   🎇💪💪💪  Process Terminate  💪💪💪🎇");
-        $this->info("\n    \t🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com 💞💞💓💗🎇\n");
+        $this->info("\n\t\t🎇💪💪💪  Process Terminate  💪💪💪🎇");
+        $this->info("\n\t\t🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com 💞💞💓💗🎇\n");
     }
 
     protected function collectFields()
@@ -168,8 +168,8 @@ class MakeCurd extends Command
             if ($field_input = $this->ask($this->input_icon . ' ' . $this->add_field_msg)) {
                 $i++;
                 //Database field name
-                $this->data[$i]['field_name'] = $field_input;
-
+                $this->data[$i]['field_name'] = str($field_input)->snake()->value();
+                $this->info("\t 🎆The field is taken as :{$this->data[$i]['field_name']}");
                 //Data type
                 $this->data[$i]['data_type'] = $this->choice(
                     'Enter a data type?',
@@ -192,8 +192,9 @@ class MakeCurd extends Command
                 break;
             }
         }
-        $this->info('Processing the field');
+        $this->info('🔎Processing the field🔍');
         $this->makeReady();
+        $this->info('🚀🚀Processing of the field is complete🚀🚀');
     }
 
     protected function replaceFillableField($replaceable_field)
@@ -675,9 +676,9 @@ class MakeCurd extends Command
         //seeder inplement in the DatabaseSeeder.php
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_seeder = str_replace("]);//n", "\t$file_name::class, \n\t\t]);//n", $database_seeder_content);
+        $database_seeder_content_with_seeder = str_replace("]); //n", "\t$file_name::class, \n\t\t]); //n", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_seeder);
-        $this->info("{$this->info_icon} The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']);//n'");
+        $this->info("{$this->info_icon} The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']); //n'");
     }
 
     protected function makeFactory()
@@ -703,8 +704,8 @@ class MakeCurd extends Command
         $raws_num = $raws_num ? $raws_num : 1;
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_factory = str_replace("]);//n", "]);//n\n\n\t\t\App\Models\FlowerTree{$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
+        $database_seeder_content_with_factory = str_replace("]); //n", "]); //n\n\n\t\t\App\Models\FlowerTree{$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_factory);
-        $this->info("{$this->info_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']);//n'");
+        $this->info("{$this->info_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']); //n'");
     }
 }

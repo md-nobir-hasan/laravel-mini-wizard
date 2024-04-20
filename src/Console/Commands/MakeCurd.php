@@ -53,12 +53,14 @@ class MakeCurd extends Command
     protected $edit_input_slot = '';
 
     //properties for icons
-    protected $all_icons = '✅❗⛔⭕❓‼️⁉️⚠️❌🚫🛑💗💓💞❤️‍🩹🏠🚀✈️💺🌷💐🌻📁✏️🖋️✒️✒️🔎🔍♂️⚔️🗡️🩸💎🎈🎆🎇👏✍️👊🫵☝️👉👈👇✌️🫲💪👀👁️😎😮';
-    protected $input_icon = '✏️ ';
-    protected $make_icon = '😮 ';
-    protected $info_icon = '⚠️ ';
-    protected $skip_icon = '⛔ ';
-    protected $success_make_icon = '💪💪💪 ';
+    protected $all_icons = '✅❗⛔⭕❓‼️⁉️⚠️❌🚫🛑💗💓💞❤️‍🩹🏠🚀✈️💺🌷💐🌻📁✏️🖋️✒️✒️🔎🔍♂️⚔️🗡️🩸💎🎈🎆🎇👏✍️👊🫵';
+    protected $all_icon2 = 'ℹ️☑️🔵🟢🔴🟠🟡🟤🟥🟧🟨🟨🟩🟦🔶🔸🔺🔻🔷🔹☝️👉👈👇✌️🫲💪👀👁️😎😮';
+    protected $input_icon = '✏️';
+    protected $make_icon = '😮';
+    protected $warning_icon = '⚠️';
+    protected $info_icon = '🟢🟢';
+    protected $skip_icon = '⛔';
+    protected $success_make_icon = '💪💪💪';
     protected $success_msg_icon = '✅ ';
 
 
@@ -89,14 +91,14 @@ class MakeCurd extends Command
         // checking for the same name
         $file_path = app_path("Models/{$this->model_class_name}.php");
         if (file_exists($file_path)) {
-            $this->info("{$this->info_icon} This model '{$this->model_class_name}' already exist.");
+            $this->info("{$this->warning_icon} This model '{$this->model_class_name}' already exist.");
             while (true) {
                 $this->model_class_name = $this->ask("{$this->input_icon} Enter a model name again:");
                 $file_path = app_path("Models/{$this->model_class_name}.php");
                 if (!file_exists($file_path)) {
                     break;
                 } else {
-                    $this->info("{$this->info_icon} This model '{$this->model_class_name}' also already exist.");
+                    $this->info("{$this->warning_icon} This model '{$this->model_class_name}' also already exist.");
                 }
             }
         }
@@ -150,17 +152,25 @@ class MakeCurd extends Command
         }
 
         // Migration and seeding
-        try{
-            Artisan::call('migrate:fresh --seed');
-        }catch(\Exception $e){
-            Artisan::call('migrate');
-          $this->info('Seed can not be done. Please check your seeder or factory file');
-        };
+        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+            $this->migrattionAndSeeding();
+        }
+
 
         $this->info("\n\t\t🎇💪💪💪  Process Terminate  💪💪💪🎇");
         $this->info("\n\t\t🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com 💞💞💓💗🎇\n");
     }
 
+    protected function migrattionAndSeeding(){
+        try {
+            Artisan::call('migrate:fresh --seed');
+            $this->info($this->success_msg_icon.' '.'Migration and Seeding is done');
+        } catch (\Exception $e) {
+            Artisan::call('migrate');
+            $this->info($this->success_msg_icon . ' ' . 'Migration done');
+            $this->info($this->warning_icon.' '.'Seed can not be done. Please check your seeder or factory file');
+        };
+    }
     protected function collectFields()
     {
         $i = 0;
@@ -262,7 +272,7 @@ class MakeCurd extends Command
                                                     @enderror
                                                 </div>";
 
-                    $this->create_input_slot .= "<div class='form-group'>
+                    $this->edit_input_slot .= "<div class='form-group'>
                                                     <label for='$field_name'>{$datum['field_name']}</label>star_slot
                                                     <select name='$field_name' id='$field_name' class='form-control' required_slot>
                                                         <option value=''>--Select any {$datum['field_name']}--</option>
@@ -678,7 +688,7 @@ class MakeCurd extends Command
         $database_seeder_content = file_get_contents($database_seeder_path);
         $database_seeder_content_with_seeder = str_replace("]); //n", "\t$file_name::class, \n\t\t]); //n", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_seeder);
-        $this->info("{$this->info_icon} The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']); //n'");
+        $this->info("{$this->warning_icon} The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']); //n'");
     }
 
     protected function makeFactory()
@@ -706,6 +716,6 @@ class MakeCurd extends Command
         $database_seeder_content = file_get_contents($database_seeder_path);
         $database_seeder_content_with_factory = str_replace("]); //n", "]); //n\n\n\t\t\App\Models\FlowerTree{$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_factory);
-        $this->info("{$this->info_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']); //n'");
+        $this->info("{$this->warning_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']); //n'");
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class $model_name extends Model
 {
     use HasFactory;
-    protected $fillable = ['title','status','serial'$fillable_properties];
-    
+    protected $fillable = ['title'$fillable_properties,'status','serial'];
+
     $slot
 }

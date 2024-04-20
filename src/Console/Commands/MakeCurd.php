@@ -51,10 +51,24 @@ class MakeCurd extends Command
     protected $create_input_slot = '';
     protected $edit_input_slot = '';
 
+    //properties for icons
+    protected $all_icons ='✅❗⛔⭕❓‼️⁉️⚠️❌🚫🛑💗💓💞❤️‍🩹🏠🚀✈️💺🌷💐🌻📁✏️🖋️✒️✒️🔎🔍♂️⚔️🗡️🩸💎🎈🎆🎇👏✍️👊🫵☝️👉👈👇✌️🫲💪👀👁️😎😮';
+    protected $input_icon = '✏️ ';
+    protected $make_icon = '😮 ';
+    protected $info_icon = '⚠️ ';
+    protected $skip_icon = '⛔ ';
+    protected $success_make_icon = '💪💪💪 ';
+    protected $success_msg_icon = '✅ ';
+
 
     //properties for messages
-    protected $add_field_msg = 'Are you want to add a field?';
+    protected $add_field_msg = 'Please, enter a field name';
     protected $skip_msg = '(Press enter to skip)';
+
+    //Function for messages
+    protected function successMsg($file_path){
+        return ($this->success_make_icon. " file '$file_path' is created Successfully");
+    }
     /**
      * The console command description.
      *
@@ -74,61 +88,62 @@ class MakeCurd extends Command
         $this->collectFields();
 
         //Migraton creation
-        if ($this->confirm('Are you want to make Migration', true)) {
+        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
             $this->makeMigration();
         }
 
         //Model creation
-        if ($this->confirm('Are you want to make Model', true)) {
+        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
             $this->makeModel();
         }
 
         // Route creation
-        if ($this->confirm('Are you want to make Route', true)) {
+        if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
             $this->makeRoute();
         }
 
         //Resource Controller creation
-        if ($this->confirm('Are you want to make Resource Controller', true)) {
-          $this->makeController();
+        if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
+            $this->makeController();
         }
 
         //Store Request creation
-        if ($this->confirm('Are you want to make Store Request', true)) {
-          $this->makeStoreRequest();
+        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+            $this->makeStoreRequest();
         }
 
         //Update Request creation
-        if ($this->confirm('Are you want to make Update Request', true)) {
-          $this->makeUpdateRequest();
+        if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
+            $this->makeUpdateRequest();
         }
 
         // View creation
-        if ($this->confirm('Are you want to make View', true)) {
-          $this->makeView();
+        if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
+            $this->makeView();
         }
 
         //seeder creation
-        if ($this->confirm('Are you want to make Seeder', true)) {
-          $this->makeSeeder();
+        if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
+            $this->makeSeeder();
         }
 
         //factory creation
-        if ($this->confirm('Are you want to make factory', true)) {
-          $this->makeFactory();
+        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+            $this->makeFactory();
         }
 
-        $this->info('Process Terminate');
+        $this->info('🎇💪💪💪  Process Terminate  💪💪💪🎇');
+        $this->info("\n🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com  💞💞💓💗🎇");
     }
 
     protected function collectFields()
     {
         $i = 0;
         while (true) {
-            if ($this->confirm($this->add_field_msg, true)) {
+            if ($field_input = $this->ask($this->input_icon.' '.$this->add_field_msg)) {
                 $i++;
                 //Database field name
-                $this->data[$i]['field_name'] = $this->ask('Field Name:');
+                $this->data[$i]['field_name'] = $field_input;
 
                 //Data type
                 $this->data[$i]['data_type'] = $this->choice(
@@ -147,7 +162,7 @@ class MakeCurd extends Command
                     $this->data[$i]['default_value'] = null;
                 }
 
-                $this->add_field_msg = 'Are you want to add another field?';
+                $this->add_field_msg = 'Enter another field name '.$this->skip_msg;
             } else {
                 break;
             }
@@ -253,16 +268,17 @@ class MakeCurd extends Command
     }
     protected function inputTextReplaceable($datum)
     {
-        if($datum['nullable']){
-            $this->create_input_slot = str_replace('star_slot', ' ',$this->create_input_slot);
-            $this->create_input_slot = str_replace('required_slot', ' ',$this->create_input_slot);
-        }else{
+        if ($datum['nullable']) {
+            $this->create_input_slot = str_replace('star_slot', ' ', $this->create_input_slot);
+            $this->create_input_slot = str_replace('required_slot', ' ', $this->create_input_slot);
+        } else {
             $this->create_input_slot = str_replace('star_slot', '<span class="text-danger">*</span></label>', $this->create_input_slot);
             $this->create_input_slot = str_replace('required_slot', 'required', $this->create_input_slot);
         }
     }
 
-    protected function otherAtrributesCheck($datum){
+    protected function otherAtrributesCheck($datum)
+    {
         if ($datum['nullable']) {
             $this->migration_slot .= "->nullable()";
             //validation
@@ -283,7 +299,7 @@ class MakeCurd extends Command
         $table_name = str($this->model_class_name)->snake()->plural()->value();
 
         //Content extract from stub
-        $stub_content = file_get_contents($this->pakage_stub_path.'migration.stub');
+        $stub_content = file_get_contents($this->pakage_stub_path . 'migration.stub');
 
         //Replace the table name
         $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
@@ -294,7 +310,9 @@ class MakeCurd extends Command
         $file_name = date('Y_m_d_His') . '_' . 'create_' . $table_name . '_table.php';
         $file_path = database_path('migrations/' . $file_name);
         file_put_contents($file_path, $content_ready);
-        $this->info("The migration file '$file_name' is created Successfully in your migration folder");
+
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
     //Model creation
@@ -302,24 +320,26 @@ class MakeCurd extends Command
     {
         $model_name = $this->model_class_name;
         //model content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path.'model.stub');
+        $stub_content = file_get_contents($this->pakage_stub_path . 'model.stub');
 
         //replace the model name
         $content_with_name = str_replace('$model_name', $model_name, $stub_content);
         $content_with_fillable_properties = str_replace('$fillable_properties', $this->model_fillable, $content_with_name);
 
-        $full_content = str_replace('$slot',$this->model_functions, $content_with_fillable_properties);
+        $full_content = str_replace('$slot', $this->model_functions, $content_with_fillable_properties);
         $full_file_name = $model_name . '.php';
         $file_path = app_path('Models/' . $full_file_name);
         file_put_contents($file_path, $full_content);
-        $this->info("The model file '$full_file_name' is created Successfully in your model folder");
+
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
     //Route creation
     protected function makeRoute()
     {
         $model_name = $this->model_class_name;
-        $controller_name = $model_name."Controller";
+        $controller_name = $model_name . "Controller";
         $route_name = str($model_name)->kebab()->value();
 
         //Route slot creation
@@ -330,75 +350,83 @@ class MakeCurd extends Command
 
         //Route group preparation
         $route_group = $this->confirm('Has the route group?', true);
-        if($route_group){
+        if ($route_group) {
             $route_group_first_code .= 'Route::';
-            if($middleware = $this->ask('Enter Middleware for the route group (Presss enter to skip)')){
+            if ($middleware = $this->ask($this->make_icon.' '.'Enter Middleware for the route group (Presss enter to skip)')) {
                 $route_group_first_code .= "middleware('$middleware')->";
             }
-            if($prefix = $this->ask('Enter prefix for the route group (Presss enter to skip)')){
+            if ($prefix = $this->ask($this->make_icon . ' ' . 'Enter prefix for the route group (Presss enter to skip)')) {
                 $route_group_first_code .= "prefix('$prefix')->";
                 $this->route_group_prefix = $prefix;
-                $this->view_name .= $prefix.'.';
-                $this->view_path .= $prefix.'/';
+                $this->view_name .= $prefix . '.';
+                $this->view_path .= $prefix . '/';
             }
-            if($name = $this->ask('Enter name for the route group (Presss enter to skip)')){
+            if ($name = $this->ask($this->make_icon . ' ' . 'Enter name for the route group (Presss enter to skip)')) {
                 $route_group_first_code .= "name('$name')->";
                 $this->route_group_name = $name;
-                $this->route_name .= $name.'.';
+                $this->route_name .= $name . '.';
             }
-            $route_group_first_code .= "group(function(){\n\t";
+            $route_group_first_code .= "group(function () {\n\t";
             $route_group_last_code = "});\n";
         }
         //base route
         $base_route .= "Route::resource('/$route_name','App\Http\Controllers\\{$controller_name}');\n";
 
         //full route, folder and path setup
-        $this->route_name .= $route_name.'.';
-        $this->view_name .= $route_name.'.';
-        $this->view_path .= $route_name.'/';
+        $this->route_name .= $route_name . '.';
+        $this->view_name .= $route_name . '.';
+        $this->view_path .= $route_name . '/';
 
         //Full route
-        $route_slot = $route_group_first_code . $base_route.$route_group_last_code;
+        $route_slot = $route_group_first_code . $base_route . $route_group_last_code;
 
         $file_path = base_path('routes/mini-wizard.php');
         //route content load from stub if not exist
-        if(file_exists($file_path)){
-            $stub_content = file_get_contents($file_path);
-            if($route_group_first_code){
-                $replaceable_route_with_group = $route_group_first_code.$base_route;
-                $full_content = str_replace($route_group_first_code, $replaceable_route_with_group, $stub_content);
-            }else{
-                $full_content = $stub_content."\n".$route_slot;
+        if (file_exists($file_path)) {
+            $wimi_wizard_content = file_get_contents($file_path);
+            if ($route_group_first_code) {
+                if (strpos($wimi_wizard_content, $route_group_first_code) === false) {
+                    $replaceable_route_with_group = $route_group_first_code . $base_route.$route_group_last_code;
+                    $full_content = str_replace($route_group_first_code, $replaceable_route_with_group, $wimi_wizard_content);
+                } else {
+                    $replaceable_route_with_group = $route_group_first_code . $base_route;
+                    $full_content = str_replace($route_group_first_code, $replaceable_route_with_group, $wimi_wizard_content);
+                }
+            } else {
+                $full_content = $wimi_wizard_content . "\n" . $route_slot;
             }
             file_put_contents($file_path, $full_content);
-            $this->info("The route file 'mini-wizard' is updated Successfully");
-        }else{
-            $stub_content = file_get_contents($this->pakage_stub_path.'route.stub');
+
+            //success message
+            $this->info($this->successMsg('mini-wizard'));
+        } else {
+            $stub_content = file_get_contents($this->pakage_stub_path . 'route.stub');
 
             $full_content = str_replace('$slot', $route_slot, $stub_content);
 
             file_put_contents($file_path, $full_content);
-            $this->info("The route file 'mini-wizard' is created Successfully in your routes folder");
+
+            //success message
+            $this->info($this->successMsg('mini-wizard'));
 
             //including the mini-wizard.php file in the web.php
             $web_file_path = base_path('/routes/web.php');
             $web_route_content = file_get_contents($web_file_path);
             $web_route_final_content = str_replace("<?php", "<?php \n require __DIR__ . '/mini-wizard.php';", $web_route_content);
-            file_put_contents($web_file_path,$web_route_final_content);
-            $this->info("The route file 'mini-wizard' is also included in web.php. So no tension.");
-
+            file_put_contents($web_file_path, $web_route_final_content);
+            $this->info("{$this->success_make_icon} The route file 'mini-wizard' is also included in web.php. So no tension.");
         }
     }
 
-    protected function makeController(){
-        $controller_name = $this->model_class_name.'Controller';
+    protected function makeController()
+    {
+        $controller_name = $this->model_class_name . 'Controller';
         $file_path = app_path("Http/Controllers/$controller_name.php");
-        if(file_exists($file_path)){
-            $this->info("This controller $controller_name is exists");
-            $controller_name = $this->ask("Enter a controller name $this->skip_msg");
-
+        if (file_exists($file_path)) {
+            $this->info("{$this->info_icon} This controller $controller_name is exists");
+            $controller_name = $this->ask("{$this->input_icon} Enter a controller name $this->skip_msg");
         }
-        if($controller_name){
+        if ($controller_name) {
             //Controller content load from stub
             $stub_content = file_get_contents($this->pakage_stub_path . 'resource-controller.stub');
 
@@ -409,16 +437,17 @@ class MakeCurd extends Command
 
             $full_content = str_replace('$route_name', $this->route_group_name, $content_with_prefix);
             file_put_contents($file_path, $full_content);
-            $this->info("file '$file_path' is created Successfully");
-            // $this->makeStoreRequest();
-            // $this->makeUpdateRequests();
-        }{
-            $this->info('Controller creation skiped');
+
+            //success message
+            $this->info($this->successMsg($file_path));
+        } {
+            $this->info($this->skip_icon.' '.'Controller creation skiped');
         }
     }
 
-    protected function makeStoreRequest(){
-        $reqest_name = 'Store'.$this->model_class_name. 'Request';
+    protected function makeStoreRequest()
+    {
+        $reqest_name = 'Store' . $this->model_class_name . 'Request';
         $file_path = app_path("Http/Requests/$reqest_name.php");
         //Controller content load from stub
         $stub_content = file_get_contents($this->pakage_stub_path . 'store-request.stub');
@@ -432,11 +461,14 @@ class MakeCurd extends Command
 
         $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
         file_put_contents($file_path, $full_content);
-        $this->info("file '$file_path' is created Successfully");
+
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
-    protected function makeUpdateRequest(){
-        $reqest_name = 'Update'.$this->model_class_name. 'Request';
+    protected function makeUpdateRequest()
+    {
+        $reqest_name = 'Update' . $this->model_class_name . 'Request';
         $file_path = app_path("Http/Requests/$reqest_name.php");
         //Controller content load from stub
         $stub_content = file_get_contents($this->pakage_stub_path . 'update-request.stub');
@@ -450,27 +482,30 @@ class MakeCurd extends Command
 
         $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
         file_put_contents($file_path, $full_content);
-        $this->info("file '$file_path' is created Successfully");
+
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
-    protected function makeView(){
+    protected function makeView()
+    {
 
         $index_view_path = resource_path("views/{$this->view_path}index.blade.php");
         $create_view_path = resource_path("views/{$this->view_path}create.blade.php");
         $edit_view_path = resource_path("views/{$this->view_path}edit.blade.php");
 
-        if(!file_exists($this->view_path)){
+        if (!file_exists($this->view_path)) {
             $directory = resource_path("views/$this->view_path");
-                mkdir($directory, 0755,true);
+            mkdir($directory, 0755, true);
         }
 
         $this->indexViewCreation($index_view_path);
         $this->createViewCreation($create_view_path);
         $this->editViewCreation($edit_view_path);
-
     }
 
-    protected function indexViewCreation($file_path){
+    protected function indexViewCreation($file_path)
+    {
 
         $th_slot = $this->thSlotCreation();
         $td_slot = $this->tdSlotCreation();
@@ -491,10 +526,13 @@ class MakeCurd extends Command
 
         $full_content = $content_with_td_slot;
         file_put_contents($file_path, $full_content);
-        $this->info("file '$file_path' is created Successfully");
+
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
-    protected function createViewCreation($file_path){
+    protected function createViewCreation($file_path)
+    {
 
         $page_title = str($this->model_class_name)->headline()->value();
 
@@ -507,10 +545,13 @@ class MakeCurd extends Command
         $content_with_page_title = str_replace('$page_title', $page_title, $content_with_route);
         $full_content = str_replace('$slot', $this->create_input_slot, $content_with_page_title);
         file_put_contents($file_path, $full_content);
-        $this->info("file '$file_path' is created Successfully");
+
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
-    protected function editViewCreation($file_path){
+    protected function editViewCreation($file_path)
+    {
         $page_title = str($this->model_class_name)->headline()->value();
 
         //edit view load content load from stub
@@ -521,34 +562,38 @@ class MakeCurd extends Command
         //replace the route name
         $content_with_route = str_replace('$route_name', $this->route_name, $content_with_page_title);
 
-        foreach($this->data as $datum){
-            $this->edit_input_slot = str_replace("value='{{ old('{$datum['field_name']}') }}'","value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'",$this->create_input_slot);
+        foreach ($this->data as $datum) {
+            $this->edit_input_slot = str_replace("value='{{ old('{$datum['field_name']}') }}'", "value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'", $this->create_input_slot);
         }
 
         $full_content = str_replace('$slot', $this->edit_input_slot, $content_with_route);
         file_put_contents($file_path, $full_content);
-        $this->info("file '$file_path' is created Successfully");
+
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
-    protected function thSlotCreation(){
+    protected function thSlotCreation()
+    {
         $table_heading = '';
-        foreach($this->data as $key => $datum){
+        foreach ($this->data as $key => $datum) {
 
             //Indentation currection
-            if($key != 1){
+            if ($key != 1) {
                 $table_heading .= "\n\t\t\t\t\t\t\t\t";
             }
-            $table_heading .= '<th>'.str($datum['field_name'])->headline()->value().'</th>';
+            $table_heading .= '<th>' . str($datum['field_name'])->headline()->value() . '</th>';
         }
         return $table_heading;
     }
 
-    protected function tdSlotCreation(){
+    protected function tdSlotCreation()
+    {
         $td = '';
-        foreach($this->data as $key => $datum){
+        foreach ($this->data as $key => $datum) {
 
             //Indentation currection
-            if($key != 1){
+            if ($key != 1) {
                 $td .= "\n\t\t\t\t\t\t\t\t\t";
             }
             $td .= "<td> {{ \$datum->{$datum['field_name']} }}</td>";
@@ -556,7 +601,8 @@ class MakeCurd extends Command
         return $td;
     }
 
-    protected function makeSeeder(){
+    protected function makeSeeder()
+    {
         $file_name = $this->model_class_name . 'Seeder';
         $table_name = str($this->model_class_name)->snake()->plural()->value();
         $file_path = database_path("seeders/$file_name.php");
@@ -571,14 +617,16 @@ class MakeCurd extends Command
         $full_content = str_replace('$slot', $this->seeder_slot, $content_with_table_name);
 
         file_put_contents($file_path, $full_content);
-        $this->info("file '$file_path' is created Successfully");
+
+        //success message
+        $this->info($this->successMsg($file_path));
 
         //seeder inplement in the DatabaseSeeder.php
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_seeder = str_replace("]);//n","\t$file_name::calss, \n\t\t]);//n",$database_seeder_content);
-        file_put_contents($database_seeder_path,$database_seeder_content_with_seeder);
-        $this->info("The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']);//n'");
+        $database_seeder_content_with_seeder = str_replace("]);//n", "\t$file_name::calss, \n\t\t]);//n", $database_seeder_content);
+        file_put_contents($database_seeder_path, $database_seeder_content_with_seeder);
+        $this->info("{$this->info_icon} The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']);//n'");
     }
 
     protected function makeFactory()
@@ -595,16 +643,17 @@ class MakeCurd extends Command
         $full_content = str_replace('$slot', $this->seeder_slot, $content_with_name);
 
         file_put_contents($file_path, $full_content);
-        $this->info("file '$file_path' is created Successfully");
+
+        //success message
+        $this->info($this->successMsg($file_path));
 
         //the factory implement
-        $raws_num = (int)$this->ask('How many rows you want to insert');
-        $raws_num = $raws_num ? $raws_num : 1 ;
+        $raws_num = (int)$this->ask($this->make_icon . ' ' . 'How many rows you want to insert');
+        $raws_num = $raws_num ? $raws_num : 1;
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
         $database_seeder_content_with_factory = str_replace("]);//n", "]);//n\n\n\t\t {$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
-        file_put_contents($database_seeder_path,$database_seeder_content_with_factory);
-        $this->info("The  '$file_name' is set to DatabaseSeeder.php file just after ']);//n'");
+        file_put_contents($database_seeder_path, $database_seeder_content_with_factory);
+        $this->info("{$this->info_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']);//n'");
     }
 }
-

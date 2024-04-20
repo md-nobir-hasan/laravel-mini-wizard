@@ -22,7 +22,7 @@ class Update$model_nameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'=> ['required','string','max:255',"unique:$table_name,title,{$this->$model_name->id}"],
+            'title'=> ['required','string','max:255',"unique:$table_name,title,{$this->$model_name_snack->id}"],
             $slot,
             'status' => ['nullable','in:Active,Inactive'],
             'serial' => ['nullable','integer'],

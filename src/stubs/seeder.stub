@@ -15,10 +15,10 @@ class $model_nameSeeder extends Seeder
     {
         DB::table('$table_name')->insert([
             [
-                'title' => '',
+                'title' => 'lfksdkl fsdl',
                 $slot
-                'serial' => '',
-                'status' => '',
+                'serial' => 25,
+                'status' => 'Active',
                 'created_at' => Carbon::now(),
             ],
         ]);

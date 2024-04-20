@@ -4,6 +4,7 @@ namespace Nobir\CurdByCommand\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
 class MakeCurd extends Command
@@ -147,6 +148,9 @@ class MakeCurd extends Command
         // if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
         //     $this->makeFactory();
         // }
+
+        // Migration and seeding
+        Artisan::call('migrate:fresh --seed');
 
         $this->info('🎇💪💪💪  Process Terminate  💪💪💪🎇');
         $this->info("\n🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com  💞💞💓💗🎇");
@@ -490,7 +494,10 @@ class MakeCurd extends Command
         $table_name = str($this->model_class_name)->kebab()->plural()->value();
         $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
 
-        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
+        //table_name
+        $model_name_snack = str($this->model_class_name)->snake()->value();
+        $content_with_model_name_snack = str_replace('$model_name_snack', $model_name_snack, $content_with_table_name);
+        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_model_name_snack);
         file_put_contents($file_path, $full_content);
 
         //success message

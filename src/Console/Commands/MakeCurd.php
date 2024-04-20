@@ -55,11 +55,11 @@ class MakeCurd extends Command
     //properties for icons
     protected $all_icons = '✅❗⛔⭕❓‼️⁉️⚠️❌🚫🛑💗💓💞❤️‍🩹🏠🚀✈️💺🌷💐🌻📁✏️🖋️✒️✒️🔎🔍♂️⚔️🗡️🩸💎🎈🎆🎇👏✍️👊🫵';
     protected $all_icon2 = 'ℹ️☑️🔵🟢🔴🟠🟡🟤🟥🟧🟨🟨🟩🟦🔶🔸🔺🔻🔷🔹☝️👉👈👇✌️🫲💪👀👁️😎😮';
-    protected $input_icon = '✏️';
+    protected $input_icon = '✏️ ';
     protected $make_icon = '😮';
-    protected $warning_icon = '⚠️';
+    protected $warning_icon = '⚠️ ';
     protected $info_icon = '🟢🟢';
-    protected $skip_icon = '⛔';
+    protected $skip_icon = '⛔ ';
     protected $success_make_icon = '💪💪💪';
     protected $success_msg_icon = '✅ ';
 
@@ -152,7 +152,7 @@ class MakeCurd extends Command
         }
 
         // Migration and seeding
-        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+        if ($this->confirm("{$this->make_icon} Are you want to run migration and seeding", true)) {
             $this->migrattionAndSeeding();
         }
 
@@ -161,7 +161,8 @@ class MakeCurd extends Command
         $this->info("\n\t\t🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com 💞💞💓💗🎇\n");
     }
 
-    protected function migrattionAndSeeding(){
+    protected function migrattionAndSeeding()
+    {
         try {
             Artisan::call('migrate:fresh --seed');
             $this->info($this->success_msg_icon.' '.'Migration and Seeding is done');
@@ -171,6 +172,7 @@ class MakeCurd extends Command
             $this->info($this->warning_icon.' '.'Seed can not be done. Please check your seeder or factory file');
         };
     }
+
     protected function collectFields()
     {
         $i = 0;
@@ -202,9 +204,9 @@ class MakeCurd extends Command
                 break;
             }
         }
-        $this->info('🔎Processing the field🔍');
+        $this->info('🔎 Processing the field🔍');
         $this->makeReady();
-        $this->info('🚀🚀Processing of the field is complete🚀🚀');
+        $this->info('🚀🚀 Processing of the field is complete🚀🚀');
     }
 
     protected function replaceFillableField($replaceable_field)
@@ -214,8 +216,10 @@ class MakeCurd extends Command
         $this->model_fillable = str_replace($replaceable_field, $field, $this->model_fillable);
 
         //In request file
-        $field = str($replaceable_field)->snake()->value() . '_id';
         $this->store_request_slot = str_replace($replaceable_field, $field, $this->store_request_slot);
+
+        //In seeder slot
+        $this->seeder_slot = str_replace($replaceable_field, $field, $this->seeder_slot);
     }
 
     protected function makeReady()
@@ -325,6 +329,7 @@ class MakeCurd extends Command
             $this->store_request_slot .= '],';
         }
     }
+
     protected function inputTextReplaceable($datum)
     {
         if ($datum['nullable']) {
@@ -454,12 +459,9 @@ class MakeCurd extends Command
         if (file_exists($file_path)) {
             $wimi_wizard_content = file_get_contents($file_path);
             if ($route_group_first_code) {
-                $this->info('route group ache');
                 if (strpos($wimi_wizard_content, $route_group_first_code) === false) {
-                    $this->info('ai route group name a route group ar aghe chilo na');
                     $full_content = $wimi_wizard_content . "\n" . $route_slot;
                 } else {
-                    $this->info('ai route group name a route group ar aghe chilo');
                     $replaceable_route_with_group = $route_group_first_code . $base_route;
                     $full_content = str_replace($route_group_first_code, $replaceable_route_with_group, $wimi_wizard_content);
                 }
@@ -469,7 +471,7 @@ class MakeCurd extends Command
             file_put_contents($file_path, $full_content);
 
             //success message
-            $this->info($this->successMsg('mini-wizard'));
+            $this->info($this->success_make_icon.' '."The 'mini-wizard' file updated successfully'");
         } else {
             $stub_content = file_get_contents($this->pakage_stub_path . 'route.stub');
 

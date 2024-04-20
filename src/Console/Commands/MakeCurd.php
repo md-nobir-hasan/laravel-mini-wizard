@@ -52,7 +52,7 @@ class MakeCurd extends Command
     protected $edit_input_slot = '';
 
     //properties for icons
-    protected $all_icons ='✅❗⛔⭕❓‼️⁉️⚠️❌🚫🛑💗💓💞❤️‍🩹🏠🚀✈️💺🌷💐🌻📁✏️🖋️✒️✒️🔎🔍♂️⚔️🗡️🩸💎🎈🎆🎇👏✍️👊🫵☝️👉👈👇✌️🫲💪👀👁️😎😮';
+    protected $all_icons = '✅❗⛔⭕❓‼️⁉️⚠️❌🚫🛑💗💓💞❤️‍🩹🏠🚀✈️💺🌷💐🌻📁✏️🖋️✒️✒️🔎🔍♂️⚔️🗡️🩸💎🎈🎆🎇👏✍️👊🫵☝️👉👈👇✌️🫲💪👀👁️😎😮';
     protected $input_icon = '✏️ ';
     protected $make_icon = '😮 ';
     protected $info_icon = '⚠️ ';
@@ -66,8 +66,9 @@ class MakeCurd extends Command
     protected $skip_msg = '(Press enter to skip)';
 
     //Function for messages
-    protected function successMsg($file_path){
-        return ($this->success_make_icon. " file '$file_path' is created Successfully");
+    protected function successMsg($file_path)
+    {
+        return ($this->success_make_icon . " file '$file_path' is created Successfully");
     }
     /**
      * The console command description.
@@ -88,16 +89,17 @@ class MakeCurd extends Command
         $file_path = app_path("Models/{$this->model_class_name}.php");
         if (file_exists($file_path)) {
             $this->info("{$this->info_icon} This model '{$this->model_class_name}' already exist.");
-            while(true){
+            while (true) {
                 $this->model_class_name = $this->ask("{$this->input_icon} Enter a model name again:");
                 $file_path = app_path("Models/{$this->model_class_name}.php");
                 if (!file_exists($file_path)) {
                     break;
-                }else{
+                } else {
                     $this->info("{$this->info_icon} This model '{$this->model_class_name}' also already exist.");
                 }
             }
         }
+
         // Database fields collect from the command plate
         $this->collectFields();
 
@@ -117,9 +119,9 @@ class MakeCurd extends Command
         }
 
         // //Resource Controller creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
-        //     $this->makeController();
-        // }
+        if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
+            $this->makeController();
+        }
 
         // //Store Request creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
@@ -154,7 +156,7 @@ class MakeCurd extends Command
     {
         $i = 0;
         while (true) {
-            if ($field_input = $this->ask($this->input_icon.' '.$this->add_field_msg)) {
+            if ($field_input = $this->ask($this->input_icon . ' ' . $this->add_field_msg)) {
                 $i++;
                 //Database field name
                 $this->data[$i]['field_name'] = $field_input;
@@ -176,7 +178,7 @@ class MakeCurd extends Command
                     $this->data[$i]['default_value'] = null;
                 }
 
-                $this->add_field_msg = 'Enter another field name '.$this->skip_msg;
+                $this->add_field_msg = 'Enter another field name ' . $this->skip_msg;
             } else {
                 break;
             }
@@ -366,7 +368,7 @@ class MakeCurd extends Command
         $route_group = $this->confirm('Has the route group?', true);
         if ($route_group) {
             $route_group_first_code .= 'Route::';
-            if ($middleware = $this->ask($this->make_icon.' '.'Enter Middleware for the route group (Presss enter to skip)')) {
+            if ($middleware = $this->ask($this->make_icon . ' ' . 'Enter Middleware for the route group (Presss enter to skip)')) {
                 $route_group_first_code .= "middleware('$middleware')->";
             }
             if ($prefix = $this->ask($this->make_icon . ' ' . 'Enter prefix for the route group (Presss enter to skip)')) {
@@ -436,26 +438,21 @@ class MakeCurd extends Command
 
     protected function makeController()
     {
-        $controller_name = $this->model_class_name . 'Controller';
-        $file_path = app_path("Http/Controllers/$controller_name.php");
+        $file_name = $this->model_class_name . 'Controller';
+        $file_path = app_path("Http/Controllers/$file_name.php");
+        //Controller content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'resource-controller.stub');
 
-        if ($controller_name) {
-            //Controller content load from stub
-            $stub_content = file_get_contents($this->pakage_stub_path . 'resource-controller.stub');
+        //replacing
+        $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        $content_with_view_name = str_replace('$view_name', $this->view_name, $content_with_model_name);
+        $content_with_route_name = str_replace('$route_name', $this->route_name, $content_with_view_name);
 
-            //replace the model name
-            $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
-            $content_with_prefix = str_replace('$route_group_prefix', $this->route_group_prefix, $content_with_name);
-            // $full  = str_replace('$route_group_prefix', $this->route_group_prefix, $content_with_name);
+        $full_content =  $content_with_route_name;
+        file_put_contents($file_path, $full_content);
 
-            $full_content = str_replace('$route_name', $this->route_group_name, $content_with_prefix);
-            file_put_contents($file_path, $full_content);
-
-            //success message
-            $this->info($this->successMsg($file_path));
-        } {
-            $this->info($this->skip_icon.' '.'Controller creation skiped');
-        }
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
     protected function makeStoreRequest()

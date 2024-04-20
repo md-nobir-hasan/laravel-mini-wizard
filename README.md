@@ -15,3 +15,6 @@ Everything in one command
     1. every datatype validation will added
     2. every inpute filed in create and edit file will added
 
+### Warning
+    1. You got a error that "This model '---' already exist." Rather than deleting your model,  you have to choose another name. If you want to delete the model you have to delete the migration, controller, requests, views, seeder,factories also with this same name.
+

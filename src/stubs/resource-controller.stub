@@ -20,7 +20,7 @@ class $model_nameController extends Controller
         $n['data'] = $model_name::orderBy('serial', 'desc')
                                 ->paginate(10);
         $n['count'] = $model_name::all();
-        return view('$route_group_prefix$route_nameindex', $n);
+        return view('$view_nameindex', $n);
     }
 
     /**
@@ -30,7 +30,7 @@ class $model_nameController extends Controller
     {
         $this->ccan('Create $model_name');
         $n['serial'] = $model_name::count();
-        return view('$route_group_prefix$route_namecreate', $n);
+        return view('$view_namecreate', $n);
     }
 
     /**
@@ -45,9 +45,9 @@ class $model_nameController extends Controller
 
         //Redirection decission
         if($request->redirect == 'back'){
-            $redirect_route = $route_group_name$route_nameindex;
+            $redirect_route = $route_nameindex;
         }else{
-            $redirect_route = $route_group_name$route_namecreate;
+            $redirect_route = $route_namecreate;
         }
 
         if(!$status){
@@ -72,7 +72,7 @@ class $model_nameController extends Controller
         $this->ccan('Edit $model_name');
 
         $n['datum'] = $$model_name;
-        return view('$route_group_prefix$route_nameedit', $n);
+        return view('$view_nameedit', $n);
     }
 
     /**
@@ -84,7 +84,7 @@ class $model_nameController extends Controller
 
         $data = $request->validated();
         $$model_name->update($data);
-        return redirect()->route('$route_group_name$route_nameindex')->with('success', "$request->title is Update successfully");
+        return redirect()->route('$route_nameindex')->with('success', "$request->title is Update successfully");
     }
 
     /**

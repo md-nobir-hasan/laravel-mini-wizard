@@ -104,15 +104,15 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-        // //Migraton creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
-        //     $this->makeMigration();
-        // }
+        //Migraton creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
+            $this->makeMigration();
+        }
 
-        // //Model creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
-        //     $this->makeModel();
-        // }
+        //Model creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
+            $this->makeModel();
+        }
 
         // Route creation
         if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
@@ -124,30 +124,30 @@ class MakeCurd extends Command
             $this->makeController();
         }
 
-        // //Store Request creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
-        //     $this->makeStoreRequest();
-        // }
+        //Store Request creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+            $this->makeStoreRequest();
+        }
 
-        // //Update Request creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
-        //     $this->makeUpdateRequest();
-        // }
+        //Update Request creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
+            $this->makeUpdateRequest();
+        }
 
-        // // View creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
-        //     $this->makeView();
-        // }
+        // View creation
+        if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
+            $this->makeView();
+        }
 
-        // //seeder creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
-        //     $this->makeSeeder();
-        // }
+        //seeder creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
+            $this->makeSeeder();
+        }
 
-        // //factory creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
-        //     $this->makeFactory();
-        // }
+        //factory creation
+        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+            $this->makeFactory();
+        }
 
         // Migration and seeding
         try{
@@ -157,8 +157,8 @@ class MakeCurd extends Command
           $this->ask('Seed can not be done. Please check your seeder or factory file');
         };
 
-        $this->info('🎇💪💪💪  Process Terminate  💪💪💪🎇');
-        $this->info("\n🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com  💞💞💓💗🎇");
+        $this->info("\n   🎇💪💪💪  Process Terminate  💪💪💪🎇");
+        $this->info("\n    \t🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com 💞💞💓💗🎇\n");
     }
 
     protected function collectFields()
@@ -217,11 +217,12 @@ class MakeCurd extends Command
                 $this->store_request_slot .= "\n\t\t\t";
                 $this->seeder_slot .= "\n\t\t\t\t";
             }
+
             //model fillable properties
             $this->model_fillable .= ", '{$datum['field_name']}'";
 
             //seeder slot
-            $this->seeder_slot .= "'{$datum['field_name']}'  => '', ";
+            $this->seeder_slot .= "'{$datum['field_name']}'  => 'fsddf', ";
 
             //Requests vaildation rules
             $this->store_request_slot .= "'{$datum['field_name']}'=> [";
@@ -615,10 +616,6 @@ class MakeCurd extends Command
         $content_with_page_title = str_replace('$page_title', $page_title, $stub_content);
         //replace the route name
         $content_with_route = str_replace('$route_name', $this->route_name, $content_with_page_title);
-
-        // foreach ($this->data as $datum) {
-        //     $this->edit_input_slot = str_replace("value='{{ old('{$datum['field_name']}') }}'", "value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'", $this->create_input_slot);
-        // }
 
         $full_content = str_replace('$slot', $this->edit_input_slot, $content_with_route);
         file_put_contents($file_path, $full_content);

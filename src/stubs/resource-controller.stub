@@ -45,9 +45,9 @@ class $model_nameController extends Controller
 
         //Redirection decission
         if($request->redirect == 'back'){
-            $redirect_route = $route_nameindex;
+            $redirect_route = '$route_nameindex';
         }else{
-            $redirect_route = $route_namecreate;
+            $redirect_route = '$route_namecreate';
         }
 
         if(!$status){

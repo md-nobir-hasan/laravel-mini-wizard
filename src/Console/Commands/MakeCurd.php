@@ -87,12 +87,14 @@ class MakeCurd extends Command
         // checking for the same name
         $file_path = app_path("Models/{$this->model_class_name}.php");
         if (file_exists($file_path)) {
-            $this->info("{$this->info_icon} This model '{$this->model_class_name}' already exists");
+            $this->info("{$this->info_icon} This model '{$this->model_class_name}' already exist.");
             while(true){
                 $this->model_class_name = $this->ask("{$this->input_icon} Enter a model name again:");
                 $file_path = app_path("Models/{$this->model_class_name}.php");
                 if (!file_exists($file_path)) {
                     break;
+                }else{
+                    $this->info("{$this->info_icon} This model '{$this->model_class_name}' also already exist.");
                 }
             }
         }

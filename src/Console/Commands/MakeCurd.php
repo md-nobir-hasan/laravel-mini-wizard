@@ -84,6 +84,18 @@ class MakeCurd extends Command
         //get the model name
         $this->model_class_name = $this->argument('model');
 
+        // checking for the same name
+        $file_path = app_path("Models/{$this->model_class_name}.php");
+        if (file_exists($file_path)) {
+            $this->info("{$this->info_icon} This model '{$this->model_class_name}' already exists");
+            while(true){
+                $this->model_class_name = $this->ask("{$this->input_icon} Enter a model name again:");
+                $file_path = app_path("Models/{$this->model_class_name}.php");
+                if (!file_exists($file_path)) {
+                    break;
+                }
+            }
+        }
         // Database fields collect from the command plate
         $this->collectFields();
 
@@ -424,10 +436,7 @@ class MakeCurd extends Command
     {
         $controller_name = $this->model_class_name . 'Controller';
         $file_path = app_path("Http/Controllers/$controller_name.php");
-        if (file_exists($file_path)) {
-            $this->info("{$this->info_icon} This controller $controller_name is exists");
-            $controller_name = $this->ask("{$this->input_icon} Enter a controller name $this->skip_msg");
-        }
+
         if ($controller_name) {
             //Controller content load from stub
             $stub_content = file_get_contents($this->pakage_stub_path . 'resource-controller.stub');

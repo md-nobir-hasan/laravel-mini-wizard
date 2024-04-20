@@ -150,7 +150,12 @@ class MakeCurd extends Command
         // }
 
         // Migration and seeding
-        Artisan::call('migrate:fresh --seed');
+        try{
+            Artisan::call('migrate:fresh --seed');
+        }catch(\Exception $e){
+            Artisan::call('migrate');
+          $this->ask('Seed can not be done. Please check your seeder or factory file');
+        };
 
         $this->info('🎇💪💪💪  Process Terminate  💪💪💪🎇');
         $this->info("\n🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com  💞💞💓💗🎇");
@@ -254,6 +259,19 @@ class MakeCurd extends Command
                                                         <span class='text-danger'>{{ \$message }}</span>
                                                     @enderror
                                                 </div>";
+
+                    $this->create_input_slot .= "<div class='form-group'>
+                                                    <label for='$field_name'>{$datum['field_name']}</label>star_slot
+                                                    <select name='$field_name' id='$field_name' class='form-control' required_slot>
+                                                        <option value=''>--Select any {$datum['field_name']}--</option>
+                                                        @foreach (\${$datum['field_name']} as \$key => \$$field_name)
+                                                            <option value='{{ \${$field_name}->id }}' @selected(\${$field_name}->id == \$datum->$field_name)>{{ \${$field_name}->title }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('$field_name')
+                                                        <span class='text-danger'>{{ \$message }}</span>
+                                                    @enderror
+                                                </div>";
                     break;
 
                     //For all Common Data Type
@@ -265,7 +283,7 @@ class MakeCurd extends Command
                     //Other attributes checking such as nullable, unique, foreign key id
                     $this->otherAtrributesCheck($datum);
 
-                    //fore view
+                    //for view
                     $this->create_input_slot .= "<div class='form-group'>
                                                             <label for='{$datum['field_name']}' class='col-form-label'>$field_title</label>star_slot
                                                             <input id='{$datum['field_name']}' type='text' name='{$datum['field_name']}' placeholder='Exp:- Enter $field_title'
@@ -274,7 +292,16 @@ class MakeCurd extends Command
                                                                 <span class='text-danger'>{{ \$message }}</span>
                                                             @enderror
                                                         </div>";
-                    //value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'
+                    $this->edit_input_slot .= "<div class='form-group'>
+                                                            <label for='{$datum['field_name']}' class='col-form-label'>$field_title</label>star_slot
+                                                            <input id='{$datum['field_name']}' type='text' name='{$datum['field_name']}' placeholder='Exp:- Enter $field_title'
+                                                                value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'
+                                                                class='form-control required_slot'>
+                                                            @error('{$datum['field_name']}')
+                                                                <span class='text-danger'>{{ \$message }}</span>
+                                                            @enderror
+                                                        </div>";
+
                     break;
             }
 
@@ -289,11 +316,21 @@ class MakeCurd extends Command
     protected function inputTextReplaceable($datum)
     {
         if ($datum['nullable']) {
+            //create
             $this->create_input_slot = str_replace('star_slot', ' ', $this->create_input_slot);
             $this->create_input_slot = str_replace('required_slot', ' ', $this->create_input_slot);
+
+            //edit
+            $this->edit_input_slot = str_replace('star_slot', ' ', $this->edit_input_slot);
+            $this->edit_input_slot = str_replace('required_slot', ' ', $this->edit_input_slot);
         } else {
+            //create
             $this->create_input_slot = str_replace('star_slot', '<span class="text-danger">*</span></label>', $this->create_input_slot);
             $this->create_input_slot = str_replace('required_slot', 'required', $this->create_input_slot);
+
+            //edit
+            $this->edit_input_slot = str_replace('star_slot', '<span class="text-danger">*</span></label>', $this->edit_input_slot);
+            $this->edit_input_slot = str_replace('required_slot', 'required', $this->edit_input_slot);
         }
     }
 
@@ -579,9 +616,9 @@ class MakeCurd extends Command
         //replace the route name
         $content_with_route = str_replace('$route_name', $this->route_name, $content_with_page_title);
 
-        foreach ($this->data as $datum) {
-            $this->edit_input_slot = str_replace("value='{{ old('{$datum['field_name']}') }}'", "value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'", $this->create_input_slot);
-        }
+        // foreach ($this->data as $datum) {
+        //     $this->edit_input_slot = str_replace("value='{{ old('{$datum['field_name']}') }}'", "value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'", $this->create_input_slot);
+        // }
 
         $full_content = str_replace('$slot', $this->edit_input_slot, $content_with_route);
         file_put_contents($file_path, $full_content);

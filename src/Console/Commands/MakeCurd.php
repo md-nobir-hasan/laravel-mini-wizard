@@ -188,7 +188,9 @@ class MakeCurd extends Command
                     $this->data_type,
                     'string'
                 );
-
+                if($this->data[$i]['data_type'] == 'foreignIdFor'){
+                    $this->data[$i]['field_name'] = str()->studly($field_input);
+                }
                 //is nullable
                 $this->data[$i]['nullable'] = $this->confirm('Is the field nullable?');
 

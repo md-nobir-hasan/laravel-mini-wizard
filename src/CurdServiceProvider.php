@@ -16,7 +16,7 @@ Class CurdServiceProvider extends ServiceProvider{
         AboutCommand::add('Laravel CURD by Command', fn () => ['Version' => '1.0.0']);
         $this->commands([
             MakeCurd::class,
-        ]);
+        ]); 
     }
 }
 

@@ -23,7 +23,7 @@ class Update$model_nameRequest extends FormRequest
     {
         return [
             'title'=> ['required','string','max:255',"unique:$table_name,title,{$this->$model_name_snack->id}"],
-            $slot,
+            $slot
             'status' => ['nullable','in:Active,Inactive'],
             'serial' => ['nullable','integer'],
 

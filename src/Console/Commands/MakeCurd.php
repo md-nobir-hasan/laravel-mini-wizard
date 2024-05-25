@@ -27,6 +27,7 @@ class MakeCurd extends Command
     ];
     protected $data = [];
     protected $migration_slot = '';
+    protected $global_prefix = '';
     protected $pakage_stub_path = __DIR__ . '/../../stubs/';
 
     //Proterties for model
@@ -103,6 +104,12 @@ class MakeCurd extends Command
             }
         }
 
+        $global_prefix = $this->choice('Choice a global prefix (Press enter to skip)',['Backend','Frontend','None'],2);
+        if($global_prefix != 'None'){
+            $this->global_prefix =  $global_prefix;
+            $this->makeDirectory();
+        }
+
         // Database fields collect from the command plate
         $this->collectFields();
 
@@ -165,7 +172,9 @@ class MakeCurd extends Command
         $this->info("\n\t\t🎇💪💪💪  Process Terminate  💪💪💪🎇");
         $this->info("\n\t\t🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com 💞💞💓💗🎇\n");
     }
-
+    protected function makeDirectory(){
+        
+    }
     protected function migrattionAndSeeding()
     {
         try {

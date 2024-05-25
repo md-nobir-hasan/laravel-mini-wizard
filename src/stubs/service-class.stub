@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\$model_name;
+use App\Services\Service;
+
+class $model_nameService extends Service
+{
+
+    public function store($data)
+    {
+        $status = $model_name::create($data);
+        return $status;
+    }
+
+
+
+
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update($editable_raw,$data)
+    {
+
+        $status = $editable_raw->update($data);
+        return $status
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($deleteable_raw)
+    {
+        $title = $$model_name->title;
+        $status = $deleteable_raw->delete();
+
+        return $status;
+    }
+}

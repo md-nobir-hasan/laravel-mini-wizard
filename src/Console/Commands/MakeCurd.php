@@ -121,11 +121,16 @@ class MakeCurd extends Command
             $this->makeRoute();
         }
 
+
+        // //Service Class
+        if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
+            $this->makeServiceClass();
+        }
+
         // //Resource Controller creation
         if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
             $this->makeController();
         }
-
         //Store Request creation
         if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
             $this->makeStoreRequest();
@@ -492,6 +497,25 @@ class MakeCurd extends Command
             file_put_contents($web_file_path, $web_route_final_content);
             $this->info("{$this->success_make_icon} The route file 'mini-wizard' is also included in web.php. So no tension.");
         }
+    }
+
+    protected function makeServiceClass()
+    {
+        $file_name = $this->model_class_name . 'Service';
+        $file_path = app_path("Http/Controllers/$file_name.php");
+        //Controller content load from stub
+        $stub_content = file_get_contents($this->pakage_stub_path . 'service-class.stub');
+
+        //replacing
+        $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        $content_with_view_name = str_replace('$view_name', $this->view_name, $content_with_model_name);
+        $content_with_route_name = str_replace('$route_name', $this->route_name, $content_with_view_name);
+
+        $full_content =  $content_with_route_name;
+        file_put_contents($file_path, $full_content);
+
+        //success message
+        $this->info($this->successMsg($file_path));
     }
 
     protected function makeController()

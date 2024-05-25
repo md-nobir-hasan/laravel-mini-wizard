@@ -8,34 +8,30 @@ use App\Services\Service;
 class $model_nameService extends Service
 {
 
-    public function store($data)
+    public static function store($data)
     {
         $status = $model_name::create($data);
         return $status;
     }
 
-
-
-
-
     /**
      * Update the specified resource in storage.
      */
-    public function update($editable_raw,$data)
+    public static function update($$model_name,$data)
     {
 
-        $status = $editable_raw->update($data);
-        return $status
+        $status = $$model_name->update($data);
+        return $status;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($deleteable_raw)
+    public static function destroy($$model_name)
     {
         $title = $$model_name->title;
-        $status = $deleteable_raw->delete();
+        $status = $$model_name->delete();
 
-        return $status;
+        return  $status;
     }
 }

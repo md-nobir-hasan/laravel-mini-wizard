@@ -106,60 +106,60 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-        //Migraton creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
-            $this->makeMigration();
-        }
+        // //Migraton creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
+        //     $this->makeMigration();
+        // }
 
-        //Model creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
-            $this->makeModel();
-        }
+        // //Model creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
+        //     $this->makeModel();
+        // }
 
-        // Route creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
-            $this->makeRoute();
-        }
+        // // Route creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
+        //     $this->makeRoute();
+        // }
 
 
         // //Service Class
         if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
-            $this->makeServiceClass();
+            $this->serviceClass();
         }
 
         // //Resource Controller creation
         if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
             $this->makeController();
         }
-        //Store Request creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
-            $this->makeStoreRequest();
-        }
+        // //Store Request creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+        //     $this->makeStoreRequest();
+        // }
 
-        //Update Request creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
-            $this->makeUpdateRequest();
-        }
+        // //Update Request creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
+        //     $this->makeUpdateRequest();
+        // }
 
-        // View creation
-        if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
-            $this->makeView();
-        }
+        // // View creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
+        //     $this->makeView();
+        // }
 
-        //seeder creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
-            $this->makeSeeder();
-        }
+        // //seeder creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
+        //     $this->makeSeeder();
+        // }
 
-        //factory creation
-        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
-            $this->makeFactory();
-        }
+        // //factory creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+        //     $this->makeFactory();
+        // }
 
-        // Migration and seeding
-        if ($this->confirm("{$this->make_icon} Are you want to run migration and seeding", true)) {
-            $this->migrattionAndSeeding();
-        }
+        // // Migration and seeding
+        // if ($this->confirm("{$this->make_icon} Are you want to run migration and seeding", true)) {
+        //     $this->migrattionAndSeeding();
+        // }
 
 
         $this->info("\n\t\t🎇💪💪💪  Process Terminate  💪💪💪🎇");
@@ -499,19 +499,42 @@ class MakeCurd extends Command
         }
     }
 
-    protected function makeServiceClass()
+    //serviceClass
+    protected function serviceClass()
     {
         $file_name = $this->model_class_name . 'Service';
-        $file_path = app_path("Http/Controllers/$file_name.php");
-        //Controller content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'service-class.stub');
+        $directory = app_path('Serivces');
+        $file_path = $directory."/$file_name.php";
+        var_dump($file_name,$directory,$file_path,is_dir($directory),file_exists($directory."/Service.php"));
+        if(!is_dir($directory)){
+            mkdir($directory, 0755, true);
+        }else{
+            echo 'folder exists';
+        }
+        if(!file_exists($directory."/Service.php")){
+            $stub_content = file_get_contents($this->pakage_stub_path . 'parent-service-class.stub');
+            file_put_contents($directory."/Service.php", $stub_content);
+        }else{
+            $this->info('Service.php class exists');
+        }
+        //Service content load from stub
+        if(!file_exists($file_path)){
+            $this->makeServiceClass($file_path);
 
+        }else{
+            if($this->confirm('Same service class is exists. Are you want to replace?')){
+                $this->makeServiceClass($file_path);
+            }
+        }
+
+    }
+
+    //makeServiceClass
+    protected function makeServiceClass($file_path){
         //replacing
+        $stub_content = file_get_contents($this->pakage_stub_path . 'service-class.stub');
         $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
-        $content_with_view_name = str_replace('$view_name', $this->view_name, $content_with_model_name);
-        $content_with_route_name = str_replace('$route_name', $this->route_name, $content_with_view_name);
-
-        $full_content =  $content_with_route_name;
+        $full_content =  $content_with_model_name;
         file_put_contents($file_path, $full_content);
 
         //success message

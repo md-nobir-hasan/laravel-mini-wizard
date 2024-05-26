@@ -41,6 +41,7 @@ class MakeCurd extends Command
 
     //Proterties for model
     protected $model_class_name;
+    protected $table_name;
     protected $model_functions = '';
     protected $model_fillable = '';
 
@@ -97,7 +98,7 @@ class MakeCurd extends Command
     {
         //get the model name
         $this->model_class_name = $this->argument('model');
-
+        $this->table_name = str($this->model_class_name)->snake()->plural()->value();
         // checking for the same name
         $file_path = app_path("Models/{$this->model_class_name}.php");
         if (file_exists($file_path)) {
@@ -151,10 +152,11 @@ class MakeCurd extends Command
         if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
             $this->makeController();
         }
-        // // 6. Store Request creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
-        //     $this->makeStoreRequest();
-        // }
+
+        // 6. Store Request creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+            $this->makeStoreRequest();
+        }
 
         // //7. Update Request creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
@@ -207,7 +209,7 @@ class MakeCurd extends Command
         }
 
         $directory_path = $file_base_path . "/$folder_name";
-        if ($this->confirm("Are you want to create the file under $folder_name")) {
+        if ($this->confirm("Are you want to create the file under $folder_name", true)) {
 
             $this->makeDirectory($directory_path);
 
@@ -455,24 +457,45 @@ class MakeCurd extends Command
     //Migration creation
     protected function makeMigration()
     {
-        //creation table name
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = database_path('migrations');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
+
+
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
         $table_name = str($this->model_class_name)->snake()->plural()->value();
-
-        //Content extract from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'migration.stub');
-
-        //Replace the table name
-        $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
-
-        //setup the migration field
-        $content_ready = str_replace('$slot', $this->migration_slot, $content_with_table_name);
-
         $file_name = date('Y_m_d_His') . '_' . 'create_' . $table_name . '_table.php';
-        $file_path = database_path('migrations/' . $file_name);
-        file_put_contents($file_path, $content_ready);
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'migration.stub';
 
-        //success message
-        $this->info($this->successMsg($file_path));
+        //Step-3 => geting the file content and replacing the certain text if needed
+        $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$table_name' => $table_name,
+            '$slot' => $this->migration_slot,
+        ]);
+
+        //Step-4 => making the file
+        $this->fileMakingAndPutingContent($file_path, $stub_content);
+
+        // //Old
+        // //creation table name
+        // $table_name = str($this->model_class_name)->snake()->plural()->value();
+
+        // //Content extract from stub
+        // $stub_content = file_get_contents($this->pakage_stub_path . 'migration.stub');
+
+        // //Replace the table name
+        // $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
+
+        // //setup the migration field
+        // $content_ready = str_replace('$slot', $this->migration_slot, $content_with_table_name);
+
+        // $file_name = date('Y_m_d_His') . '_' . 'create_' . $table_name . '_table.php';
+        // $file_path = database_path('migrations/' . $file_name);
+        // file_put_contents($file_path, $content_ready);
+
+        // //success message
+        // $this->info($this->successMsg($file_path));
     }
 
     //Model creation
@@ -481,47 +504,25 @@ class MakeCurd extends Command
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
         $dir_base_path = app_path('Models');
         $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
-dd($dir_final_path);
 
         //Step-2 => Making stub file path and file path for the files thats are needed to create
-        $file_name = $this->model_class_name . 'Service.php';
-        $file_path = $directory_final_path . "/$file_name";
-        $stub_file_path = $this->pakage_stub_path . 'service-class.stub';
+        $file_name = $this->model_class_name . '.php';
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'model.stub';
 
         //Step-3 => geting the file content and replacing the certain text if needed
-        //parent files contents
-        $parent_stub_content = $this->getContentAndReplaceText($parent_stub_file_path);
-        //targent (responsible) file contents
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-            '$model_name' => $this->model_class_name
+            '$model_name' => $this->model_class_name,
+            '$fillable_properties' => $this->model_fillable,
+            '$slot' => $this->model_functions,
         ]);
 
         //Step-4 => making the file
-        //paretn files
-        $this->fileMakingAndPutingContent($parent_file_path, $parent_stub_content);
-        //target or responsible file
         $this->fileMakingAndPutingContent($file_path, $stub_content);
-
-        //old
-        $model_name = $this->model_class_name;
-        //model content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'model.stub');
-
-        //replace the model name
-        $content_with_name = str_replace('$model_name', $model_name, $stub_content);
-        $content_with_fillable_properties = str_replace('$fillable_properties', $this->model_fillable, $content_with_name);
-
-        $full_content = str_replace('$slot', $this->model_functions, $content_with_fillable_properties);
-        $full_file_name = $model_name . '.php';
-        $file_path = app_path('Models/' . $full_file_name);
-        file_put_contents($file_path, $full_content);
-
-        //success message
-        $this->info($this->successMsg($file_path));
     }
 
     //Route creation
-    protected function makeRoute()
+    protected function  makeRoute()
     {
         $model_name = $this->model_class_name;
         $controller_name = $model_name . "Controller";
@@ -638,79 +639,158 @@ dd($dir_final_path);
 
     protected function makeController()
     {
-        $file_name = $this->model_class_name . 'Controller';
-        $file_path = app_path("Http/Controllers/$file_name.php");
-        //Controller content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'resource-controller.stub');
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = app_path('Http/Controllers');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
-        //replacing
-        $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
-        $content_with_view_name = str_replace('$view_name', $this->view_name, $content_with_model_name);
-        $content_with_route_name = str_replace('$route_name', $this->route_name, $content_with_view_name);
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        $file_name = $this->model_class_name . 'Controller.php';
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'resource-controller.stub';
 
-        $full_content =  $content_with_route_name;
-        file_put_contents($file_path, $full_content);
+        //Step-3 => geting the file content and replacing the certain text if needed
+        $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$model_name' => $this->model_class_name,
+            '$view_name' => $this->view_name,
+            '$route_name' => $this->route_name,
+        ]);
 
-        //success message
-        $this->info($this->successMsg($file_path));
+        //Step-4 => making the file
+        $this->fileMakingAndPutingContent($file_path, $stub_content);
+
+        // //Old
+        // $file_name = $this->model_class_name . 'Controller';
+        // $file_path = app_path("Http/Controllers/$file_name.php");
+        // //Controller content load from stub
+        // $stub_content = file_get_contents($this->pakage_stub_path . 'resource-controller.stub');
+
+        // //replacing
+        // $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        // $content_with_view_name = str_replace('$view_name', $this->view_name, $content_with_model_name);
+        // $content_with_route_name = str_replace('$route_name', $this->route_name, $content_with_view_name);
+
+        // $full_content =  $content_with_route_name;
+        // file_put_contents($file_path, $full_content);
+
+        // //success message
+        // $this->info($this->successMsg($file_path));
     }
 
     protected function makeStoreRequest()
     {
-        $reqest_name = 'Store' . $this->model_class_name . 'Request';
-        $file_path = app_path("Http/Requests/$reqest_name.php");
-        //Controller content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'store-request.stub');
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = app_path('Http/Requests');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
-        //replace the model name
-        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        $file_name = 'Store' . $this->model_class_name . 'Request.php';
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'store-request.stub';
 
-        //table_name
-        $table_name = str($this->model_class_name)->kebab()->plural()->value();
-        $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
+        //Step-3 => geting the file content and replacing the certain text if needed
+        $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$model_name' => $this->model_class_name,
+            '$table_name' => str($this->model_class_name)->snake()->plural()->value(),
+            '$slot' => $this->store_request_slot,
+        ]);
 
-        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
-        file_put_contents($file_path, $full_content);
+        //Step-4 => making the file
+        $this->fileMakingAndPutingContent($file_path, $stub_content);
 
-        //success message
-        $this->info($this->successMsg($file_path));
+        // //Old
+        // $reqest_name = 'Store' . $this->model_class_name . 'Request';
+        // $file_path = app_path("Http/Requests/$reqest_name.php");
+        // //Controller content load from stub
+        // $stub_content = file_get_contents($this->pakage_stub_path . 'store-request.stub');
+
+        // //replace the model name
+        // $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+
+        // //table_name
+        // $table_name = str($this->model_class_name)->kebab()->plural()->value();
+        // $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
+
+        // $full_content = str_replace('$slot', $this->store_request_slot, $content_with_table_name);
+        // file_put_contents($file_path, $full_content);
+
+        // //success message
+        // $this->info($this->successMsg($file_path));
     }
 
     protected function makeUpdateRequest()
     {
-        $reqest_name = 'Update' . $this->model_class_name . 'Request';
-        $file_path = app_path("Http/Requests/$reqest_name.php");
-        //Controller content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'update-request.stub');
 
-        //replace the model name
-        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = app_path('Http/Requests');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
-        //table_name
-        $table_name = str($this->model_class_name)->kebab()->plural()->value();
-        $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        $file_name = 'Update' . $this->model_class_name . 'Request.php';
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'update-request.stub';
 
-        //table_name
-        $model_name_snack = str($this->model_class_name)->snake()->value();
-        $content_with_model_name_snack = str_replace('$model_name_snack', $model_name_snack, $content_with_table_name);
-        $full_content = str_replace('$slot', $this->store_request_slot, $content_with_model_name_snack);
-        file_put_contents($file_path, $full_content);
+        //Step-3 => geting the file content and replacing the certain text if needed
+        $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$model_name' => $this->model_class_name,
+            '$table_name'=> str($this->model_class_name)->snake()->plural()->value(),
+            '$model_name_snack'=> str($this->model_class_name)->snake()->value(),
+            '$slot'=>$this->store_request_slot,
+        ]);
 
-        //success message
-        $this->info($this->successMsg($file_path));
+        //Step-4 => making the file
+        $this->fileMakingAndPutingContent($file_path, $stub_content);
+
+        // //Old
+        // $reqest_name = 'Update' . $this->model_class_name . 'Request';
+        // $file_path = app_path("Http/Requests/$reqest_name.php");
+        // //Controller content load from stub
+        // $stub_content = file_get_contents($this->pakage_stub_path . 'update-request.stub');
+
+        // //replace the model name
+        // $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
+
+        // //table_name
+        // $table_name = str($this->model_class_name)->snake()->plural()->value();
+        // $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
+
+        // //table_name
+        // $model_name_snack = str($this->model_class_name)->snake()->value();
+        // $content_with_model_name_snack = str_replace('$model_name_snack', $model_name_snack, $content_with_table_name);
+        // $full_content = str_replace('$slot', $this->store_request_slot, $content_with_model_name_snack);
+        // file_put_contents($file_path, $full_content);
+
+        // //success message
+        // $this->info($this->successMsg($file_path));
     }
 
     protected function makeView()
     {
 
-        $index_view_path = resource_path("views/{$this->view_path}index.blade.php");
-        $create_view_path = resource_path("views/{$this->view_path}create.blade.php");
-        $edit_view_path = resource_path("views/{$this->view_path}edit.blade.php");
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = app_path('views');
+        $dir_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
+        $dir_final_path = $dir_path."/$this->view_path";
+        $this->makeDirectory($dir_final_path);
 
-        if (!file_exists($this->view_path)) {
-            $directory = resource_path("views/$this->view_path");
-            mkdir($directory, 0755, true);
-        }
+        // //Step-2 => Making stub file path and file path for the files thats are needed to create
+        // $file_name = $this->model_class_name . '.php';
+        // $file_path = $dir_final_path . "/$file_name";
+        // $stub_file_path = $this->pakage_stub_path . 'model.stub';
+
+        // //Step-3 => geting the file content and replacing the certain text if needed
+        // $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+        //     '$model_name' => $this->model_class_name,
+        //     '$fillable_properties'=>$this->model_fillable,
+        //     '$slot'=>$this->model_functions,
+        // ]);
+
+        // //Step-4 => making the file
+        // $this->fileMakingAndPutingContent($file_path, $stub_content);
+
+        //Old
+        $index_view_path = $dir_final_path."index.blade.php";
+        $create_view_path = $dir_final_path."create.blade.php";
+        $edit_view_path = $dir_final_path."edit.blade.php";
 
         $this->indexViewCreation($index_view_path);
         $this->createViewCreation($create_view_path);
@@ -812,23 +892,24 @@ dd($dir_final_path);
 
     protected function makeSeeder()
     {
-        $file_name = $this->model_class_name . 'Seeder';
-        $table_name = str($this->model_class_name)->snake()->plural()->value();
-        $file_path = database_path("seeders/$file_name.php");
+      // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+      $dir_base_path = database_path('seeders');
+      $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
-        //Controller content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'seeder.stub');
+      //Step-2 => Making stub file path and file path for the files thats are needed to create
+      $file_name = $this->model_class_name . 'Seeder.php';
+      $file_path = $dir_final_path . "/$file_name";
+      $stub_file_path = $this->pakage_stub_path . 'seeder.stub';
 
-        //replace the model name
-        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
-        $content_with_table_name = str_replace('$table_name', $table_name, $content_with_name);
+      //Step-3 => geting the file content and replacing the certain text if needed
+      $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+          '$model_name' => $this->model_class_name,
+          '$table_name'=>$this->table_name,
+          '$slot'=>$this->seeder_slot,
+      ]);
 
-        $full_content = str_replace('$slot', $this->seeder_slot, $content_with_table_name);
-
-        file_put_contents($file_path, $full_content);
-
-        //success message
-        $this->info($this->successMsg($file_path));
+      //Step-4 => making the file
+      $this->fileMakingAndPutingContent($file_path, $stub_content);
 
         //seeder inplement in the DatabaseSeeder.php
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
@@ -840,22 +921,26 @@ dd($dir_final_path);
 
     protected function makeFactory()
     {
-        $file_name = $this->model_class_name . 'Factory';
-        $table_name = str($this->model_class_name)->snake()->plural()->value();
-        $file_path = database_path("factories/$file_name.php");
 
-        //Controller content load from stub
-        $stub_content = file_get_contents($this->pakage_stub_path . 'factory.stub');
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = database_path('Models');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
-        //replace the model name
-        $content_with_name = str_replace('$model_name', $this->model_class_name, $stub_content);
-        $full_content = str_replace('$slot', $this->seeder_slot, $content_with_name);
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        $file_name = $this->model_class_name . 'Factory.php';
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'factory.stub';
 
-        file_put_contents($file_path, $full_content);
+        //Step-3 => geting the file content and replacing the certain text if needed
+        $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$model_name' => $this->model_class_name,
+            '$slot'=>$this->seeder_slot,
+        ]);
 
-        //success message
-        $this->info($this->successMsg($file_path));
+        //Step-4 => making the file
+        $this->fileMakingAndPutingContent($file_path, $stub_content);
 
+        
         //the factory implement
         $raws_num = (int)$this->ask($this->make_icon . ' ' . 'How many rows you want to insert');
         $raws_num = $raws_num ? $raws_num : 1;

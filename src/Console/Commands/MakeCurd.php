@@ -30,6 +30,9 @@ class MakeCurd extends Command
     protected $global_prefix = '';
     protected $pakage_stub_path = __DIR__ . '/../../stubs/';
 
+    //File Type
+    const VIEW = 'view';
+
     //Proterties for model
     protected $model_class_name;
     protected $model_functions = '';
@@ -104,10 +107,9 @@ class MakeCurd extends Command
             }
         }
 
-        $global_prefix = $this->choice('Choice a global prefix (Press enter to skip)',['Backend','Frontend','None'],2);
-        if($global_prefix != 'None'){
+        $global_prefix = $this->choice('Choice a global prefix (Press enter to skip)', ['Backend', 'Frontend', 'None'], 2);
+        if ($global_prefix != 'None') {
             $this->global_prefix =  $global_prefix;
-            $this->makeDirectory();
         }
 
         // Database fields collect from the command plate
@@ -172,18 +174,41 @@ class MakeCurd extends Command
         $this->info("\n\t\t🎇💪💪💪  Process Terminate  💪💪💪🎇");
         $this->info("\n\t\t🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com 💞💞💓💗🎇\n");
     }
-    protected function makeDirectory(){
-        
+
+    protected function makeDirectory($directory_path)
+    {
+        if ($this->confirm("Are you want to create the file under $this->global_prefix")) {
+            if (!is_dir($directory_path)) {
+                mkdir($directory_path, 0755, true);
+                $this->info($directory_path . 'created successfully');
+            } else {
+                $this->info("$this->global_prefix folder already exists");
+            }
+        }
     }
+
+    protected function fileMakingAndPutingContent($file_path, $content)
+    {
+        if (!file_exists($file_path)) {
+            file_put_contents($file_path, $content);
+            $this->info($file_path . 'created successfully');
+        } else {
+            if ($this->confirm("$file_path is already exists. Are you want to replace", false)) {
+                file_put_contents($file_path, $content);
+                $this->info($file_path . 'created successfully');
+            }
+        }
+    }
+
     protected function migrattionAndSeeding()
     {
         try {
             Artisan::call('migrate:fresh --seed');
-            $this->info($this->success_msg_icon.' '.'Migration and Seeding is done');
+            $this->info($this->success_msg_icon . ' ' . 'Migration and Seeding is done');
         } catch (\Exception $e) {
             Artisan::call('migrate');
             $this->info($this->success_msg_icon . ' ' . 'Migration done');
-            $this->info($this->warning_icon.' '.'Seed can not be done. Please check your seeder or factory file');
+            $this->info($this->warning_icon . ' ' . 'Seed can not be done. Please check your seeder or factory file');
         };
     }
 
@@ -202,7 +227,7 @@ class MakeCurd extends Command
                     $this->data_type,
                     'string'
                 );
-                if($this->data[$i]['data_type'] == 'foreignIdFor'){
+                if ($this->data[$i]['data_type'] == 'foreignIdFor') {
                     $this->data[$i]['field_name'] = str()->studly($field_input);
                 }
                 //is nullable
@@ -344,7 +369,6 @@ class MakeCurd extends Command
             $this->migration_slot .= ';';
             $this->store_request_slot .= '],';
         }
-
     }
 
     protected function inputTextReplaceable($datum)
@@ -488,7 +512,7 @@ class MakeCurd extends Command
             file_put_contents($file_path, $full_content);
 
             //success message
-            $this->info($this->success_make_icon.' '."The 'mini-wizard' file updated successfully'");
+            $this->info($this->success_make_icon . ' ' . "The 'mini-wizard' file updated successfully'");
         } else {
             $stub_content = file_get_contents($this->pakage_stub_path . 'route.stub');
 
@@ -513,33 +537,32 @@ class MakeCurd extends Command
     {
         $file_name = $this->model_class_name . 'Service';
         $directory = app_path('Serivces');
-        $file_path = $directory."/$file_name.php";
-        var_dump($file_name,$directory,$file_path,is_dir($directory),file_exists($directory."/Service.php"));
-        if(!is_dir($directory)){
+        $file_path = $directory . "/$file_name.php";
+        var_dump($file_name, $directory, $file_path, is_dir($directory), file_exists($directory . "/Service.php"));
+        if (!is_dir($directory)) {
             mkdir($directory, 0755, true);
-        }else{
+        } else {
             echo 'folder exists';
         }
-        if(!file_exists($directory."/Service.php")){
+        if (!file_exists($directory . "/Service.php")) {
             $stub_content = file_get_contents($this->pakage_stub_path . 'parent-service-class.stub');
-            file_put_contents($directory."/Service.php", $stub_content);
-        }else{
+            file_put_contents($directory . "/Service.php", $stub_content);
+        } else {
             $this->info('Service.php class exists');
         }
         //Service content load from stub
-        if(!file_exists($file_path)){
+        if (!file_exists($file_path)) {
             $this->makeServiceClass($file_path);
-
-        }else{
-            if($this->confirm('Same service class is exists. Are you want to replace?')){
+        } else {
+            if ($this->confirm('Same service class is exists. Are you want to replace?')) {
                 $this->makeServiceClass($file_path);
             }
         }
-
     }
 
     //makeServiceClass
-    protected function makeServiceClass($file_path){
+    protected function makeServiceClass($file_path)
+    {
         //replacing
         $stub_content = file_get_contents($this->pakage_stub_path . 'service-class.stub');
         $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);

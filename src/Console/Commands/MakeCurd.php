@@ -30,8 +30,14 @@ class MakeCurd extends Command
     protected $global_prefix = '';
     protected $pakage_stub_path = __DIR__ . '/../../stubs/';
 
-    //File Type
-    const VIEW = 'view';
+    //File base path
+    const MODEL_PATH = '';
+    const MIGRATION_PATH = '';
+    const SEEDER_PATH = '';
+    const FACTORY_PATH = '';
+    const CONTROLLER_PATH = '';
+    const REQUESTS_PATH = '';
+    const SERVICE_PATH = '';
 
     //Proterties for model
     protected $model_class_name;
@@ -107,6 +113,7 @@ class MakeCurd extends Command
             }
         }
 
+        // Collecting global prefix such as backend, frontend
         $global_prefix = $this->choice('Choice a global prefix (Press enter to skip)', ['Backend', 'Frontend', 'None'], 2);
         if ($global_prefix != 'None') {
             $this->global_prefix =  $global_prefix;
@@ -115,57 +122,57 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-        // //Migraton creation
+        // // 1. Migraton creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
         //     $this->makeMigration();
         // }
 
-        // //Model creation
+        // // 2. Model creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
         //     $this->makeModel();
         // }
 
-        // // Route creation
+        // // 3. Route creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
         //     $this->makeRoute();
         // }
 
 
-        // //Service Class
+        // // 4. Service Class
         if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
-            $this->serviceClass();
+            $this->makeServiceClass();
         }
 
-        // //Resource Controller creation
+        // // 5. Resource Controller creation
         if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
             $this->makeController();
         }
-        // //Store Request creation
+        // // 6. Store Request creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
         //     $this->makeStoreRequest();
         // }
 
-        // //Update Request creation
+        // //7. Update Request creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
         //     $this->makeUpdateRequest();
         // }
 
-        // // View creation
+        // // 8. View creation
         // if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
         //     $this->makeView();
         // }
 
-        // //seeder creation
+        // // 9. seeder creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
         //     $this->makeSeeder();
         // }
 
-        // //factory creation
+        // // 10. factory creation
         // if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
         //     $this->makeFactory();
         // }
 
-        // // Migration and seeding
+        // // 11. Migration and seeding
         // if ($this->confirm("{$this->make_icon} Are you want to run migration and seeding", true)) {
         //     $this->migrattionAndSeeding();
         // }
@@ -177,25 +184,59 @@ class MakeCurd extends Command
 
     protected function makeDirectory($directory_path)
     {
-        if ($this->confirm("Are you want to create the file under $this->global_prefix")) {
-            if (!is_dir($directory_path)) {
-                mkdir($directory_path, 0755, true);
-                $this->info($directory_path . 'created successfully');
-            } else {
-                $this->info("$this->global_prefix folder already exists");
+        if (!is_dir($directory_path)) {
+            mkdir($directory_path, 0755, true);
+            $this->info($directory_path . 'created successfully');
+        } else {
+            $this->info("$directory_path folder already exists");
+        }
+    }
+
+    protected function makeDirectoryWithValidation($file_base_path, $folder_name)
+    {
+        if (!empty($file_base_path) && !is_dir($file_base_path)) {
+            $this->makeDirectory($file_base_path);
+        }
+
+        if (!$folder_name) {
+            return $file_base_path;
+        }
+
+        $directory_path = $file_base_path . "/$folder_name";
+        if ($this->confirm("Are you want to create the file under $folder_name")) {
+
+            $this->makeDirectory($directory_path);
+
+            return $directory_path;
+        } else {
+            return $file_base_path;
+        }
+    }
+
+    protected function getContentAndReplaceText($content_path, array $replacing_texts=[])
+    {
+
+        $content = file_get_contents($content_path);
+
+        if (count($replacing_texts) > 0) {
+            foreach ($replacing_texts as $key => $value) {
+                $content = str_replace($key, $value, $content);
             }
         }
+
+        return $content;
     }
 
     protected function fileMakingAndPutingContent($file_path, $content)
     {
         if (!file_exists($file_path)) {
             file_put_contents($file_path, $content);
-            $this->info($file_path . 'created successfully');
+            $this->info($file_path . ' created successfully');
         } else {
             if ($this->confirm("$file_path is already exists. Are you want to replace", false)) {
                 file_put_contents($file_path, $content);
-                $this->info($file_path . 'created successfully');
+                $this->info($file_path . '
+                created successfully');
             }
         }
     }
@@ -532,45 +573,40 @@ class MakeCurd extends Command
         }
     }
 
-    //serviceClass
-    protected function serviceClass()
-    {
-        $file_name = $this->model_class_name . 'Service';
-        $directory = app_path('Serivces');
-        $file_path = $directory . "/$file_name.php";
-        var_dump($file_name, $directory, $file_path, is_dir($directory), file_exists($directory . "/Service.php"));
-        if (!is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        } else {
-            echo 'folder exists';
-        }
-        if (!file_exists($directory . "/Service.php")) {
-            $stub_content = file_get_contents($this->pakage_stub_path . 'parent-service-class.stub');
-            file_put_contents($directory . "/Service.php", $stub_content);
-        } else {
-            $this->info('Service.php class exists');
-        }
-        //Service content load from stub
-        if (!file_exists($file_path)) {
-            $this->makeServiceClass($file_path);
-        } else {
-            if ($this->confirm('Same service class is exists. Are you want to replace?')) {
-                $this->makeServiceClass($file_path);
-            }
-        }
-    }
-
     //makeServiceClass
-    protected function makeServiceClass($file_path)
+    protected function makeServiceClass()
     {
-        //replacing
-        $stub_content = file_get_contents($this->pakage_stub_path . 'service-class.stub');
-        $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
-        $full_content =  $content_with_model_name;
-        file_put_contents($file_path, $full_content);
+        // step- 1 => Making directory and directory path (using global prefix such as backend,..) for the service class
+        $dir_name = 'Services';
+        $dir_base_path = app_path($dir_name);
+        $directory_final_path = $this->makeDirectoryWithValidation($dir_base_path,$this->global_prefix);
 
-        //success message
-        $this->info($this->successMsg($file_path));
+
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        //parent file
+        $parent_file_name = 'Service.php';
+        $parent_file_path = $dir_base_path . "/$parent_file_name";
+        $parent_stub_file_path = $this->pakage_stub_path . 'parent-service-class.stub';
+        //responsible file
+        $file_name = $this->model_class_name . 'Service.php';
+        $file_path = $directory_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'service-class.stub';
+
+        //Step-3 => geting the file content and replacing the certain text if needed
+        //parent files contents
+        $parent_stub_content = $this->getContentAndReplaceText($parent_stub_file_path);
+        //targent (responsible) file contents
+        $stub_content = $this->getContentAndReplaceText($stub_file_path,[
+            '$model_name'=>$this->model_class_name
+        ]);
+
+        //Step-4 => making the file
+        //paretn files
+         $this->fileMakingAndPutingContent($parent_file_path, $parent_stub_content);
+        //target or responsible file
+
+        $this->fileMakingAndPutingContent($file_path,$stub_content);
+
     }
 
     protected function makeController()

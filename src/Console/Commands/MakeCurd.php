@@ -122,20 +122,24 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-        // // 1. Migraton creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
-        //     $this->makeMigration();
-        // }
 
-        // // 2. Model creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
-        //     $this->makeModel();
-        // }
 
-        // // 3. Route creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
-        //     $this->makeRoute();
-        // }
+        //=====================================================================
+        // ========================= Operation Start ========================
+        // 1. Model creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
+            $this->makeModel();
+        }
+
+        // 2. Migraton creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
+            $this->makeMigration();
+        }
+
+        // 3. Route creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
+            $this->makeRoute();
+        }
 
 
         // // 4. Service Class
@@ -186,7 +190,7 @@ class MakeCurd extends Command
     {
         if (!is_dir($directory_path)) {
             mkdir($directory_path, 0755, true);
-            $this->info($directory_path . 'created successfully');
+            $this->info($directory_path . ' created successfully');
         } else {
             $this->info("$directory_path folder already exists");
         }
@@ -213,7 +217,7 @@ class MakeCurd extends Command
         }
     }
 
-    protected function getContentAndReplaceText($content_path, array $replacing_texts=[])
+    protected function getContentAndReplaceText($content_path, array $replacing_texts = [])
     {
 
         $content = file_get_contents($content_path);
@@ -474,6 +478,31 @@ class MakeCurd extends Command
     //Model creation
     protected function makeModel()
     {
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = app_path('Models');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
+dd($dir_final_path);
+
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        $file_name = $this->model_class_name . 'Service.php';
+        $file_path = $directory_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'service-class.stub';
+
+        //Step-3 => geting the file content and replacing the certain text if needed
+        //parent files contents
+        $parent_stub_content = $this->getContentAndReplaceText($parent_stub_file_path);
+        //targent (responsible) file contents
+        $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$model_name' => $this->model_class_name
+        ]);
+
+        //Step-4 => making the file
+        //paretn files
+        $this->fileMakingAndPutingContent($parent_file_path, $parent_stub_content);
+        //target or responsible file
+        $this->fileMakingAndPutingContent($file_path, $stub_content);
+
+        //old
         $model_name = $this->model_class_name;
         //model content load from stub
         $stub_content = file_get_contents($this->pakage_stub_path . 'model.stub');
@@ -579,7 +608,7 @@ class MakeCurd extends Command
         // step- 1 => Making directory and directory path (using global prefix such as backend,..) for the service class
         $dir_name = 'Services';
         $dir_base_path = app_path($dir_name);
-        $directory_final_path = $this->makeDirectoryWithValidation($dir_base_path,$this->global_prefix);
+        $directory_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
 
         //Step-2 => Making stub file path and file path for the files thats are needed to create
@@ -596,17 +625,15 @@ class MakeCurd extends Command
         //parent files contents
         $parent_stub_content = $this->getContentAndReplaceText($parent_stub_file_path);
         //targent (responsible) file contents
-        $stub_content = $this->getContentAndReplaceText($stub_file_path,[
-            '$model_name'=>$this->model_class_name
+        $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$model_name' => $this->model_class_name
         ]);
 
         //Step-4 => making the file
         //paretn files
-         $this->fileMakingAndPutingContent($parent_file_path, $parent_stub_content);
+        $this->fileMakingAndPutingContent($parent_file_path, $parent_stub_content);
         //target or responsible file
-
-        $this->fileMakingAndPutingContent($file_path,$stub_content);
-
+        $this->fileMakingAndPutingContent($file_path, $stub_content);
     }
 
     protected function makeController()

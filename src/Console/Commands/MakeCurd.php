@@ -115,7 +115,7 @@ class MakeCurd extends Command
         }
 
         // Collecting global prefix such as backend, frontend
-        $global_prefix = $this->choice('Choice a global prefix (Press enter to skip)', ['Backend', 'Frontend', 'None'], 2);
+        $global_prefix = $this->choice('Choice a global prefix (Press enter to skip)', ['Backend', 'Frontend', 'None'], 0);
         if ($global_prefix != 'None') {
             $this->global_prefix =  $global_prefix;
         }
@@ -123,40 +123,37 @@ class MakeCurd extends Command
         // Database fields collect from the command plate
         $this->collectFields();
 
-
-
         //=====================================================================
         // ========================= Operation Start ========================
-        // 1. Model creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
-            $this->makeModel();
-        }
+        // // 1. Model creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
+        //     $this->makeModel();
+        // }
 
-        // 2. Migraton creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
-            $this->makeMigration();
-        }
+        // // 2. Migraton creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
+        //     $this->makeMigration();
+        // }
 
         // 3. Route creation
         if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
             $this->makeRoute();
         }
 
+        // // // 4. Service Class
+        // if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
+        //     $this->makeServiceClass();
+        // }
 
-        // // 4. Service Class
-        if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
-            $this->makeServiceClass();
-        }
+        // // // 5. Resource Controller creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
+        //     $this->makeController();
+        // }
 
-        // // 5. Resource Controller creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
-            $this->makeController();
-        }
-
-        // 6. Store Request creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
-            $this->makeStoreRequest();
-        }
+        // // 6. Store Request creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+        //     $this->makeStoreRequest();
+        // }
 
         // //7. Update Request creation
         // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
@@ -182,7 +179,6 @@ class MakeCurd extends Command
         // if ($this->confirm("{$this->make_icon} Are you want to run migration and seeding", true)) {
         //     $this->migrattionAndSeeding();
         // }
-
 
         $this->info("\n\t\t🎇💪💪💪  Process Terminate  💪💪💪🎇");
         $this->info("\n\t\t🎇💗💓💞💞 How was  your feeling. Let me know:- nobir.wd@gmail.com 💞💞💓💗🎇\n");
@@ -498,6 +494,13 @@ class MakeCurd extends Command
         // $this->info($this->successMsg($file_path));
     }
 
+    protected function makeNameSpace($base_path){
+        if($this->global_prefix != 'None'){
+            return $base_path."\\$this->global_prefix";
+        }
+        return $base_path;
+    }
+
     //Model creation
     protected function makeModel()
     {
@@ -510,8 +513,15 @@ class MakeCurd extends Command
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'model.stub';
 
+        // namespace creation
+        $name_space = "App\Models";
+        if($this->global_prefix != 'None'){
+            $name_space = "App\\$this->global_prefix\\Models";
+        }
+
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$name_space' => $this->makeNameSpace('App\Models'),
             '$model_name' => $this->model_class_name,
             '$fillable_properties' => $this->model_fillable,
             '$slot' => $this->model_functions,
@@ -525,14 +535,14 @@ class MakeCurd extends Command
     protected function  makeRoute()
     {
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
-        $dir_base_path = app_path('routes');
+        $dir_base_path = base_path('routes');
         $dir_final_path = $dir_base_path;
         //Step-2 => Making stub file path and file path for the files thats are needed to create
         $file_name = 'mini-wizard.php';
-        if ($this->global_prefix !== 'None') {
-            $file_name = 'admin.php';
-
+        if ($this->global_prefix) {
+            $file_name = $this->global_prefix;
         }
+        
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'route.stub';
 
@@ -610,10 +620,10 @@ class MakeCurd extends Command
             $this->info($this->success_make_icon . ' ' . "The $file_name file updated successfully'");
         } else {
             $stub_content = file_get_contents($this->pakage_stub_path . 'route.stub');
-
             //global prefix added to the route
             if ($this->global_prefix !== 'None') {
-                $global_route_prefix_code = "Route::prefix($this->global_prefix)->group(function(){\n \$slot \n });";
+                $global_prefix_lowercase = strtolower($this->global_prefix);
+                $global_route_prefix_code = "Route::prefix('$global_prefix_lowercase')->group(function(){\n \$slot \n });";
                 $stub_content = str_replace('$slot', $global_route_prefix_code, $stub_content);
             }
 
@@ -622,7 +632,7 @@ class MakeCurd extends Command
             file_put_contents($file_path, $full_content);
 
             //success message
-            $this->info($this->successMsg('mini-wizard'));
+            $this->info($this->successMsg($file_name));
 
             //including the mini-wizard.php file in the web.php
             $web_file_path = base_path('/routes/web.php');
@@ -652,12 +662,19 @@ class MakeCurd extends Command
         $file_path = $directory_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'service-class.stub';
 
+        // namespace creation
+        $name_space = "App\Services";
+        if($this->global_prefix != 'None'){
+            $name_space = "App\\$this->global_prefix\\Services";
+        }
+
         //Step-3 => geting the file content and replacing the certain text if needed
         //parent files contents
         $parent_stub_content = $this->getContentAndReplaceText($parent_stub_file_path);
         //targent (responsible) file contents
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-            '$model_name' => $this->model_class_name
+            '$model_name' => $this->model_class_name,
+            '$name_space' => $this->makeNameSpace('App\Services'),
         ]);
 
         //Step-4 => making the file
@@ -678,8 +695,15 @@ class MakeCurd extends Command
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'resource-controller.stub';
 
+        // namespace creation
+        $name_space = "App\Controllers";
+        if($this->global_prefix != 'None'){
+            $name_space = "App\\$this->global_prefix\\Controllers";
+        }
+
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$name_space' => $this->makeNameSpace('App\Controllers'),
             '$model_name' => $this->model_class_name,
             '$view_name' => $this->view_name,
             '$route_name' => $this->route_name,
@@ -717,8 +741,15 @@ class MakeCurd extends Command
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'store-request.stub';
 
+        // namespace creation
+        $name_space = "App\Requests";
+        if($this->global_prefix != 'None'){
+            $name_space = "App\\$this->global_prefix\\Requests";
+        }
+
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$name_space' => $this->makeNameSpace('App\Requests'),
             '$model_name' => $this->model_class_name,
             '$table_name' => str($this->model_class_name)->snake()->plural()->value(),
             '$slot' => $this->store_request_slot,
@@ -759,8 +790,16 @@ class MakeCurd extends Command
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'update-request.stub';
 
+
+        // namespace creation
+        $name_space = "App\Requests";
+        if($this->global_prefix != 'None'){
+            $name_space = "App\\$this->global_prefix\\Requests";
+        }
+
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$name_space' => $this->makeNameSpace('App\Requests'),
             '$model_name' => $this->model_class_name,
             '$table_name' => str($this->model_class_name)->snake()->plural()->value(),
             '$model_name_snack' => str($this->model_class_name)->snake()->value(),
@@ -931,8 +970,14 @@ class MakeCurd extends Command
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'seeder.stub';
 
+        // namespace creation
+        $name_space = "Database\Seeders";
+        if($this->global_prefix != 'None'){
+            $name_space = "Database\\$this->global_prefix\\Seeders";
+        }
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$name_space' => $this->makeNameSpace('Database\Seeders'),
             '$model_name' => $this->model_class_name,
             '$table_name' => $this->table_name,
             '$slot' => $this->seeder_slot,
@@ -961,8 +1006,14 @@ class MakeCurd extends Command
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'factory.stub';
 
+        // namespace creation
+        $name_space = "Database\Factories";
+        if($this->global_prefix != 'None'){
+            $name_space = "Database\\$this->global_prefix\\Factories";
+        }
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$name_space' => $this->makeNameSpace('Database\Factories'),
             '$model_name' => $this->model_class_name,
             '$slot' => $this->seeder_slot,
         ]);

@@ -524,6 +524,19 @@ class MakeCurd extends Command
     //Route creation
     protected function  makeRoute()
     {
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = app_path('routes');
+        $dir_final_path = $dir_base_path;
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        $file_name = 'mini-wizard.php';
+        if ($this->global_prefix !== 'None') {
+            $file_name = 'admin.php';
+
+        }
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'route.stub';
+
+        //Step-extra => Processing
         $model_name = $this->model_class_name;
         $controller_name = $model_name . "Controller";
         $route_name = str($model_name)->kebab()->value();
@@ -566,10 +579,21 @@ class MakeCurd extends Command
         //Full route
         $route_slot = $route_group_first_code . $base_route . $route_group_last_code;
 
-        $file_path = base_path('routes/mini-wizard.php');
+        // //Step-3 => geting the file content and replacing the certain text if needed
+        // $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+        //     '$model_name' => $this->model_class_name,
+        //     '$fillable_properties' => $this->model_fillable,
+        //     '$slot' => $this->model_functions,
+        // ]);
+
+        // //Step-4 => making the file
+        // $this->fileMakingAndPutingContent($file_path, $stub_content);
+
+        // $file_path = base_path('routes/mini-wizard.php');
         //route content load from stub if not exist
         if (file_exists($file_path)) {
-            $wimi_wizard_content = file_get_contents($file_path);
+            $wimi_wizard_content = file_get_contents($stub_file_path);
+
             if ($route_group_first_code) {
                 if (strpos($wimi_wizard_content, $route_group_first_code) === false) {
                     $full_content = $wimi_wizard_content . "\n" . $route_slot;
@@ -583,9 +607,15 @@ class MakeCurd extends Command
             file_put_contents($file_path, $full_content);
 
             //success message
-            $this->info($this->success_make_icon . ' ' . "The 'mini-wizard' file updated successfully'");
+            $this->info($this->success_make_icon . ' ' . "The $file_name file updated successfully'");
         } else {
             $stub_content = file_get_contents($this->pakage_stub_path . 'route.stub');
+
+            //global prefix added to the route
+            if ($this->global_prefix !== 'None') {
+                $global_route_prefix_code = "Route::prefix($this->global_prefix)->group(function(){\n \$slot \n });";
+                $stub_content = str_replace('$slot', $global_route_prefix_code, $stub_content);
+            }
 
             $full_content = str_replace('$slot', $route_slot, $stub_content);
 
@@ -597,9 +627,9 @@ class MakeCurd extends Command
             //including the mini-wizard.php file in the web.php
             $web_file_path = base_path('/routes/web.php');
             $web_route_content = file_get_contents($web_file_path);
-            $web_route_final_content = str_replace("<?php", "<?php \n require __DIR__ . '/mini-wizard.php';", $web_route_content);
+            $web_route_final_content = str_replace("<?php", "<?php \n require __DIR__ . '/$file_name';", $web_route_content);
             file_put_contents($web_file_path, $web_route_final_content);
-            $this->info("{$this->success_make_icon} The route file 'mini-wizard' is also included in web.php. So no tension.");
+            $this->info("{$this->success_make_icon} The route file '$file_name' is also included in web.php. So no tension.");
         }
     }
 
@@ -732,9 +762,9 @@ class MakeCurd extends Command
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
             '$model_name' => $this->model_class_name,
-            '$table_name'=> str($this->model_class_name)->snake()->plural()->value(),
-            '$model_name_snack'=> str($this->model_class_name)->snake()->value(),
-            '$slot'=>$this->store_request_slot,
+            '$table_name' => str($this->model_class_name)->snake()->plural()->value(),
+            '$model_name_snack' => str($this->model_class_name)->snake()->value(),
+            '$slot' => $this->store_request_slot,
         ]);
 
         //Step-4 => making the file
@@ -769,7 +799,7 @@ class MakeCurd extends Command
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
         $dir_base_path = app_path('views');
         $dir_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
-        $dir_final_path = $dir_path."/$this->view_path";
+        $dir_final_path = $dir_path . "/$this->view_path";
         $this->makeDirectory($dir_final_path);
 
         // //Step-2 => Making stub file path and file path for the files thats are needed to create
@@ -788,9 +818,9 @@ class MakeCurd extends Command
         // $this->fileMakingAndPutingContent($file_path, $stub_content);
 
         //Old
-        $index_view_path = $dir_final_path."index.blade.php";
-        $create_view_path = $dir_final_path."create.blade.php";
-        $edit_view_path = $dir_final_path."edit.blade.php";
+        $index_view_path = $dir_final_path . "index.blade.php";
+        $create_view_path = $dir_final_path . "create.blade.php";
+        $edit_view_path = $dir_final_path . "edit.blade.php";
 
         $this->indexViewCreation($index_view_path);
         $this->createViewCreation($create_view_path);
@@ -892,24 +922,24 @@ class MakeCurd extends Command
 
     protected function makeSeeder()
     {
-      // step- 1 => making directory path (using global prefix such as backend,..) for the service class
-      $dir_base_path = database_path('seeders');
-      $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = database_path('seeders');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
-      //Step-2 => Making stub file path and file path for the files thats are needed to create
-      $file_name = $this->model_class_name . 'Seeder.php';
-      $file_path = $dir_final_path . "/$file_name";
-      $stub_file_path = $this->pakage_stub_path . 'seeder.stub';
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        $file_name = $this->model_class_name . 'Seeder.php';
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'seeder.stub';
 
-      //Step-3 => geting the file content and replacing the certain text if needed
-      $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-          '$model_name' => $this->model_class_name,
-          '$table_name'=>$this->table_name,
-          '$slot'=>$this->seeder_slot,
-      ]);
+        //Step-3 => geting the file content and replacing the certain text if needed
+        $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+            '$model_name' => $this->model_class_name,
+            '$table_name' => $this->table_name,
+            '$slot' => $this->seeder_slot,
+        ]);
 
-      //Step-4 => making the file
-      $this->fileMakingAndPutingContent($file_path, $stub_content);
+        //Step-4 => making the file
+        $this->fileMakingAndPutingContent($file_path, $stub_content);
 
         //seeder inplement in the DatabaseSeeder.php
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
@@ -934,13 +964,13 @@ class MakeCurd extends Command
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
             '$model_name' => $this->model_class_name,
-            '$slot'=>$this->seeder_slot,
+            '$slot' => $this->seeder_slot,
         ]);
 
         //Step-4 => making the file
         $this->fileMakingAndPutingContent($file_path, $stub_content);
 
-        
+
         //the factory implement
         $raws_num = (int)$this->ask($this->make_icon . ' ' . 'How many rows you want to insert');
         $raws_num = $raws_num ? $raws_num : 1;

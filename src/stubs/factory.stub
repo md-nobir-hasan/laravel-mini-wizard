@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace $name_space;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;

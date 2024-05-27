@@ -455,7 +455,7 @@ class MakeCurd extends Command
     {
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
         $dir_base_path = database_path('migrations');
-        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, strtolower($this->global_prefix));
 
 
         //Step-2 => Making stub file path and file path for the files thats are needed to create
@@ -806,8 +806,8 @@ class MakeCurd extends Command
     {
 
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
-        $dir_base_path = app_path('views');
-        $dir_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
+        $dir_base_path = resource_path('views');
+        $dir_path = $this->makeDirectoryWithValidation($dir_base_path, strtolower($this->global_prefix));
         $dir_final_path = $dir_path . "/$this->view_path";
         $this->makeDirectory($dir_final_path);
 

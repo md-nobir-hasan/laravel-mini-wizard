@@ -2,16 +2,15 @@
 
 namespace $name_space;
 
-use App\Models\$model_name;
-use App\Services\$model_nameService;
-use App\Http\Requests\Store$model_nameRequest;
-use App\Http\Requests\Update$model_nameRequest;
+use App\Models\Backend\$model_name;
+use App\Services\Backend\$model_nameService;
+use App\Http\Requests\Backend\Store$model_nameRequest;
+use App\Http\Requests\Backend\Update$model_nameRequest;
 
 class $model_nameController extends Controller
 {
     public function __construct(protected $model_nameService $service)
     {
-        $this->middleware(['can:Show $model_name']);
     }
     /**
      * Display a listing of the resource.
@@ -29,7 +28,6 @@ class $model_nameController extends Controller
      */
     public function create()
     {
-        $this->ccan('Create $model_name');
         $n['serial'] = $model_name::count();
         return view('$view_namecreate', $n);
     }
@@ -39,8 +37,6 @@ class $model_nameController extends Controller
      */
     public function store(Store$model_nameRequest $request)
     {
-        $this->ccan('Create $model_name');
-
         $data = $request->validated();
         $status = $this->service::store($data);
 
@@ -70,8 +66,6 @@ class $model_nameController extends Controller
      */
     public function edit($model_name $$model_name)
     {
-        $this->ccan('Edit $model_name');
-
         $n['datum'] = $$model_name;
         return view('$view_nameedit', $n);
     }
@@ -81,8 +75,6 @@ class $model_nameController extends Controller
      */
     public function update(Update$model_nameRequest $request, $model_name $$model_name)
     {
-        $this->ccan('Edit $model_name');
-
         $data = $request->validated();
         $this->service->update($$model_name,$data);
 
@@ -94,7 +86,6 @@ class $model_nameController extends Controller
      */
     public function destroy($model_name $$model_name)
     {
-        $this->ccan('Delete $model_name');
         $title = $$model_name->title;
         $status = $service::delete($$model_name);
 

@@ -2,7 +2,7 @@
 
 namespace $name_space;
 
-use App\Models\$model_name;
+use App\Models\Backend\$model_name;
 use App\Services\Service;
 
 class $model_nameService extends Service

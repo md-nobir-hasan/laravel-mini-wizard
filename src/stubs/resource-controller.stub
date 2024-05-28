@@ -2,6 +2,7 @@
 
 namespace $name_space;
 
+use App\Http\Controllers\Controller;
 use App\Models\Backend\$model_name;
 use App\Services\Backend\$model_nameService;
 use App\Http\Requests\Backend\Store$model_nameRequest;
@@ -87,7 +88,7 @@ class $model_nameController extends Controller
     public function destroy($model_name $$model_name)
     {
         $title = $$model_name->title;
-        $status = $service::delete($$model_name);
+        $status = $this->service->delete($$model_name);
 
         if ($status) {
             request()->session()->flash('success', "$title successfully deleted");

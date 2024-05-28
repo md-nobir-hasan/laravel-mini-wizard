@@ -1,4 +1,4 @@
-@extends('admin.layout.app')
+@extends('backend.layouts.app')
 
 {{-- Page Title  --}}
 @push('title')

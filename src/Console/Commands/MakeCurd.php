@@ -574,7 +574,9 @@ class MakeCurd extends Command
         }
         //base route
         $base_route .= "Route::resource('/$route_name','App\Http\Controllers\\{$controller_name}');\n";
-
+        if($this->global_prefix){
+            $base_route .= "Route::resource('/$route_name','App\Http\Controllers\\$this->global_prefix\\{$controller_name}');\n";
+        }
         //full route, folder and path setup
         $this->route_name .= $route_name . '.';
         $this->view_name .= $route_name . '.';
@@ -684,10 +686,13 @@ class MakeCurd extends Command
         $stub_file_path = $this->pakage_stub_path . 'resource-controller.stub';
 
         //Step-3 => geting the file content and replacing the certain text if needed
+        if($this->global_prefix){
+            $view_name = strtolower($this->global_prefix).'.pages.'.$this->view_name;
+        }
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-            '$name_space' => $this->makeNameSpace('App\Controllers'),
+            '$name_space' => $this->makeNameSpace('App\Http\Controllers'),
             '$model_name' => $this->model_class_name,
-            '$view_name' => $this->view_name,
+            '$view_name' => $view_name,
             '$route_name' => $this->route_name,
         ]);
 
@@ -725,7 +730,7 @@ class MakeCurd extends Command
 
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-            '$name_space' => $this->makeNameSpace('App\Requests'),
+            '$name_space' => $this->makeNameSpace('App\Http\Requests'),
             '$model_name' => $this->model_class_name,
             '$table_name' => str($this->model_class_name)->snake()->plural()->value(),
             '$slot' => $this->store_request_slot,
@@ -769,7 +774,7 @@ class MakeCurd extends Command
 
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-            '$name_space' => $this->makeNameSpace('App\Requests'),
+            '$name_space' => $this->makeNameSpace('App\Http\Requests'),
             '$model_name' => $this->model_class_name,
             '$table_name' => str($this->model_class_name)->snake()->plural()->value(),
             '$model_name_snack' => str($this->model_class_name)->snake()->value(),
@@ -808,7 +813,7 @@ class MakeCurd extends Command
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
         $dir_base_path = resource_path('views');
         $dir_path = $this->makeDirectoryWithValidation($dir_base_path, strtolower($this->global_prefix));
-        $dir_final_path = $dir_path . "/$this->view_path";
+        $dir_final_path = $dir_path . "/pages/$this->view_path";
         $this->makeDirectory($dir_final_path);
 
         // //Step-2 => Making stub file path and file path for the files thats are needed to create
@@ -932,16 +937,18 @@ class MakeCurd extends Command
     protected function makeSeeder()
     {
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $name_space = $this->makeNameSpace('Database\Seeders');
         $dir_base_path = database_path('seeders');
-        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, strtolower($this->global_prefix));
 
         //Step-2 => Making stub file path and file path for the files thats are needed to create
-        $file_name = $this->model_class_name . 'Seeder.php';
+        $file_class_name = $this->model_class_name . 'Seeder';
+        $file_name = $file_class_name. '.php';
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'seeder.stub';
         //Step-3 => geting the file content and replacing the certain text if needed
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-            '$name_space' => $this->makeNameSpace('Database\Seeders'),
+            '$name_space' => $name_space,
             '$model_name' => $this->model_class_name,
             '$table_name' => $this->table_name,
             '$slot' => $this->seeder_slot,
@@ -953,7 +960,7 @@ class MakeCurd extends Command
         //seeder inplement in the DatabaseSeeder.php
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_seeder = str_replace("]); //n", "\t$file_name::class, \n\t\t]); //n", $database_seeder_content);
+        $database_seeder_content_with_seeder = str_replace("]); //n", "\t$name_space\\$file_class_name::class, \n\t\t]); //n", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_seeder);
         $this->info("{$this->warning_icon} The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']); //n'");
     }
@@ -962,8 +969,8 @@ class MakeCurd extends Command
     {
 
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
-        $dir_base_path = database_path('Models');
-        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
+        $dir_base_path = database_path('factories');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, strtolower($this->global_prefix));
 
         //Step-2 => Making stub file path and file path for the files thats are needed to create
         $file_name = $this->model_class_name . 'Factory.php';
@@ -985,7 +992,7 @@ class MakeCurd extends Command
         $raws_num = $raws_num ? $raws_num : 1;
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_factory = str_replace("]); //n", "]); //n\n\n\t\t\App\Models\\{$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
+        $database_seeder_content_with_factory = str_replace("]); //n", "]); //n\n\n\t\t\App\Models\backend\\{$this->model_class_name}::factory()->count($raws_num)->create();", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_factory);
         $this->info("{$this->warning_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']); //n'");
     }

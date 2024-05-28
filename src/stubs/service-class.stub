@@ -8,7 +8,7 @@ use App\Services\Service;
 class $model_nameService extends Service
 {
 
-    public static function store($data)
+    public function store($data)
     {
         $status = $model_name::create($data);
         return $status;
@@ -17,7 +17,7 @@ class $model_nameService extends Service
     /**
      * Update the specified resource in storage.
      */
-    public static function update($$model_name,$data)
+    public function update($$model_name,$data)
     {
 
         $status = $$model_name->update($data);
@@ -27,7 +27,7 @@ class $model_nameService extends Service
     /**
      * Remove the specified resource from storage.
      */
-    public static function destroy($$model_name)
+    public function destroy($$model_name)
     {
         $title = $$model_name->title;
         $status = $$model_name->delete();

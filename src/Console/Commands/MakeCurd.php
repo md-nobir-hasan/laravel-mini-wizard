@@ -384,19 +384,19 @@ class MakeCurd extends Command
                     $this->otherAtrributesCheck($datum);
 
                     //for view
-                    $this->create_input_slot .= "<div class='form-group'>
-                                                            <label for='{$datum['field_name']}' class='col-form-label'>$field_title</label>star_slot
+                    $this->create_input_slot .= "<div class='flex-shrink max-w-full px-4 w-full md:w-1/2 mb-6'>
+                                                            <label for='{$datum['field_name']}' class='inline-block mb-2'>$field_title</label>star_slot
                                                             <input id='{$datum['field_name']}' type='text' name='{$datum['field_name']}' placeholder='Exp:- Enter $field_title'
-                                                                value='{{ old('{$datum['field_name']}') }}' class='form-control required_slot'>
+                                                                value='{{ old('{$datum['field_name']}') }}' class='w-full leading-5 relative py-2 px-4 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'>
                                                             @error('{$datum['field_name']}')
                                                                 <span class='text-danger'>{{ \$message }}</span>
                                                             @enderror
                                                         </div>";
-                    $this->edit_input_slot .= "<div class='form-group'>
-                                                            <label for='{$datum['field_name']}' class='col-form-label'>$field_title</label>star_slot
+                    $this->edit_input_slot .= "<div class='flex-shrink max-w-full px-4 w-full md:w-1/2 mb-6'>
+                                                            <label for='{$datum['field_name']}' class='inline-block mb-2'>$field_title</label>star_slot
                                                             <input id='{$datum['field_name']}' type='text' name='{$datum['field_name']}' placeholder='Exp:- Enter $field_title'
                                                                 value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'
-                                                                class='form-control required_slot'>
+                                                                class='w-full leading-5 relative py-2 px-4 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'>
                                                             @error('{$datum['field_name']}')
                                                                 <span class='text-danger'>{{ \$message }}</span>
                                                             @enderror
@@ -565,7 +565,7 @@ class MakeCurd extends Command
                 $this->view_path .= $prefix . '/';
             }
             if ($name = $this->ask($this->make_icon . ' ' . 'Enter name for the route group (Presss enter to skip)')) {
-                $route_group_first_code .= "name('$name')->";
+                $route_group_first_code .= "name('$name.')->";
                 $this->route_group_name = $name;
                 $this->route_name .= $name . '.';
             }
@@ -584,19 +584,6 @@ class MakeCurd extends Command
 
         //Full route
         $route_slot = $route_group_first_code . $base_route . $route_group_last_code;
-
-        // //Step-3 => geting the file content and replacing the certain text if needed
-        // $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-        //     '$model_name' => $this->model_class_name,
-        //     '$fillable_properties' => $this->model_fillable,
-        //     '$slot' => $this->model_functions,
-        // ]);
-
-        // //Step-4 => making the file
-        // $this->fileMakingAndPutingContent($file_path, $stub_content);
-
-        // $file_path = base_path('routes/mini-wizard.php');
-        //route content load from stub if not exist
         if (file_exists($file_path)) {
             $file_path_content = file_get_contents($file_path);
 
@@ -815,21 +802,6 @@ class MakeCurd extends Command
         $dir_path = $this->makeDirectoryWithValidation($dir_base_path, strtolower($this->global_prefix));
         $dir_final_path = $dir_path . "/pages/$this->view_path";
         $this->makeDirectory($dir_final_path);
-
-        // //Step-2 => Making stub file path and file path for the files thats are needed to create
-        // $file_name = $this->model_class_name . '.php';
-        // $file_path = $dir_final_path . "/$file_name";
-        // $stub_file_path = $this->pakage_stub_path . 'model.stub';
-
-        // //Step-3 => geting the file content and replacing the certain text if needed
-        // $stub_content = $this->getContentAndReplaceText($stub_file_path, [
-        //     '$model_name' => $this->model_class_name,
-        //     '$fillable_properties'=>$this->model_fillable,
-        //     '$slot'=>$this->model_functions,
-        // ]);
-
-        // //Step-4 => making the file
-        // $this->fileMakingAndPutingContent($file_path, $stub_content);
 
         //Old
         $index_view_path = $dir_final_path . "index.blade.php";

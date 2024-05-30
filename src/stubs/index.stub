@@ -78,7 +78,7 @@
                             </div>
 
                             <div class="w-full mb-6 overflow-x-auto">
-                                <form action="#">
+                               {{-- <form action="#"> --}}
                                     <div
                                         class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
                                         <div class="dataTable-top">
@@ -223,7 +223,7 @@
                                             });
                                         }
                                     </script>
-                                </form>
+                               {{-- </form> --}}
                             </div>
                         </div>
                     </div>

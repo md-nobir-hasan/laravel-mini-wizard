@@ -39,7 +39,7 @@ class $model_nameController extends Controller
     public function store(Store$model_nameRequest $request)
     {
         $data = $request->validated();
-        $status = $this->service::store($data);
+        $status = $this->service->store($data);
 
         //Redirection decission
         if($request->redirect == 'back'){

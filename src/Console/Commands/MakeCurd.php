@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
@@ -1037,7 +1038,10 @@ class MakeCurd extends Command
             'serial'=> (int)$serial,
             'status'=> 'Active',
         ]);
-
+         Cache::rememberForever('nsidebar', function () {
+            return DB::table('n_sidebars')->where('status', 'Active')->get();
+        });
+        var_dump(Cache::get('nsidebar'));
         $this->info('Sidebar database and migration done');
     }
 }

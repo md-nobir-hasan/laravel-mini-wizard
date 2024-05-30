@@ -27,7 +27,7 @@ class $model_nameService extends Service
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($$model_name)
+    public function delete($$model_name)
     {
         $title = $$model_name->title;
         $status = $$model_name->delete();

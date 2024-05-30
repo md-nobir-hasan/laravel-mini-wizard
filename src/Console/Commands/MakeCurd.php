@@ -779,7 +779,7 @@ class MakeCurd extends Command
             '$name_space' => $this->makeNameSpace('App\Http\Requests'),
             '$model_name' => $this->model_class_name,
             '$table_name' => str($this->model_class_name)->snake()->plural()->value(),
-            '$model_name_snack' => str($this->model_class_name)->snake()->value(),
+            '$m_name_snack' => str($this->model_class_name)->snake()->value(),
             '$slot' => $this->store_request_slot,
         ]);
 

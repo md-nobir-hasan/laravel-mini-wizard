@@ -7,11 +7,14 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Nobir\CurdByCommand\Module\Navbar;
 
 class MakeCurd extends Command
 {
+
     /**
      * The name and signature of the console command.
      *
@@ -66,6 +69,8 @@ class MakeCurd extends Command
     protected $create_input_slot = '';
     protected $edit_input_slot = '';
 
+    //sidebar properties
+    protected $parent_navbar='';
     //properties for icons
     protected $all_icons = '✅❗⛔⭕❓‼️⁉️⚠️❌🚫🛑💗💓💞❤️‍🩹🏠🚀✈️💺🌷💐🌻📁✏️🖋️✒️✒️🔎🔍♂️⚔️🗡️🩸💎🎈🎆🎇👏✍️👊🫵';
     protected $all_icon2 = 'ℹ️☑️🔵🟢🔴🟠🟡🟤🟥🟧🟨🟨🟩🟦🔶🔸🔺🔻🔷🔹☝️👉👈👇✌️🫲💪👀👁️😎😮';
@@ -128,55 +133,56 @@ class MakeCurd extends Command
 
         //=====================================================================
         // ========================= Operation Start ========================
-        // // 1. Model creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
-        //     $this->makeModel();
-        // }
+        // 1. Model creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
+            $this->makeModel();
+        }
 
-        // // 2. Migraton creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
-        //     $this->makeMigration();
-        // }
+        // 2. Migraton creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
+            $this->makeMigration();
+        }
 
-        // // 3. Route creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
-        //     $this->makeRoute();
-        // }
+        // 3. Route creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
+            $this->makeRoute();
+        }
 
-        // // // 4. Service Class
-        // if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
-        //     $this->makeServiceClass();
-        // }
+        // 4. Service Class
+        if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
+            $this->makeServiceClass();
+        }
 
-        // // // 5. Resource Controller creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
-        //     $this->makeController();
-        // }
+        // 5. Resource Controller creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
+            $this->makeController();
+        }
 
-        // // 6. Store Request creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
-        //     $this->makeStoreRequest();
-        // }
+        // 6. Store Request creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+            $this->makeStoreRequest();
+        }
 
-        // //7. Update Request creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
-        //     $this->makeUpdateRequest();
-        // }
+        //7. Update Request creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
+            $this->makeUpdateRequest();
+        }
 
-        // // 8. View creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
-        //     $this->makeView();
-        // }
+        // 8. View creation
+        if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
+            $this->makeView();
+        }
 
-        // // 9. seeder creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
-        //     $this->makeSeeder();
-        // }
+        // 9. seeder creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
+            $this->makeSeeder();
+        }
 
-        // // 10. factory creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
-        //     $this->makeFactory();
-        // }
+        // 10. factory creation
+        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+            $this->makeFactory();
+        }
+
         // 11. Sidebar(menu) creation
         if ($this->confirm("{$this->make_icon} Are you want to make Sidebar", true)) {
             $this->makeSidebar();
@@ -538,6 +544,7 @@ class MakeCurd extends Command
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
         $dir_base_path = base_path('routes');
         $dir_final_path = $dir_base_path;
+
         //Step-2 => Making stub file path and file path for the files thats are needed to create
         $file_name = 'mini-wizard.php';
         if ($this->global_prefix) {
@@ -570,6 +577,7 @@ class MakeCurd extends Command
                 $this->route_group_prefix = $prefix;
                 $this->view_name .= $prefix . '.';
                 $this->view_path .= $prefix . '/';
+                $this->parent_navbar = $prefix;
             }
             if ($name = $this->ask($this->make_icon . ' ' . 'Enter name for the route group (Presss enter to skip)')) {
                 $route_group_first_code .= "name('$name.')->";
@@ -835,7 +843,7 @@ class MakeCurd extends Command
         $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
 
         //replace the route name
-        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_model_name);
+        $content_with_route = str_replace('$route_name', str($this->route_name)->camel()->snake()->value(), $content_with_model_name);
         $content_with_page_name = str_replace('$page_title', $page_title, $content_with_route);
         $content_with_th_slot = str_replace('$th_slot', $th_slot, $content_with_page_name);
         $content_with_td_slot = str_replace('$td_slot', $td_slot, $content_with_th_slot);
@@ -857,7 +865,7 @@ class MakeCurd extends Command
         //replace the model name
         $content_with_modal_name = str_replace('$model_name', $this->model_class_name, $stub_content);
         //replace the route name
-        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_modal_name);
+        $content_with_route = str_replace('$route_name', str($this->route_name)->camel()->snake()->value(), $content_with_modal_name);
         $content_with_page_title = str_replace('$page_title', $page_title, $content_with_route);
         $full_content = str_replace('$slot', $this->create_input_slot, $content_with_page_title);
         file_put_contents($file_path, $full_content);
@@ -876,7 +884,7 @@ class MakeCurd extends Command
         //replace the model name
         $content_with_page_title = str_replace('$page_title', $page_title, $stub_content);
         //replace the route name
-        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_page_title);
+        $content_with_route = str_replace('$route_name', str($this->route_name)->camel()->snake()->value(), $content_with_page_title);
 
         $full_content = str_replace('$slot', $this->edit_input_slot, $content_with_route);
         file_put_contents($file_path, $full_content);
@@ -982,48 +990,54 @@ class MakeCurd extends Command
             $content = $this->getContentAndReplaceText($this->pakage_stub_path.'sidebar-model.stub');
             $this->fileMakingAndPutingContent($file_path,$content);
         }
-        Schema::create('n_sidebars',function(Blueprint $table){
-            $table->id();
-            $table->string('title');
-            $table->string('access');
-			$table->string('route')->nullable();
-			$table->boolean('is_parent')->nullable();
-			$table->foreignIdFor(NSidebar::class)->nullable();
-            $table->unsignedBigInteger('serial');
-            $table->enum('status',['Active','Inactive'])->default('Active');
-            $table->softDeletes();
-            $table->timestamps();
-        });
+
+        if(!Schema::hasTable('n_sidebars')){
+            Schema::create('n_sidebars',function(Blueprint $table){
+                $table->id();
+                $table->string('title');
+                $table->string('access');
+                $table->string('route')->nullable();
+                $table->boolean('is_parent')->nullable();
+                $table->foreignIdFor(NSidebar::class)->nullable();
+                $table->unsignedBigInteger('serial');
+                $table->enum('status',['Active','Inactive'])->default('Active');
+                $table->softDeletes();
+                $table->timestamps();
+            });
+        }
+
         Artisan::call('migrate');
 
         //Sidebar inserting data to database
-        NSidebar::create([
-            [
-                'title'=>$this->model_class_name,
-                'access'=> $this->model_class_name,
-                'route'=> $this->route_name,
-                'n_sidebar_id'=> 1,
-                'serail'=> 25,
-                'status'=> 'Active',
-            ],
-            [
-                'title'=>$this->model_class_name,
-                'access'=> $this->model_class_name,
-                'route'=> $this->route_name,
-                'n_sidebar_id'=> 1,
-                'serail'=> 25,
-                'status'=> 'Active',
-            ],
-            [
-                'title'=>$this->model_class_name,
-                'access'=> $this->model_class_name,
-                'route'=> $this->route_name,
-                'n_sidebar_id'=> 1,
-                'serail'=> 25,
-                'status'=> 'Active',
-            ],
+        $last_row = DB::table('n_sidebars')->latest()->first();
+        $serial = 1;
+        if($last_row){
+            $serial = $last_row->id + 1;
+        }
+        $n_sidebar_id = null;
+        $is_parent = false;
+        if($this->parent_navbar){
+            $sidebar = NSidebar::firstOrCreate([
+                'title' => $this->parent_navbar,
+                'access' => $this->parent_navbar,
+                'is_parent' => true,
+                'serial' => $serial,
+            ]);
+            $n_sidebar_id = $sidebar->id;
+            $is_parent = true;
+        }
 
+
+        NSidebar::create([
+            'title'=>$this->model_class_name,
+            'access'=> "$this->model_class_name",
+            'route'=> $this->route_name,
+            'n_sidebar_id'=> $n_sidebar_id,
+            'is_parent'=> $is_parent,
+            'serial'=> (int)$serial,
+            'status'=> 'Active',
         ]);
+
         $this->info('Sidebar database and migration done');
     }
 }

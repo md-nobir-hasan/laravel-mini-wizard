@@ -1043,7 +1043,7 @@ class MakeCurd extends Command
         ]);
         Cache::forget('nsidebar');
         Cache::rememberForever('nsidebar', function () {
-            return NSidebar::with('child_bar')->where('is_parent','!=',null)->where('status','Active')->get();
+            return NSidebar::with('child_bar')->where('is_parent',1)->where('status','Active')->get();
         });
 
         $this->info('Sidebar database and migration done');

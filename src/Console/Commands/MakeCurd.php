@@ -71,7 +71,7 @@ class MakeCurd extends Command
     protected $edit_input_slot = '';
 
     //sidebar properties
-    protected $parent_navbar='';
+    protected $parent_navbar = '';
     //properties for icons
     protected $all_icons = '✅❗⛔⭕❓‼️⁉️⚠️❌🚫🛑💗💓💞❤️‍🩹🏠🚀✈️💺🌷💐🌻📁✏️🖋️✒️✒️🔎🔍♂️⚔️🗡️🩸💎🎈🎆🎇👏✍️👊🫵';
     protected $all_icon2 = 'ℹ️☑️🔵🟢🔴🟠🟡🟤🟥🟧🟨🟨🟩🟦🔶🔸🔺🔻🔷🔹☝️👉👈👇✌️🫲💪👀👁️😎😮';
@@ -263,9 +263,9 @@ class MakeCurd extends Command
         //     Artisan::call('migrate:fresh --seed');
         //     $this->info($this->success_msg_icon . ' ' . 'Migration and Seeding is done');
         // } catch (\Exception $e) {
-            Artisan::call('migrate');
-            $this->info($this->success_msg_icon . ' ' . 'Migration done');
-            $this->info($this->warning_icon . ' ' . 'Seed can not be done. Please check your seeder or factory file');
+        Artisan::call('migrate');
+        $this->info($this->success_msg_icon . ' ' . 'Migration done');
+        $this->info($this->warning_icon . ' ' . 'Seed can not be done. Please check your seeder or factory file');
         // };
     }
 
@@ -486,31 +486,12 @@ class MakeCurd extends Command
 
         //Step-4 => making the file
         $this->fileMakingAndPutingContent($file_path, $stub_content);
-
-        // //Old
-        // //creation table name
-        // $table_name = str($this->model_class_name)->snake()->plural()->value();
-
-        // //Content extract from stub
-        // $stub_content = file_get_contents($this->pakage_stub_path . 'migration.stub');
-
-        // //Replace the table name
-        // $content_with_table_name = str_replace('$table_name', $table_name, $stub_content);
-
-        // //setup the migration field
-        // $content_ready = str_replace('$slot', $this->migration_slot, $content_with_table_name);
-
-        // $file_name = date('Y_m_d_His') . '_' . 'create_' . $table_name . '_table.php';
-        // $file_path = database_path('migrations/' . $file_name);
-        // file_put_contents($file_path, $content_ready);
-
-        // //success message
-        // $this->info($this->successMsg($file_path));
     }
 
-    protected function makeNameSpace($base_path){
-        if($this->global_prefix != 'None'){
-            return $base_path."\\$this->global_prefix";
+    protected function makeNameSpace($base_path)
+    {
+        if ($this->global_prefix != 'None') {
+            return $base_path . "\\$this->global_prefix";
         }
         return $base_path;
     }
@@ -549,7 +530,7 @@ class MakeCurd extends Command
         //Step-2 => Making stub file path and file path for the files thats are needed to create
         $file_name = 'mini-wizard.php';
         if ($this->global_prefix) {
-            $file_name = strtolower($this->global_prefix).'.php';
+            $file_name = strtolower($this->global_prefix) . '.php';
         }
 
         $file_path = $dir_final_path . "/$file_name";
@@ -590,7 +571,7 @@ class MakeCurd extends Command
         }
         //base route
         $base_route .= "Route::resource('/$route_name','App\Http\Controllers\\{$controller_name}');\n";
-        if($this->global_prefix){
+        if ($this->global_prefix) {
             $base_route .= "Route::resource('/$route_name','App\Http\Controllers\\$this->global_prefix\\{$controller_name}');\n";
         }
         //full route, folder and path setup
@@ -689,8 +670,8 @@ class MakeCurd extends Command
         $stub_file_path = $this->pakage_stub_path . 'resource-controller.stub';
 
         //Step-3 => geting the file content and replacing the certain text if needed
-        if($this->global_prefix){
-            $view_name = strtolower($this->global_prefix).'.pages.'.$this->view_name;
+        if ($this->global_prefix) {
+            $view_name = strtolower($this->global_prefix) . '.pages.' . $this->view_name;
         }
         $stub_content = $this->getContentAndReplaceText($stub_file_path, [
             '$name_space' => $this->makeNameSpace('App\Http\Controllers'),
@@ -931,7 +912,7 @@ class MakeCurd extends Command
 
         //Step-2 => Making stub file path and file path for the files thats are needed to create
         $file_class_name = $this->model_class_name . 'Seeder';
-        $file_name = $file_class_name. '.php';
+        $file_name = $file_class_name . '.php';
         $file_path = $dir_final_path . "/$file_name";
         $stub_file_path = $this->pakage_stub_path . 'seeder.stub';
         //Step-3 => geting the file content and replacing the certain text if needed
@@ -948,7 +929,7 @@ class MakeCurd extends Command
         //seeder inplement in the DatabaseSeeder.php
         $database_seeder_path = database_path('seeders/DatabaseSeeder.php');
         $database_seeder_content = file_get_contents($database_seeder_path);
-        $database_seeder_content_with_seeder = str_replace("]); //n", "\t$name_space\\$file_class_name::class, \n\t\t]); //n", $database_seeder_content);
+        $database_seeder_content_with_seeder = str_replace("]); //n", "\t\\$name_space\\$file_class_name::class, \n\t\t]); //n", $database_seeder_content);
         file_put_contents($database_seeder_path, $database_seeder_content_with_seeder);
         $this->info("{$this->warning_icon} The seeder '$file_name' is set to DatabaseSeeder.php file just befor ']); //n'");
     }
@@ -985,40 +966,56 @@ class MakeCurd extends Command
         $this->info("{$this->warning_icon} The  '$file_name' is set to DatabaseSeeder.php file just after ']); //n'");
     }
 
-    protected function makeSidebar(){
+    protected function makeSidebar()
+    {
         $file_path = app_path('Models/NSidebar.php');
-        if(!file_exists($file_path)){
-            $content = $this->getContentAndReplaceText($this->pakage_stub_path.'sidebar-model.stub');
-            $this->fileMakingAndPutingContent($file_path,$content);
+        if (!file_exists($file_path)) {
+            $content = $this->getContentAndReplaceText($this->pakage_stub_path . 'sidebar-model.stub');
+            $this->fileMakingAndPutingContent($file_path, $content);
         }
 
-        if(!Schema::hasTable('n_sidebars')){
-            Schema::create('n_sidebars',function(Blueprint $table){
-                $table->id();
-                $table->string('title');
-                $table->string('access');
-                $table->string('route')->nullable();
-                $table->boolean('is_parent')->nullable();
-                $table->foreignIdFor(NSidebar::class)->nullable();
-                $table->unsignedBigInteger('serial');
-                $table->enum('status',['Active','Inactive'])->default('Active');
-                $table->softDeletes();
-                $table->timestamps();
-            });
+        if (!Schema::hasTable('n_sidebars')) {
+            // sidebar migration
+            // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+            $dir_base_path = database_path('migrations');
+            $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, 'backend');
+
+
+            //Step-2 => Making stub file path and file path for the files thats are needed to create
+            $table_name = 'n_sidebars';
+            $birth_date = '2024_05_31_085644';
+            $file_name = $birth_date . '_' . 'create_' . $table_name . '_table.php';
+            $file_path = $dir_final_path . "/$file_name";
+            $stub_file_path = $this->pakage_stub_path . 'migration.stub';
+            $slot = "\$table->string('access');\n\t\t\t \$table->string('route')->nullable();\n\t\t\t \$table->boolean('is_parent')->nullable();\n\t\t\t \$table->foreignIdFor(NSidebar::class)->nullable();";
+
+            if (!file_exists($file_path)) {
+                //Step-3 => geting the file content and replacing the certain text if needed
+                $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+                    '$table_name' => $table_name,
+                    '$slot' => $slot,
+                ]);
+
+                //Step-4 => making the file
+                $this->fileMakingAndPutingContent($file_path, $stub_content);
+            }
+            Artisan::call("migrate", ['--path' => $file_path]);
+            $this->info("Migration of $file_path is completed");
         }
 
-
+        $nav_seeder_slot = '';
         //Sidebar inserting data to database
         $last_row = DB::table('n_sidebars')->latest()->first();
         $serial = 1;
-        if($last_row){
+        if ($last_row) {
             $serial = $last_row->id + 1;
         }
         $n_sidebar_id = null;
         $is_parent = true;
-        if($this->parent_navbar){
-            $sidebar = Nsidebar::where('title',$this->parent_navbar)->first();
-            if(!$sidebar){
+        if ($this->parent_navbar) {
+            $sidebar = Nsidebar::where('title', $this->parent_navbar)->first();
+            if (!$sidebar) {
+                $nav_seeder_slot .= "[\n'title' => $this->parent_navbar,\n'access' => $this->parent_navbar,\n'route' => NULL,\n'n_sidebar_id' => 'NULL',\n'is_parent' => true,\n'serial' => $serial,\n'status' => 'Active' \n]";
                 $sidebar = NSidebar::create([
                     'title' => $this->parent_navbar,
                     'access' => $this->parent_navbar,
@@ -1031,21 +1028,41 @@ class MakeCurd extends Command
             $is_parent = false;
         }
 
-
+        $nav_seeder_slot .= "[\n'title' => $this->model_class_name,\n'access' => $this->model_class_name,\n'route' => $this->route_name,\n'n_sidebar_id' => $n_sidebar_id,\n'is_parent' => $is_parent,\n'serial' => (int)$serial,\n'status' => 'Active' \n]";
         NSidebar::create([
-            'title'=>$this->model_class_name,
-            'access'=> "$this->model_class_name",
-            'route'=> $this->route_name,
-            'n_sidebar_id'=> $n_sidebar_id,
-            'is_parent'=> $is_parent,
-            'serial'=> (int)$serial,
-            'status'=> 'Active',
+            'title' => $this->model_class_name,
+            'access' => "$this->model_class_name",
+            'route' => $this->route_name,
+            'n_sidebar_id' => $n_sidebar_id,
+            'is_parent' => $is_parent,
+            'serial' => $serial,
+            'status' => 'Active',
         ]);
         Cache::forget('nsidebar');
         Cache::rememberForever('nsidebar', function () {
-            return NSidebar::with('child_bar')->where('is_parent',1)->where('status','Active')->get();
+            return NSidebar::with('child_bar')->where('is_parent', 1)->where('status', 'Active')->get();
         });
 
-        $this->info('Sidebar database and migration done');
+        //Making navbar Seeder
+        // step- 1 => making directory path (using global prefix such as backend,..) for the service class
+        $dir_base_path = database_path('seeders');
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, 'backend');
+
+
+        //Step-2 => Making stub file path and file path for the files thats are needed to create
+        $file_name = 'SidebarSeeder.php';
+        $file_path = $dir_final_path . "/$file_name";
+        $stub_file_path = $this->pakage_stub_path . 'specific/sidebar/seeder.stub';
+
+        if (!file_exists($file_path)) {
+            //Step-3 => geting the file content and replacing the certain text if needed
+            $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+                '$slot' => $nav_seeder_slot,
+            ]);
+
+            //Step-4 => making the file
+            $this->fileMakingAndPutingContent($file_path, $stub_content);
+        }
+        $this->info("Seeder of $file_path is created");
     }
 }

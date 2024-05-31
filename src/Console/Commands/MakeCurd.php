@@ -134,60 +134,60 @@ class MakeCurd extends Command
 
         //=====================================================================
         // ========================= Operation Start ========================
-        // // 1. Model creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
-        //     $this->makeModel();
-        // }
+        // 1. Model creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
+            $this->makeModel();
+        }
 
-        // // 2. Migraton creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
-        //     $this->makeMigration();
-        // }
+        // 2. Migraton creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
+            $this->makeMigration();
+        }
 
-        // // 3. Route creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
-        //     $this->makeRoute();
-        // }
+        // 3. Route creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
+            $this->makeRoute();
+        }
 
-        // // 4. Service Class
-        // if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
-        //     $this->makeServiceClass();
-        // }
+        // 4. Service Class
+        if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
+            $this->makeServiceClass();
+        }
 
-        // // 5. Resource Controller creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
-        //     $this->makeController();
-        // }
+        // 5. Resource Controller creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
+            $this->makeController();
+        }
 
-        // // 6. Store Request creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
-        //     $this->makeStoreRequest();
-        // }
+        // 6. Store Request creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+            $this->makeStoreRequest();
+        }
 
-        // //7. Update Request creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
-        //     $this->makeUpdateRequest();
-        // }
+        //7. Update Request creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
+            $this->makeUpdateRequest();
+        }
 
-        // // 8. View creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
-        //     $this->makeView();
-        // }
+        // 8. View creation
+        if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
+            $this->makeView();
+        }
 
-        // // 9. seeder creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
-        //     $this->makeSeeder();
-        // }
+        // 9. seeder creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
+            $this->makeSeeder();
+        }
 
-        // // 10. factory creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
-        //     $this->makeFactory();
-        // }
+        // 10. factory creation
+        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+            $this->makeFactory();
+        }
 
-        // // 11. Sidebar(menu) creation
-        // if ($this->confirm("{$this->make_icon} Are you want to make Sidebar", true)) {
-        //     $this->makeSidebar();
-        // }
+        // 11. Sidebar(menu) creation
+        if ($this->confirm("{$this->make_icon} Are you want to make Sidebar", true)) {
+            $this->makeSidebar();
+        }
 
         // 12. Migration and seeding
         if ($this->confirm("{$this->make_icon} Are you want to run migration and seeding", true)) {
@@ -259,14 +259,14 @@ class MakeCurd extends Command
 
     protected function migrattionAndSeeding()
     {
-        try {
-            Artisan::call('migrate:fresh --seed');
-            $this->info($this->success_msg_icon . ' ' . 'Migration and Seeding is done');
-        } catch (\Exception $e) {
+        // try {
+        //     Artisan::call('migrate:fresh --seed');
+        //     $this->info($this->success_msg_icon . ' ' . 'Migration and Seeding is done');
+        // } catch (\Exception $e) {
             Artisan::call('migrate');
             $this->info($this->success_msg_icon . ' ' . 'Migration done');
             $this->info($this->warning_icon . ' ' . 'Seed can not be done. Please check your seeder or factory file');
-        };
+        // };
     }
 
     protected function collectFields()
@@ -1007,7 +1007,6 @@ class MakeCurd extends Command
             });
         }
 
-        Artisan::call('migrate');
 
         //Sidebar inserting data to database
         $last_row = DB::table('n_sidebars')->latest()->first();
@@ -1016,16 +1015,20 @@ class MakeCurd extends Command
             $serial = $last_row->id + 1;
         }
         $n_sidebar_id = null;
-        $is_parent = false;
+        $is_parent = true;
         if($this->parent_navbar){
-            $sidebar = NSidebar::firstOrCreate([
-                'title' => $this->parent_navbar,
-                'access' => $this->parent_navbar,
-                'is_parent' => true,
-                'serial' => $serial,
-            ]);
+            $sidebar = Nsidebar::where('title',$this->parent_navbar)->first();
+            if(!$sidebar){
+                $sidebar = NSidebar::create([
+                    'title' => $this->parent_navbar,
+                    'access' => $this->parent_navbar,
+                    'is_parent' => true,
+                    'serial' => $serial,
+                ]);
+            }
+
             $n_sidebar_id = $sidebar->id;
-            $is_parent = true;
+            $is_parent = false;
         }
 
 
@@ -1038,10 +1041,11 @@ class MakeCurd extends Command
             'serial'=> (int)$serial,
             'status'=> 'Active',
         ]);
-         Cache::rememberForever('nsidebar', function () {
-            return DB::table('n_sidebars')->where('status', 'Active')->get();
+        Cache::forget('nsidebar');
+        Cache::rememberForever('nsidebar', function () {
+            return NSidebar::with('child_bar')->where('is_parent','!=',null)->where('status','Active')->get();
         });
-        var_dump(Cache::get('nsidebar'));
+
         $this->info('Sidebar database and migration done');
     }
 }

@@ -10,7 +10,7 @@ class NSidebar extends Model
     use HasFactory;
     protected $fillable = ['title','access','route','is_parent','n_sidebar_id','serial','status'];
 
-    public function child_navbar(){
-        return $this->belongsTo(Self::class,'n_sidebar_id','id');
+     public function child_bar(){
+        return $this->hasMany(NSidebar::class,'n_sidebar_id','id');
     }
 }

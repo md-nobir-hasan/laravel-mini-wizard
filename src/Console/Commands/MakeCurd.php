@@ -987,7 +987,7 @@ class MakeCurd extends Command
             $file_name = $birth_date . '_' . 'create_' . $table_name . '_table.php';
             $file_path = $dir_final_path . "/$file_name";
             $stub_file_path = $this->pakage_stub_path . 'migration.stub';
-            $slot = "\$table->string('access');\n\t\t\t \$table->string('route')->nullable();\n\t\t\t \$table->boolean('is_parent')->nullable();\n\t\t\t \$table->foreignIdFor(NSidebar::class)->nullable();";
+            $slot = "\$table->string('access');\n\t\t\t \$table->string('route')->nullable();\n\t\t\t \$table->boolean('is_parent')->nullable();\n\t\t\t \$table->foreignIdFor(\App\Models\NSidebar::class)->nullable();";
 
             if (!file_exists($file_path)) {
                 //Step-3 => geting the file content and replacing the certain text if needed
@@ -999,7 +999,7 @@ class MakeCurd extends Command
                 //Step-4 => making the file
                 $this->fileMakingAndPutingContent($file_path, $stub_content);
             }
-            Artisan::call("migrate", ['--path' => $file_path]);
+            Artisan::call("migrate", ['--path' => 'database/migrations/backend/2024_05_31_085644_create_n_sidebars_table.php']);
             $this->info("Migration of $file_path is completed");
         }
 
@@ -1015,7 +1015,7 @@ class MakeCurd extends Command
         if ($this->parent_navbar) {
             $sidebar = Nsidebar::where('title', $this->parent_navbar)->first();
             if (!$sidebar) {
-                $nav_seeder_slot .= "[\n'title' => $this->parent_navbar,\n'access' => $this->parent_navbar,\n'route' => NULL,\n'n_sidebar_id' => 'NULL',\n'is_parent' => true,\n'serial' => $serial,\n'status' => 'Active' \n]";
+                $nav_seeder_slot .= "[\n'title' => '$this->parent_navbar',\n'access' => '$this->parent_navbar',\n'route' => NULL,\n'n_sidebar_id' => 'NULL',\n'is_parent' => true,\n'serial' => $serial,\n'status' => 'Active' \n]";
                 $sidebar = NSidebar::create([
                     'title' => $this->parent_navbar,
                     'access' => $this->parent_navbar,
@@ -1028,7 +1028,7 @@ class MakeCurd extends Command
             $is_parent = false;
         }
 
-        $nav_seeder_slot .= "[\n'title' => $this->model_class_name,\n'access' => $this->model_class_name,\n'route' => $this->route_name,\n'n_sidebar_id' => $n_sidebar_id,\n'is_parent' => $is_parent,\n'serial' => (int)$serial,\n'status' => 'Active' \n]";
+        $nav_seeder_slot .= "[\n'title' => '$this->model_class_name',\n'access' => '$this->model_class_name',\n'route' => '$this->route_name',\n'n_sidebar_id' => $n_sidebar_id,\n'is_parent' => '$is_parent',\n'serial' => '$serial',\n'status' => 'Active' \n]";
         NSidebar::create([
             'title' => $this->model_class_name,
             'access' => "$this->model_class_name",

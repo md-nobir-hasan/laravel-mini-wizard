@@ -14,9 +14,7 @@ class SidebarSeeder extends Seeder
     public function run(): void
     {
         DB::table('n_sidebars')->insert([
-            [
-                $slot
-            ],
+            $slot
         ]);
     }
 }

@@ -134,60 +134,60 @@ class MakeCurd extends Command
 
         //=====================================================================
         // ========================= Operation Start ========================
-        // 1. Model creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
-            $this->makeModel();
-        }
+        // // 1. Model creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Model", true)) {
+        //     $this->makeModel();
+        // }
 
-        // 2. Migraton creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
-            $this->makeMigration();
-        }
+        // // 2. Migraton creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Migration", true)) {
+        //     $this->makeMigration();
+        // }
 
-        // 3. Route creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
-            $this->makeRoute();
-        }
+        // // 3. Route creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Route", true)) {
+        //     $this->makeRoute();
+        // }
 
-        // 4. Service Class
-        if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
-            $this->makeServiceClass();
-        }
+        // // 4. Service Class
+        // if ($this->confirm("{$this->make_icon} Are you want to make Service Class", true)) {
+        //     $this->makeServiceClass();
+        // }
 
-        // 5. Resource Controller creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
-            $this->makeController();
-        }
+        // // 5. Resource Controller creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Resource Controller", true)) {
+        //     $this->makeController();
+        // }
 
-        // 6. Store Request creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
-            $this->makeStoreRequest();
-        }
+        // // 6. Store Request creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Store Request", true)) {
+        //     $this->makeStoreRequest();
+        // }
 
-        //7. Update Request creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
-            $this->makeUpdateRequest();
-        }
+        // //7. Update Request creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Update Request", true)) {
+        //     $this->makeUpdateRequest();
+        // }
 
-        // 8. View creation
-        if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
-            $this->makeView();
-        }
+        // // 8. View creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make View", true)) {
+        //     $this->makeView();
+        // }
 
-        // 9. seeder creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
-            $this->makeSeeder();
-        }
+        // // 9. seeder creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Seeder", true)) {
+        //     $this->makeSeeder();
+        // }
 
-        // 10. factory creation
-        if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
-            $this->makeFactory();
-        }
+        // // 10. factory creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make factory", true)) {
+        //     $this->makeFactory();
+        // }
 
-        // 11. Sidebar(menu) creation
-        if ($this->confirm("{$this->make_icon} Are you want to make Sidebar", true)) {
-            $this->makeSidebar();
-        }
+        // // 11. Sidebar(menu) creation
+        // if ($this->confirm("{$this->make_icon} Are you want to make Sidebar", true)) {
+        //     $this->makeSidebar();
+        // }
 
         // 12. Migration and seeding
         if ($this->confirm("{$this->make_icon} Are you want to run migration and seeding", true)) {

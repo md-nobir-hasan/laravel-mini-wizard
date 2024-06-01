@@ -1028,7 +1028,7 @@ class MakeCurd extends Command
             $is_parent = false;
         }
 
-        $nav_seeder_slot .= "[\n'title' => '$this->model_class_name',\n'access' => '$this->model_class_name',\n'route' => '$this->route_name',\n'n_sidebar_id' => $n_sidebar_id,\n'is_parent' => '$is_parent',\n'serial' => '$serial',\n'status' => 'Active' \n],";
+        $nav_seeder_slot .= "[\n'title' => '$this->model_class_name',\n'access' => '$this->model_class_name',\n'route' => '$this->route_name',\n'n_sidebar_id' => $n_sidebar_id,\n'is_parent' => '$is_parent',\n'serial' => '$serial',\n'status' => 'Active' \n],\n \$slot";
         NSidebar::create([
             'title' => $this->model_class_name,
             'access' => "$this->model_class_name",
@@ -1048,7 +1048,6 @@ class MakeCurd extends Command
         $dir_base_path = database_path('seeders');
         $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, 'backend');
 
-
         //Step-2 => Making stub file path and file path for the files thats are needed to create
         $file_name = 'SidebarSeeder.php';
         $file_path = $dir_final_path . "/$file_name";
@@ -1057,6 +1056,14 @@ class MakeCurd extends Command
         if (!file_exists($file_path)) {
             //Step-3 => geting the file content and replacing the certain text if needed
             $stub_content = $this->getContentAndReplaceText($stub_file_path, [
+                '$slot' => $nav_seeder_slot,
+            ]);
+
+            //Step-4 => making the file
+            $this->fileMakingAndPutingContent($file_path, $stub_content);
+        }else{
+            $path = database_path('seeders/backend/SidebarSeeder.php');
+            $stub_content = $this->getContentAndReplaceText($path, [
                 '$slot' => $nav_seeder_slot,
             ]);
 

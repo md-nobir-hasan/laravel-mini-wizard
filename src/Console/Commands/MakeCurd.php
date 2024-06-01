@@ -1028,7 +1028,7 @@ class MakeCurd extends Command
             $is_parent = false;
         }
 
-        $nav_seeder_slot .= "[\n'title' => '$this->model_class_name',\n'access' => '$this->model_class_name',\n'route' => '$this->route_name',\n'n_sidebar_id' => $n_sidebar_id,\n'is_parent' => '$is_parent',\n'serial' => '$serial',\n'status' => 'Active' \n],\n \$slot";
+        $nav_seeder_slot .= "[\n'title' => '$this->model_class_name',\n'access' => '$this->model_class_name',\n'route' => '$this->route_name',\n'n_sidebar_id' => $n_sidebar_id,\n'is_parent' => '$is_parent',\n'serial' => '$serial',\n'status' => 'Active' \n],\n //\$slot";
         NSidebar::create([
             'title' => $this->model_class_name,
             'access' => "$this->model_class_name",
@@ -1064,7 +1064,7 @@ class MakeCurd extends Command
         }else{
             $path = database_path('seeders/backend/SidebarSeeder.php');
             $stub_content = $this->getContentAndReplaceText($path, [
-                '$slot' => $nav_seeder_slot,
+                '//$slot' => $nav_seeder_slot,
             ]);
 
             //Step-4 => making the file

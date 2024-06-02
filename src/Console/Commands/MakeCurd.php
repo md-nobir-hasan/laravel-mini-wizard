@@ -825,7 +825,7 @@ class MakeCurd extends Command
         $content_with_model_name = str_replace('$model_name', $this->model_class_name, $stub_content);
 
         //replace the route name
-        $content_with_route = str_replace('$route_name', str($this->route_name)->camel()->snake()->value(), $content_with_model_name);
+        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_model_name);
         $content_with_page_name = str_replace('$page_title', $page_title, $content_with_route);
         $content_with_th_slot = str_replace('$th_slot', $th_slot, $content_with_page_name);
         $content_with_td_slot = str_replace('$td_slot', $td_slot, $content_with_th_slot);
@@ -847,7 +847,7 @@ class MakeCurd extends Command
         //replace the model name
         $content_with_modal_name = str_replace('$model_name', $this->model_class_name, $stub_content);
         //replace the route name
-        $content_with_route = str_replace('$route_name', str($this->route_name)->camel()->snake()->value(), $content_with_modal_name);
+        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_modal_name);
         $content_with_page_title = str_replace('$page_title', $page_title, $content_with_route);
         $full_content = str_replace('$slot', $this->create_input_slot, $content_with_page_title);
         file_put_contents($file_path, $full_content);
@@ -866,7 +866,7 @@ class MakeCurd extends Command
         //replace the model name
         $content_with_page_title = str_replace('$page_title', $page_title, $stub_content);
         //replace the route name
-        $content_with_route = str_replace('$route_name', str($this->route_name)->camel()->snake()->value(), $content_with_page_title);
+        $content_with_route = str_replace('$route_name', $this->route_name, $content_with_page_title);
 
         $full_content = str_replace('$slot', $this->edit_input_slot, $content_with_route);
         file_put_contents($file_path, $full_content);

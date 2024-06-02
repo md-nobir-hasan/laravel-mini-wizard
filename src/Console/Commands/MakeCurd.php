@@ -361,10 +361,10 @@ class MakeCurd extends Command
                     $this->model_functions .= "public function {$datum['field_name']}(){\n\t\treturn \$this->belongsTo({$datum['field_name']}::class);\n\t}";
 
                     //for view
-                    $this->create_input_slot .= "<div class='form-group'>
+                    $this->create_input_slot .= "<div class='mb-6'>
                                                     <label for='$field_name'>{$datum['field_name']}</label>star_slot
-                                                    <select name='$field_name' id='$field_name' class='form-control' required_slot>
-                                                        <option value=''>--Select any {$datum['field_name']}--</option>
+                                                    <select name='$field_name' id='$field_name' class='inline-block w-full leading-5 relative py-2 pl-3 pr-8 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600 select-caret appearance-none' required_slot>
+                                                        <option value='' selected>--Select any {$datum['field_name']}--</option>
                                                         @foreach (\${$datum['field_name']} as \$key => \$$field_name)
                                                             <option value='{{ \${$field_name}->id }}' @selected(\${$field_name}->id == old('$field_name'))>{{ \${$field_name}->title }}</option>
                                                         @endforeach
@@ -374,10 +374,10 @@ class MakeCurd extends Command
                                                     @enderror
                                                 </div>";
 
-                    $this->edit_input_slot .= "<div class='form-group'>
+                    $this->edit_input_slot .= "<div class='mb-6'>
                                                     <label for='$field_name'>{$datum['field_name']}</label>star_slot
-                                                    <select name='$field_name' id='$field_name' class='form-control' required_slot>
-                                                        <option value=''>--Select any {$datum['field_name']}--</option>
+                                                    <select name='$field_name' id='$field_name'class='inline-block w-full leading-5 relative py-2 pl-3 pr-8 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600 select-caret appearance-none' required_slot>
+                                                        <option value='' selected>--Select any {$datum['field_name']}--</option>
                                                         @foreach (\${$datum['field_name']} as \$key => \$$field_name)
                                                             <option value='{{ \${$field_name}->id }}' @selected(\${$field_name}->id == \$datum->$field_name)>{{ \${$field_name}->title }}</option>
                                                         @endforeach

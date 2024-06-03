@@ -1054,6 +1054,7 @@ class MakeCurd extends Command
         $stub_file_path = $this->pakage_stub_path . 'specific/sidebar/seeder.stub';
 
         if (!file_exists($file_path)) {
+            // var_dump('sidebarseeder not exist,noibr');
             //Step-3 => geting the file content and replacing the certain text if needed
             $stub_content = $this->getContentAndReplaceText($stub_file_path, [
                 '$slot' => $nav_seeder_slot,
@@ -1066,7 +1067,7 @@ class MakeCurd extends Command
             $stub_content = $this->getContentAndReplaceText($path, [
                 '//$slot' => $nav_seeder_slot,
             ]);
-
+            // dd($stub_content,$nav_seeder_slot);
             //Step-4 => making the file
             $this->fileMakingAndPutingContent($file_path, $stub_content);
         }

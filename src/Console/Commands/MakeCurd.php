@@ -908,7 +908,7 @@ class MakeCurd extends Command
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
         $name_space = $this->makeNameSpace('Database\Seeders');
         $dir_base_path = database_path('seeders');
-        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, strtolower($this->global_prefix));
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
         //Step-2 => Making stub file path and file path for the files thats are needed to create
         $file_class_name = $this->model_class_name . 'Seeder';
@@ -939,7 +939,7 @@ class MakeCurd extends Command
 
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
         $dir_base_path = database_path('factories');
-        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, strtolower($this->global_prefix));
+        $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);
 
         //Step-2 => Making stub file path and file path for the files thats are needed to create
         $file_name = $this->model_class_name . 'Factory.php';

@@ -370,7 +370,7 @@ class MakeCurd extends Command
                                                         @endforeach
                                                     </select>
                                                     @error('$field_name')
-                                                        <span class='text-danger'>{{ \$message }}</span>
+                                                        <span class='text-[red]'>{{ \$message }}</span>
                                                     @enderror
                                                 </div>";
 
@@ -383,7 +383,7 @@ class MakeCurd extends Command
                                                         @endforeach
                                                     </select>
                                                     @error('$field_name')
-                                                        <span class='text-danger'>{{ \$message }}</span>
+                                                        <span class='text-[red]'>{{ \$message }}</span>
                                                     @enderror
                                                 </div>";
                     break;
@@ -403,7 +403,7 @@ class MakeCurd extends Command
                                                             <input id='{$datum['field_name']}' type='text' name='{$datum['field_name']}' placeholder='Exp:- Enter $field_title'
                                                                 value='{{ old('{$datum['field_name']}') }}' class='w-full leading-5 relative py-2 px-4 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'>
                                                             @error('{$datum['field_name']}')
-                                                                <span class='text-danger'>{{ \$message }}</span>
+                                                                <span class='text-[red]'>{{ \$message }}</span>
                                                             @enderror
                                                         </div>";
                     $this->edit_input_slot .= "<div class='flex-shrink max-w-full px-4 w-full md:w-1/2 mb-6'>
@@ -412,7 +412,7 @@ class MakeCurd extends Command
                                                                 value='{{\$datum->{$datum['field_name']} ? \$datum->{$datum['field_name']} : old('{$datum['field_name']}') }}'
                                                                 class='w-full leading-5 relative py-2 px-4 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'>
                                                             @error('{$datum['field_name']}')
-                                                                <span class='text-danger'>{{ \$message }}</span>
+                                                                <span class='text-[red]'>{{ \$message }}</span>
                                                             @enderror
                                                         </div>";
 
@@ -440,11 +440,11 @@ class MakeCurd extends Command
             $this->edit_input_slot = str_replace('required_slot', ' ', $this->edit_input_slot);
         } else {
             //create
-            $this->create_input_slot = str_replace('star_slot', '<span class="text-danger">*</span></label>', $this->create_input_slot);
+            $this->create_input_slot = str_replace('star_slot', '<span class="text-[red]">*</span></label>', $this->create_input_slot);
             $this->create_input_slot = str_replace('required_slot', 'required', $this->create_input_slot);
 
             //edit
-            $this->edit_input_slot = str_replace('star_slot', '<span class="text-danger">*</span></label>', $this->edit_input_slot);
+            $this->edit_input_slot = str_replace('star_slot', '<span class="text-[red]">*</span></label>', $this->edit_input_slot);
             $this->edit_input_slot = str_replace('required_slot', 'required', $this->edit_input_slot);
         }
     }
@@ -936,7 +936,6 @@ class MakeCurd extends Command
 
     protected function makeFactory()
     {
-
         // step- 1 => making directory path (using global prefix such as backend,..) for the service class
         $dir_base_path = database_path('factories');
         $dir_final_path = $this->makeDirectoryWithValidation($dir_base_path, $this->global_prefix);

@@ -50,12 +50,12 @@
                                 @csrf
                                 {{--  Title --}}
                                 <div class="flex-shrink max-w-full px-4 w-full md:w-1/2 mb-6">
-                                    <label for="title" class="inline-block mb-2">Title</label>
+                                    <label for="title" class="inline-block mb-2">Title<span class="text-[red]">*</span></label>
                                     <input type="text" name="title" value="{{ old('title') }}"
                                         class="w-full leading-5 relative py-2 px-4 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600"
                                         id="title">
                                     @error('title')
-                                        <span class="text-danger">{{ $message }}</span>
+                                        <span class="text-[red]">{{ $message }}</span>
                                     @enderror
                                 </div>
 
@@ -63,25 +63,25 @@
 
                                 {{--  serial --}}
                                 <div class="flex-shrink max-w-full px-4 w-full md:w-1/2 mb-6">
-                                    <label for="serial" class="inline-block mb-2">serial</label>
+                                    <label for="serial" class="inline-block mb-2">serial<span class="text-[red]">*</span></label>
                                     <input type="text" name="serial" value="{{ $serial }}"
                                         class="w-full leading-5 relative py-2 px-4 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600"
                                         id="serial">
                                     @error('serial')
-                                        <span class="text-danger">{{ $message }}</span>
+                                        <span class="text-[red]">{{ $message }}</span>
                                     @enderror
                                 </div>
 
                                 {{-- Status --}}
                                 <div class="flex-shrink max-w-full px-4 w-full md:w-1/2 mb-6">
-                                    <label for="status" class="inline-block mb-2">Status</label>
+                                    <label for="status" class="inline-block mb-2">Status<span class="text-[red]">*</span></label>
                                     <select id="status"
                                         class="inline-block w-full leading-5 relative py-2 pl-3 pr-8 rounded text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600 select-caret appearance-none">
                                         <option value="Active">Active</option>
                                         <option value="Inactive">Inactive</option>
                                     </select>
                                     @error('status')
-                                        <span class="text-danger">{{ $message }}</span>
+                                        <span class="text-[red]">{{ $message }}</span>
                                     @enderror
                                 </div>
 

@@ -104,7 +104,7 @@
                                                             </th>
                                                             <th class="min-w-[250px]" data-sortable=""
                                                                 style="width: 49.5287%;">
-                                                                <a href="#" class="dataTable-sorter">Title</a>
+                                                                <a href="javascript:;" class="dataTable-sorter">Title</a>
                                                             </th>
                                                             $th_slot
                                                             <th class="hidden lg:table-cell" data-sortable=""

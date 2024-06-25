@@ -12,14 +12,12 @@ class MigrationCreation extends BaseCreation
     {
         $table_name = \Illuminate\Support\Str::snake(\Illuminate\Support\Str::plural($this->model_name)); // Derive table name from model name
         $migrationFileName = date('Y_m_d_His') . '_create_' . $table_name . '_table.php';
-        $migrationTemplate = $this->getStub(self::MIGRATION);
-        $migrationContent = str_replace(
-            ['{{tableName}}', '{{migrationFields}}'],
-            [$table_name, $this->generateMigrationFields()],
-            $migrationTemplate
-        );
 
-        File::put(database_path("/migrations/{$migrationFileName}"), $migrationContent);
+        //file creation
+        FileModifier::getContent(self::migration_stub_path)
+                    ->searchingText('{{tableName}}')->replace()->insertingText($table_name)
+                    ->searchingText('{{migrationFields}}')->replace()->insertingText($this->generateMigrationFields())
+                    ->save($migrationFileName);
     }
 
     protected function generateMigrationFields()

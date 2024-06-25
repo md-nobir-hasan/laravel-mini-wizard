@@ -89,7 +89,11 @@ class WizardCommand extends Command
         // Here you can confirm the collected fields and proceed with file creation
 
         $this->info('Fields collected successfully.');
-        dd($this->fields);
+        if ($this->confirm('Do you want to create the migration?', true)) {
+            $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
+            $allFunctionality->createMigration();
+            $this->info('Migration created successfully.');
+        }
     }
 
     protected function collectFields()

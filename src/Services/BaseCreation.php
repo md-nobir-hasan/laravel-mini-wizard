@@ -3,11 +3,11 @@
 namespace Nobir\MiniWizard\Services;
 
 use Nobir\MiniWizard\Traits\ModuleKeys;
-use Nobir\MiniWizard\Traits\StubPaths;
+use Nobir\MiniWizard\Traits\PathManager;
 
 abstract class BaseCreation
 {
-    use ModuleKeys, StubPaths;
+    use ModuleKeys, PathManager;
 
     protected $fields;
     protected $model_name;

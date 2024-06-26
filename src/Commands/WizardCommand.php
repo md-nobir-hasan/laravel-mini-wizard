@@ -86,7 +86,7 @@ class WizardCommand extends Command
         $this->table_name = Str::snake(Str::plural($this->model_class_name));
 
         $this->collectFields();
-
+        $this->bootstrap();
         $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
         if ($this->confirm('Do you want to create the migration?', true)) {
             $allFunctionality->createMigration();
@@ -166,5 +166,9 @@ class WizardCommand extends Command
             default:
                 return null;
         }
+    }
+
+    protected function bootstrap(){
+        
     }
 }

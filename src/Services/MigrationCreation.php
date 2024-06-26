@@ -15,34 +15,30 @@ class MigrationCreation extends BaseCreation
 
         //file creation
         FileModifier::getContent(self::migration_stub_path)
-                    ->searchingText('{{tableName}}')->replace()->insertingText($table_name)
-                    ->searchingText('{{migrationFields}}')->replace()->insertingText($this->generateMigrationFields())
+                    ->searchingText('{{table_name}}')->replace()->insertingText($table_name)
+                    ->searchingText('{{slot}}')->replace()->insertingText($this->generateMigrationFields())
                     ->save($migrationFileName);
     }
 
     protected function generateMigrationFields()
     {
         $migrationFields = '';
-        foreach ($this->fields as $fieldName => $field) {
+        foreach ($this->fields as $fieldName => $fieldFunctions) {
             $fieldLine = "\$table";
 
-            foreach ($field as $key => $value) {
-                if (is_numeric($key)) {
-                    if ($value === 'foreignIdFor') {
-                        $fieldLine .= "->foreignIdFor(\App\Models\\" . Str::studly(Str::singular($fieldName)) . "::class, '{$fieldName}')";
-                    } else {
-                        $fieldLine .= "->{$value}('{$fieldName}')";
-                    }
-                } elseif ($key === 'enum') {
-                    $enumValues = implode("', '", $value);
-                    $fieldLine .= "->enum('{$fieldName}', ['{$enumValues}'])";
-                } elseif ($key === 'default') {
-                    $fieldLine .= "->default('{$value}')";
+            foreach ($fieldFunctions as $functinORNumeric => $functionORValue) {
+                if(in_array($functinORNumeric, ['enum', 'set'])) {
+                    $fieldLine .= "->{$functinORNumeric}('{$fieldName}', '{$functionORValue}')";
+                } elseif (in_array($functinORNumeric, ['default'])) {
+                    $fieldLine .= "->{$functinORNumeric}('{$functionORValue}')";
                 } else {
-                    $fieldLine .= "->{$key}()";
+                    if (in_array($functinORNumeric, ['foreignIdFor'])) {
+                        $fieldLine .= "->{$functinORNumeric}(\App\Models\\" . $this->model_name . "::class)";
+                    } else {
+                        $fieldLine .= "->{$functionORValue}()";
+                    }
                 }
             }
-
             $fieldLine .= ';';
             $migrationFields .= "\n\t\t\t" . $fieldLine;
         }

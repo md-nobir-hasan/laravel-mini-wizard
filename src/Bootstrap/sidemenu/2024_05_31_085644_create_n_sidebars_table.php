@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('{{table_name}}', function (Blueprint $table) {
+        Schema::create('n_sidebars', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            {{slot}}
+            $table->string('access');
+            $table->string('route')->nullable();
+            $table->boolean('is_parent')->nullable();
+            $table->foreignIdFor(\App\Models\Backend\NSidebar::class)->nullable();
             $table->unsignedBigInteger('serial');
-            $table->boolean('status')->default(true);
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('#table_name');
+        Schema::dropIfExists('n_sidebars');
     }
 };

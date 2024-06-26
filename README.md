@@ -1,6 +1,15 @@
 # laravel-curd-by-command
-Everything in one command 
+##   Everything in one command 
 
+The mini-wizard package is a Laravel package designed to streamline the creation of various components necessary for a Laravel application's CRUD operations. It automates the generation of migrations, controllers, models, and other related files, saving developers time and reducing the risk of errors.
+
+## Key Features
+    1. Automated File Generation: Automatically generates migration files, controllers, and models based on user input.
+    2. Modular Design: Utilizes a modular approach to handle different components (migrations, controllers, models) through dedicated classes.
+    3. Stub-Based Templates: Uses stub files as templates for the generated files, making it easy to customize the output.
+    4. Traits for Reusability: Implements traits (ModuleKeys and StubPaths) to manage module identifiers and stub paths, enhancing code reusability and reducing errors.
+    5. User Interaction: Provides a command-line interface for users to specify the model and fields, and to confirm the creation of various files
+    
 ### Some notes
     1. Don't use name field. Always try to use title field instead of name which will use to session message. and try to use title field for every table.
     1. Just one name only model name will use for the all name. Example shows for "(Photo), (OrderItem)".

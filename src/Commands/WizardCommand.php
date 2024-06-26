@@ -4,6 +4,7 @@ namespace Nobir\MiniWizard\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Nobir\MiniWizard\Services\AllFunctionalityClass;
 
 class WizardCommand extends Command
 {
@@ -86,11 +87,8 @@ class WizardCommand extends Command
 
         $this->collectFields();
 
-        // Here you can confirm the collected fields and proceed with file creation
-
-        $this->info('Fields collected successfully.');
+        $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
         if ($this->confirm('Do you want to create the migration?', true)) {
-            $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
             $allFunctionality->createMigration();
             $this->info('Migration created successfully.');
         }

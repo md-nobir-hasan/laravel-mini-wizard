@@ -4,8 +4,11 @@ namespace Nobir\MiniWizard;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider;
 use Nobir\MiniWizard\Commands\WizardCommand;
+use Nobir\MiniWizard\Traits\ModuleKeys;
+use Nobir\MiniWizard\Traits\PathManager;
 
 Class MiniWizardServiceProvider extends ServiceProvider{
+    use PathManager, ModuleKeys;
 
     public function register(){
 
@@ -17,6 +20,24 @@ Class MiniWizardServiceProvider extends ServiceProvider{
         $this->commands([
             WizardCommand::class,
         ]);
+
+        //publishing configure file
+        $this->publishes([
+            __DIR__ . '/bootstrap/config.php' => config_path('mini-wizard.php'), //configure files
+        ], 'wizard-config');
+
+        //publishing bootstraping files
+        $this->publishes([
+            __DIR__ . '/bootstrap/sidemenu/NSidebarModel.php' => $this->getModulePath(self::MODEL),
+            __DIR__ . '/bootstrap/sidemenu/2024_05_31_085644_create_n_sidebars_table.php' => $this->getModulePath(self::MIGRATION),
+            __DIR__ . '/bootstrap/sidemenu/nSidebarSeeder.php' => $this->getModulePath(self::SEEDER),
+            __DIR__ . '/bootstrap/sidemenu/2024_05_31_085644_create_n_sidebars_table.php' => $this->getModulePath(self::MIGRATION),
+        ], 'wizard-sidebar');
+
+        //publishing stub files
+        $this->publishes([
+            __DIR__ . '/stubs' => self::stubPathDir(),
+            ], 'wizard-stubs');
     }
 }
 

@@ -3,11 +3,15 @@
 namespace Nobir\MiniWizard\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Nobir\MiniWizard\Services\AllFunctionalityClass;
+use Nobir\MiniWizard\Traits\ModuleKeys;
+use Nobir\MiniWizard\Traits\PathManager;
 
 class WizardCommand extends Command
 {
+    use PathManager, ModuleKeys;
     protected $signature = 'nobir:wizard {model}';
     protected $description = 'Generate a complete set of files for a given model';
 
@@ -84,9 +88,9 @@ class WizardCommand extends Command
     {
         $this->model_class_name = $this->argument('model');
         $this->table_name = Str::snake(Str::plural($this->model_class_name));
+        $this->bootstrap();
 
         $this->collectFields();
-        $this->bootstrap();
         $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
         if ($this->confirm('Do you want to create the migration?', true)) {
             $allFunctionality->createMigration();
@@ -169,6 +173,29 @@ class WizardCommand extends Command
     }
 
     protected function bootstrap(){
-        
+        $this->bootstrapingFilesNamespaceChecking();
+        if(!file_exists(config_path('mini-wizard.php'))){
+            Artisan::call('vendor:publish', [
+                '--tag' => 'wizard-config',
+            ]);
+            echo Artisan::output();
+        }
+        if(!file_exists(self::getModulePath(self::MODEL) . '/NSidebar.php')){
+            Artisan::call('vendor:publish', [
+                '--tag' => 'wizard-sidebar',
+            ]);
+            echo Artisan::output();
+        }
+
+        if(!is_dir((self::stubPathDir()))){
+            Artisan::call('vendor:publish', [
+                '--tag' => 'wizard-stubs',
+            ]);
+            echo Artisan::output();
+        }
+    }
+
+    protected function bootstrapingFilesNamespaceChecking(){
+        $sidebar_model_namesapce = self::getModuleNamespaceOrFolder(self::MODEL);
     }
 }

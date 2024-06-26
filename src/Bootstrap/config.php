@@ -1,15 +1,25 @@
 <?php
 return [
-    'stubs' => [
-        'migration' => resource_path('stubs/migration.stub'),
-        'controller' => resource_path('stubs/controller.stub'),
-        'model' => resource_path('stubs/model.stub'),
-        'view' => resource_path('stubs/view.stub'),
+    'stubs_paths' => [
+        'model' => base_path('nobir/mini-wizard/stubs/model.stub'),
+        'migration' => base_path('nobir/mini-wizard/stubs/migration.stub'),
+        'seeder' => base_path('nobir/mini-wizard/stubs/seeder.stub'),
+        'factory' => base_path('nobir/mini-wizard/stubs/factory.stub'),
+        'controller' => base_path('nobir/mini-wizard/stubs/controller.stub'),
+        'service_class' => base_path('nobir/mini-wizard/stubs/service-class.stub'),
+        'stor_request' => base_path('nobir/mini-wizard/stubs/store-request.stub'),
+        'update_request' => base_path('nobir/mini-wizard/stubs/update-request.stub'),
+        'controller' => base_path('nobir/mini-wizard/stubs/controller.stub'),
+        'view' => base_path('nobir/mini-wizard/stubs/view.stub'),
     ],
     'paths' => [
-        'migration' => 'database/migrations/Backend',
-        'controller' => 'app/Http/Controllers/Backend',
-        'model' => 'app/Models/Backend',
-        'view' => 'resources/views/backend',
+        'model' => 'Backend',
+        'migration' => 'Backend',
+        'seeder' => 'Backend',
+        'factory' => 'Backend',
+        'controller' => 'Backend',
+        'requests' => 'Backend',
+        'service_class' => 'Backend',
+        'view' => 'backend',
     ],
 ];

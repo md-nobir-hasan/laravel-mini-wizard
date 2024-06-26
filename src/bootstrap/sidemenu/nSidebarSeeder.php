@@ -1,20 +1,17 @@
 <?php
 
-namespace Database\Seeders\Backend;
+namespace $namespace;
 
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class SidebarSeeder extends Seeder
+class nSidebarSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        DB::table('n_sidebars')->insert([
-            $slot
-        ]);
+        DB::table('n_sidebars')->insert([]);
     }
 }

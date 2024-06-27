@@ -1,14 +1,15 @@
 <?php
 
-namespace $name_space;
+namespace {{name_space}};
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class $model_name extends Model
+class {{model_name}} extends Model
 {
+    //nobir
     use HasFactory;
-    protected $fillable = ['title'$fillable_properties,'status','serial'];
+    protected $fillable = ['title',{{fillable_properties}},'status','serial'];
 
-    $slot
+    {{relationships}}
 }

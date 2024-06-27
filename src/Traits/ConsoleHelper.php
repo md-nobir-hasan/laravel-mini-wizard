@@ -2,7 +2,7 @@
 
 namespace Nobir\MiniWizard\Traits;
 
-class ConsoleHelper
+trait ConsoleHelper
 {
     /**
      * Ask the user for confirmation in the console.

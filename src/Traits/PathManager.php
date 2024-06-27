@@ -80,27 +80,30 @@ trait PathManager
         $defaultPaths = (include(self::config_path_pakage))['paths'];
         $configPaths = config('mini-wizard.paths', []);
         $suffix = $configPaths[$module] ?? $defaultPaths[$module];
-
+        if($suffix){
+            $suffix = '\\'.$suffix;
+        }
         switch ($module) {
             case self::MODEL:
-                $namesapce = app_path('Models/' . $namesapce_suffix);
-                return $namesapce;
+                $namesapce = 'App\Models' . $suffix;
+               break;
             case self::SEEDER:
-                $namesapce = database_path('seeders/' . $namesapce_suffix);
-                return $namesapce;
+                $namesapce = 'Database\Seeders' . $suffix;
+               break;
             case self::FACTORY:
-                $namesapce = database_path('factories/' . $namesapce_suffix);
-                return $namesapce;
+                $namesapce = 'Database\Factories' . $suffix;
+               break;
             case self::CONTROLLER:
-                $namesapce = app_path('http/Controllers/' . $namesapce_suffix);
-                return $namesapce;
+                $namesapce = 'App\Http\Controllers' . $suffix;
+               break;
             case self::SERVICE_CLASS:
-                $namesapce = app_path('ServiceClass/' . $namesapce_suffix);
-                return $namesapce;
+                $namesapce = 'App\Services' . $suffix;
+               break;
             case self::REQUESTS:
-                $namesapce = app_path('http/Requests/' . $namesapce_suffix);
-                return $namesapce;
+                $namesapce = 'App\Http\Requests' . $suffix;
+               break;
         }
+        return $namesapce;
     }
 
     public static function directoryCheck($path){

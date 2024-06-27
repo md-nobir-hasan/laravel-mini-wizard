@@ -8,15 +8,16 @@ use Illuminate\Support\Str;
 use Nobir\MiniWizard\Services\AllFunctionalityClass;
 use Nobir\MiniWizard\Traits\ModuleKeys;
 use Nobir\MiniWizard\Traits\PathManager;
+use Nobir\MiniWizard\Traits\StringManipulation;
 
 class WizardCommand extends Command
 {
-    use PathManager, ModuleKeys;
+    use PathManager, StringManipulation;
     protected $signature = 'nobir:wizard {model}';
     protected $description = 'Generate a complete set of files for a given model';
 
     protected $model_class_name;
-    protected $table_name;
+    protected $models_name = [];
     protected $fields = [];
 
     protected $data_type_functions = [
@@ -86,8 +87,8 @@ class WizardCommand extends Command
 
     public function handle()
     {
-        $this->model_class_name = $this->argument('model');
-        $this->table_name = Str::snake(Str::plural($this->model_class_name));
+
+        $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 
         //bootstraping the mini-wizard
         $this->bootstrap();
@@ -134,8 +135,9 @@ class WizardCommand extends Command
     protected function getFieldName($type)
     {
         if ($type === 'foreignIdFor') {
-            $modelClass = $this->ask("Enter the related model name for $type"); //we transfer it to field name when we need
-            return ['fname' => Str::snake(Str::singular($modelClass)) . '_id'];
+            $modelClass = self::mdoelNameFormat($this->ask("Enter the related model name for $type")); //we transfer it to field name when we need
+            array_push($this->models_name, $modelClass);
+            return ['fname' => self::modelToForeignKey($modelClass)];
         } elseif (in_array($type, ['enum', 'set'])) {
             $fieldName = $this->ask("Enter the field name for $type");
             $fieldvlaue = explode(',', $this->ask("Enter the values for $type (comma separated)"));
@@ -196,7 +198,13 @@ class WizardCommand extends Command
 
     protected function wizard()
     {
-        $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
+
+        $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name,$this->models_name);
+
+        //Model creation
+        if ($this->confirm('Do you want to create the model?', true)) {
+            $allFunctionality->createModel();
+        }
 
         //migration creation
         if ($this->confirm('Do you want to create the migration?', true)) {

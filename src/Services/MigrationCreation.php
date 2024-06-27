@@ -17,6 +17,7 @@ class MigrationCreation extends BaseCreation
             //file creation
             FileModifier::getContent(self::getStubFilePath(self::MIGRATION))
                 ->searchingText('{{table_name}}')->replace()->insertingText($table_name)
+                ->searchingText('{{table_name}}')->replace()->insertingText($table_name)
                 ->searchingText('{{slot}}')->replace()->insertingText($this->generateMigrationFields())
                 ->save($migration_file_path);
             echo 'Migration created successfully';

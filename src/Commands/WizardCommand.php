@@ -94,15 +94,8 @@ class WizardCommand extends Command
 
         //fields collection and making an array
         $this->collectFields();
-        dd($this->fields);
         //wizard functionality call all together or sequencely and see the mystery
-        $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
-
-        //migration creation
-        if ($this->confirm('Do you want to create the migration?', true)) {
-            $allFunctionality->createMigration();
-            $this->info('Migration created successfully.');
-        }
+        $this->wizard();
     }
 
     protected function collectFields()
@@ -142,7 +135,7 @@ class WizardCommand extends Command
     {
         if ($type === 'foreignIdFor') {
             $modelClass = $this->ask("Enter the related model name for $type"); //we transfer it to field name when we need
-            return ['fname' => $modelClass];
+            return ['fname' => Str::snake(Str::singular($modelClass)) . '_id'];
         } elseif (in_array($type, ['enum', 'set'])) {
             $fieldName = $this->ask("Enter the field name for $type");
             $fieldvlaue = explode(',', $this->ask("Enter the values for $type (comma separated)"));
@@ -155,10 +148,11 @@ class WizardCommand extends Command
     protected function dataTypeProperty($option, $type)
     {
         switch ($option) {
+            case 'default':
             case 'length':
             case 'total':
             case 'places':
-                return $this->ask("Enter the $option for $type");
+                return $this->ask("Enter the $option value for $type");
             case 'unsigned':
             case 'constrained':
             case 'cascadeOnDelete':
@@ -172,15 +166,14 @@ class WizardCommand extends Command
             case 'restrictOnDelete':
             case 'restrictOnUpdate':
                 return $this->confirm("Is this field $option?", false);
-            case 'default':
-                return $this->ask("Enter the default value for $type (or press enter for none)");
             default:
                 return null;
         }
     }
 
-    protected function bootstrap(){
-        if(!file_exists(config_path('mini-wizard.php'))){
+    protected function bootstrap()
+    {
+        if (!file_exists(config_path('mini-wizard.php'))) {
             Artisan::call('vendor:publish', [
                 '--tag' => 'wizard-config',
             ]);
@@ -201,7 +194,13 @@ class WizardCommand extends Command
         // }
     }
 
-    // protected function bootstrapingFilesNamespaceChecking(){
-    //     $sidebar_model_namesapce = self::getModuleNamespaceOrFolder(self::MODEL);
-    // }
+    protected function wizard()
+    {
+        $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
+
+        //migration creation
+        if ($this->confirm('Do you want to create the migration?', true)) {
+            $allFunctionality->createMigration();
+        }
+    }
 }

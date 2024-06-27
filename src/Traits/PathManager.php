@@ -20,15 +20,17 @@ trait PathManager
         $defaultStubFilePath = self::pakage_root_path. '/template/stubs/'.$module.'.stub';
         $StubFilePath = self::stubDirPath().'/'.$module.'.stub';
        if(file_exists($StubFilePath)){
-        return $$StubFilePath;
+        return $StubFilePath;
        }else{
         return $defaultStubFilePath;
        }
     }
 
-    public static function getModulePath($module)
+    public static function getModulePath($module,$fileName=null)
     {
         $defaultPaths = (include(self::config_path_pakage))['paths'];
+        $configPaths = config('mini-wizard.paths', []);
+        $path_suffix = $configPaths[$module] ?? $defaultPaths[$module];
         $configPaths = config('mini-wizard.paths', []);
         $path_suffix = $configPaths[$module] ?? $defaultPaths[$module];
 
@@ -36,36 +38,41 @@ trait PathManager
             case self::MIGRATION:
                 $path = database_path('migrations/' . $path_suffix);
                 self::directoryCheck($path);
-                return $path;
+                break;
             case self::MODEL:
                 $path = app_path('Models/'.$path_suffix);
                 self::directoryCheck($path);
-                return $path;
+                break;
             case self::SEEDER:
                 $path = database_path('seeders/'.$path_suffix);
                 self::directoryCheck($path);
-                return $path;
+                break;
             case self::FACTORY:
                 $path = database_path('factories/'.$path_suffix);
                 self::directoryCheck($path);
-                return $path;
+                break;
             case self::CONTROLLER:
                 $path = app_path('http/Controllers/'.$path_suffix);
                 self::directoryCheck($path);
-                return $path;
+                break;
             case self::SERVICE_CLASS:
                 $path = app_path('ServiceClass/'.$path_suffix);
                 self::directoryCheck($path);
-                return $path;
+                break;
             case self::REQUESTS:
                 $path = app_path('http/Requests/'.$path_suffix);
                 self::directoryCheck($path);
-                return $path;
+                break;
             case self::VIEW:
                 $path = resource_path('views/'.$path_suffix);
                 self::directoryCheck($path);
-                return $path;
+                break;
         }
+        if($fileName){
+            $path = $path.'/'. $fileName;
+        }
+        return $path;
+
     }
 
     public static function getModuleNamespace($module)
@@ -111,5 +118,18 @@ trait PathManager
         } else {
             return $defaultConfigFilePath;
         }
+    }
+
+    public static function fileCheck($file_path){
+        if(File::exists($file_path)){
+            if (ConsoleHelper::confirm("The file {$file_path} already exists. Do you want to overwrite it?", true)) {
+                // Overwrite the file
+                return true;
+            } else {
+                // Skip the file
+                return false;
+            }
+        }
+        return true;
     }
 }

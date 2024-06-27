@@ -9,7 +9,42 @@ The mini-wizard package is a Laravel package designed to streamline the creation
     3. Stub-Based Templates: Uses stub files as templates for the generated files, making it easy to customize the output.
     4. Traits for Reusability: Implements traits (ModuleKeys and StubPaths) to manage module identifiers and stub paths, enhancing code reusability and reducing errors.
     5. User Interaction: Provides a command-line interface for users to specify the model and fields, and to confirm the creation of various files
-    
+## pakage structure
+            src/
+        ├── bootstrap/
+        │   └── config.php
+        ├── Commands/
+        │   └── WizardCommand.php
+        ├── Services/
+        │   ├── MigrationCreation.php
+        │   ├── BaseCreation.php
+        │   ├── FileModifier.php
+        │   └── AllFunctionalityClass.php  
+        └── Traits/
+        │   ├── ConsoleHelper.php
+        │   ├── ModuleKeys.php
+        │   └── PathManager.php
+        ├── template/
+        │   ├── sidebar
+        │         ├── 2024_05_31_085644_create_n_sidebars_table.php
+        │         ├── NSidebarModel.php
+        │         └── nSidebarSeeder.php 
+        │   ├── stubs
+        │         ├── create.stub
+        │         ├── edit.stub
+        │         ├── factory.stub
+        │         ├── index.stub
+        │         ├── migration.stub
+        │         ├── model.stub
+        │         ├── parent-service-class.stub
+        │         ├── resource-controller.stub
+        │         ├── route.stub
+        │         ├── seeder.stub
+        │         ├── service-class.stub
+        │         ├── show.stub
+        │         ├── store-request.stub
+        │         └── update-request.stub
+        
 ### Some notes
     1. Don't use name field. Always try to use title field instead of name which will use to session message. and try to use title field for every table.
     1. Just one name only model name will use for the all name. Example shows for "(Photo), (OrderItem)".

@@ -40,7 +40,12 @@ class MigrationCreation extends BaseCreation
                     $fieldLine .= "->{$functinORNumeric}('{$functionORValue}')";
                 } else {
                     if (in_array($functionORValue, ['foreignIdFor'])) {
-                        $fieldLine .= "->{$functionORValue}(\App\Models\\" . $this->model_name . "::class)";
+                        $model_name = self::foreignKeyToModelName($fieldName);
+                        $name_space = self::getModuleNamespace(self::MODEL);
+                        if (!file_exists(self::getModulePath(self::MODEL) . '/'.self::foreignKeyToModelName($fieldName) . '.php')) {
+                            $name_space = 'App\Models';
+                        }
+                        $fieldLine .= "->{$functionORValue}(\\$name_space\\" . $model_name . "::class)";
                     } elseif (in_array($functionORValue, ['unsigned', 'constrained', 'cascadeOnDelete', 'cascadeOnUpdate', 'nullable', 'primary', 'unique', 'autoIncrement', 'index', 'restrictOnDelete', 'restrictOnUpdate'])) {
                         $fieldLine .= "->{$functionORValue}()";
                     } else {

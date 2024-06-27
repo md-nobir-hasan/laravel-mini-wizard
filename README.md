@@ -44,7 +44,7 @@ The mini-wizard package is a Laravel package designed to streamline the creation
         │         ├── show.stub
         │         ├── store-request.stub
         │         └── update-request.stub
-        
+
 ### Some notes
     1. Don't use name field. Always try to use title field instead of name which will use to session message. and try to use title field for every table.
     1. Just one name only model name will use for the all name. Example shows for "(Photo), (OrderItem)".
@@ -53,7 +53,8 @@ The mini-wizard package is a Laravel package designed to streamline the creation
     4. Permissions name will be  (Show Photo, Create Photo, Edit Photo, Delete Photo), (Show OrderItem, Create  OrderItem, Edit OrderItem, Delete OrderItem).
     5. Requests name will be  (StorePhotoRequest, UpdatePhotoRequest), (StoreOrderItemRequest, UpdateOrderItemRequest).
     6. Every migration default contain title, status, serial field. You can modified these from the migration stub file.
-    7. For automatice implementation of seeder or factory you have to use )}//n in the DatabaseSeeder.php 
+    7. For automatice implementation of seeder or factory you have to use  in the DatabaseSeeder.php 
+    8. in parent module relationship added after  '];'
 
 ### Improveable note
     1. every datatype validation will added

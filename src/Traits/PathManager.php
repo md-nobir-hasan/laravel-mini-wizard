@@ -8,17 +8,22 @@ trait PathManager
 {
     use ModuleKeys;
 
+    const pakage_root_path = __DIR__ . '/..';
     const config_path_pakage = __DIR__ . '/../bootstrap/config.php';
 
-    public static function stubPathDir(){
+    public static function stubDirPath(){
         return base_path('nobir/mini-wizard/stubs');
     }
 
-    public static function getStubPath($module)
+    public static function getStubFilePath($module)
     {
-        $defaultStubs = (include(self::config_path_pakage))['stubs_paths'];
-        $configStubs = config('mini-wizard.stubs_paths', []);
-        return $configStubs[$module] ?? $defaultStubs[$module];
+        $defaultStubFilePath = self::pakage_root_path. '/template/stubs/'.$module.'.stub';
+        $StubFilePath = self::stubDirPath().'/'.$module.'.stub';
+       if(file_exists($StubFilePath)){
+        return $$StubFilePath;
+       }else{
+        return $defaultStubFilePath;
+       }
     }
 
     public static function getModulePath($module)
@@ -63,15 +68,13 @@ trait PathManager
         }
     }
 
-    public static function getModuleNamespaceOrFolder($module)
+    public static function getModuleNamespace($module)
     {
         $defaultPaths = (include(self::config_path_pakage))['paths'];
         $configPaths = config('mini-wizard.paths', []);
         $suffix = $configPaths[$module] ?? $defaultPaths[$module];
 
         switch ($module) {
-            case self::MIGRATION:
-                return $suffix;
             case self::MODEL:
                 $namesapce = app_path('Models/' . $namesapce_suffix);
                 return $namesapce;
@@ -90,8 +93,6 @@ trait PathManager
             case self::REQUESTS:
                 $namesapce = app_path('http/Requests/' . $namesapce_suffix);
                 return $namesapce;
-            case self::VIEW:
-                return $suffix;
         }
     }
 
@@ -101,23 +102,14 @@ trait PathManager
         }
     }
 
-    public static function resolveNamespace($path)
+    public static function getConfigFilePath()
     {
-        $basePath = app_path();
-        $namespace = 'App';
-
-        $path = self::normalizePath($path);
-
-        if (strpos($path, $basePath) === 0) {
-            $path = substr($path, strlen($basePath));
-            $namespace .= str_replace('/', '\\', $path);
+        $defaultConfigFilePath = self::pakage_root_path . '/bootstrap/config.php';
+        $configFilePath = config_path('mini-wizard.php');
+        if (file_exists($configFilePath)) {
+            return $configFilePath;
+        } else {
+            return $defaultConfigFilePath;
         }
-
-        return $namespace;
-    }
-
-    protected static function normalizePath($path)
-    {
-        return rtrim(str_replace('\\', '/', $path), '/');
     }
 }

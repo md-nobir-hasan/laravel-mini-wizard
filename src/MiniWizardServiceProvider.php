@@ -23,20 +23,20 @@ Class MiniWizardServiceProvider extends ServiceProvider{
 
         //publishing configure file
         $this->publishes([
-            __DIR__ . '/bootstrap/config.php' => config_path('mini-wizard.php'), //configure files
+           self::pakage_root_path.'/bootstrap/config.php' => config_path('mini-wizard.php'), //configure files
         ], 'wizard-config');
 
         //publishing bootstraping files
         $this->publishes([
-            __DIR__ . '/bootstrap/sidemenu/NSidebarModel.php' => $this->getModulePath(self::MODEL),
-            __DIR__ . '/bootstrap/sidemenu/2024_05_31_085644_create_n_sidebars_table.php' => $this->getModulePath(self::MIGRATION),
-            __DIR__ . '/bootstrap/sidemenu/nSidebarSeeder.php' => $this->getModulePath(self::SEEDER),
-            __DIR__ . '/bootstrap/sidemenu/2024_05_31_085644_create_n_sidebars_table.php' => $this->getModulePath(self::MIGRATION),
+           self::pakage_root_path.'/template/sidebar/NSidebarModel.php' => $this->getModulePath(self::MODEL),
+           self::pakage_root_path.'/template/sidebar/2024_05_31_085644_create_n_sidebars_table.php' => $this->getModulePath(self::MIGRATION),
+           self::pakage_root_path.'/template/sidebar/nSidebarSeeder.php' => $this->getModulePath(self::SEEDER),
+           self::pakage_root_path.'/template/sidebar/2024_05_31_085644_create_n_sidebars_table.php' => $this->getModulePath(self::MIGRATION),
         ], 'wizard-sidebar');
 
         //publishing stub files
         $this->publishes([
-            __DIR__ . '/stubs' => self::stubPathDir(),
+            self::pakage_root_path. '/template/stubs' => self::stubDirPath(),
             ], 'wizard-stubs');
     }
 }

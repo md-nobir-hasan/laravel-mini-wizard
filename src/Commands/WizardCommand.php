@@ -88,10 +88,17 @@ class WizardCommand extends Command
     {
         $this->model_class_name = $this->argument('model');
         $this->table_name = Str::snake(Str::plural($this->model_class_name));
+
+        //bootstraping the mini-wizard
         $this->bootstrap();
 
+        //fields collection and making an array
         $this->collectFields();
+        dd($this->fields);
+        //wizard functionality call all together or sequencely and see the mystery
         $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name);
+
+        //migration creation
         if ($this->confirm('Do you want to create the migration?', true)) {
             $allFunctionality->createMigration();
             $this->info('Migration created successfully.');
@@ -173,29 +180,28 @@ class WizardCommand extends Command
     }
 
     protected function bootstrap(){
-        $this->bootstrapingFilesNamespaceChecking();
         if(!file_exists(config_path('mini-wizard.php'))){
             Artisan::call('vendor:publish', [
                 '--tag' => 'wizard-config',
             ]);
             echo Artisan::output();
         }
-        if(!file_exists(self::getModulePath(self::MODEL) . '/NSidebar.php')){
-            Artisan::call('vendor:publish', [
-                '--tag' => 'wizard-sidebar',
-            ]);
-            echo Artisan::output();
-        }
+        // if(!file_exists(self::getModulePath(self::MODEL) . '/NSidebar.php')){
+        //     Artisan::call('vendor:publish', [
+        //         '--tag' => 'wizard-sidebar',
+        //     ]);
+        //     echo Artisan::output();
+        // }
 
-        if(!is_dir((self::stubPathDir()))){
-            Artisan::call('vendor:publish', [
-                '--tag' => 'wizard-stubs',
-            ]);
-            echo Artisan::output();
-        }
+        // if(!is_dir((self::stubPathDir()))){
+        //     Artisan::call('vendor:publish', [
+        //         '--tag' => 'wizard-stubs',
+        //     ]);
+        //     echo Artisan::output();
+        // }
     }
 
-    protected function bootstrapingFilesNamespaceChecking(){
-        $sidebar_model_namesapce = self::getModuleNamespaceOrFolder(self::MODEL);
-    }
+    // protected function bootstrapingFilesNamespaceChecking(){
+    //     $sidebar_model_namesapce = self::getModuleNamespaceOrFolder(self::MODEL);
+    // }
 }

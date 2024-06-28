@@ -12,7 +12,7 @@ class FileModifier
 
     protected $searchingText = '';
 
-    protected $matching = 1;
+    protected $matching = 0; // Change default to 0 to handle all occurrences
 
     protected $insertingPosition = 0;
 
@@ -38,7 +38,7 @@ class FileModifier
         return new static($getContentPath);
     }
 
-    public function searchingText($text, $match = 1)
+    public function searchingText($text, $match = 0)
     {
         $this->searchingText = $text;
         $this->matching = $match;
@@ -49,7 +49,7 @@ class FileModifier
     public function orSearchingText($text)
     {
         $text = $this->searchingText;
-        if (strpos($this->content, $text) == false) {
+        if (strpos($this->content, $text) === false) {
             $this->searchingText = $text;
         }
 
@@ -104,17 +104,6 @@ class FileModifier
         return $this;
     }
 
-    public function isExist($text)
-    {
-        if (strpos($this->content, $text) !== false) {
-            return true;
-        }
-
-        return false;
-    }
-
-
-
     public function remove($startText, $endText, $text = '')
     {
         $this->removeStart = $startText;
@@ -136,67 +125,57 @@ class FileModifier
 
     protected function applyModification()
     {
-        // Search for the target text
-        $position = $this->strposNth($this->content, $this->searchingText, $this->matching);
-
-        // If the searching text is not found, position at the end of the content
-        if ($position === false) {
-            $position = strlen($this->content);
-            $this->insertingPosition = 1;
-        }
-
-        // Handle removing text if specified
         if ($this->removeStart && $this->removeEnd) {
             $this->content = $this->removeText($this->content, $this->removeStart, $this->removeEnd);
-            $position = strpos($this->content, $this->removeStart);
-            if ($position === false) {
-                $position = strlen($this->content);
-                $this->insertingPosition = 1;
-            }
-            $this->insertingText = $this->removeText;
         }
 
-        // Insert or replace text
-        $this->content = $this->insertOrReplaceText($this->content, $position, $this->searchingText, $this->insertingText, $this->insertingPosition);
-    }
-
-    protected function strposNth($haystack, $needle, $n)
-    {
-        $offset = 0;
-        for ($i = 1; $i <= $n; $i++) {
-            $pos = strpos($haystack, $needle, $offset);
-            if ($pos === false) {
-                return false;
-            }
-            $offset = $pos + 1;
+        if ($this->matching > 0) {
+            // Handle specific occurrence
+            $this->content = $this->modifySpecificOccurrence($this->content, $this->searchingText, $this->insertingText, $this->matching, $this->insertingPosition);
+        } else {
+            // Handle all occurrences
+            $this->content = $this->modifyAllOccurrences($this->content, $this->searchingText, $this->insertingText, $this->insertingPosition);
         }
-
-        return $pos;
     }
 
-    protected function removeText($content, $startText, $endText)
+    protected function modifySpecificOccurrence($content, $searchingText, $insertingText, $occurrence, $insertingPosition)
     {
-        $removeStart = strpos($content, $startText);
-        $removeEnd = strpos($content, $endText, $removeStart) + strlen($endText);
+        $pattern = '/(' . preg_quote($searchingText, '/') . ')/';
+        $matches = [];
+        preg_match_all($pattern, $content, $matches, PREG_OFFSET_CAPTURE);
 
-        if ($removeStart !== false && $removeEnd !== false) {
-            return substr_replace($content, '', $removeStart, $removeEnd - $removeStart);
+        if (isset($matches[0][$occurrence - 1])) {
+            $match = $matches[0][$occurrence - 1];
+            $position = $match[1];
+
+            if ($insertingPosition === -1) {
+                return substr_replace($content, $insertingText, $position, 0);
+            } elseif ($insertingPosition === 1) {
+                return substr_replace($content, $insertingText, $position + strlen($searchingText), 0);
+            } else {
+                return substr_replace($content, $insertingText, $position, strlen($searchingText));
+            }
         }
 
         return $content;
     }
 
-    protected function insertOrReplaceText($content, $position, $searchingText, $insertingText, $insertingPosition)
+    protected function modifyAllOccurrences($content, $searchingText, $insertingText, $insertingPosition)
     {
+        $pattern = '/(' . preg_quote($searchingText, '/') . ')/';
+
         if ($insertingPosition === -1) {
-            // Insert before the searching text
-            return substr_replace($content, $insertingText, $position, 0);
+            return preg_replace($pattern, $insertingText . '$1', $content);
         } elseif ($insertingPosition === 1) {
-            // Insert after the searching text
-            return substr_replace($content, $insertingText, $position + strlen($searchingText), 0);
+            return preg_replace($pattern, '$1' . $insertingText, $content);
         } else {
-            // Replace the searching text
-            return substr_replace($content, $insertingText, $position, strlen($searchingText));
+            return preg_replace($pattern, $insertingText, $content);
         }
+    }
+
+    protected function removeText($content, $startText, $endText)
+    {
+        $pattern = '/' . preg_quote($startText, '/') . '.*?' . preg_quote($endText, '/') . '/s';
+        return preg_replace($pattern, '', $content);
     }
 }

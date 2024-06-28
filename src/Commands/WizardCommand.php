@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Nobir\MiniWizard\Services\AllFunctionalityClass;
+use Nobir\MiniWizard\Services\FileModifier;
 use Nobir\MiniWizard\Traits\ModuleKeys;
 use Nobir\MiniWizard\Traits\PathManager;
 use Nobir\MiniWizard\Traits\StringManipulation;
@@ -87,6 +88,7 @@ class WizardCommand extends Command
 
     public function handle()
     {
+       dd(FileModifier::getContent(self::getStubFilePath(self::SERVICE_CLASS))->searchingText('{{model_name}}',5)->insertBefore()->insertingText('nobir')->save(app_path('nobir/text.php')));
         //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 
@@ -247,7 +249,7 @@ class WizardCommand extends Command
          *  Service class for controller creation
          * */
         if ($this->confirm('Do you want to create the route  for the module?', true)) {
-            
+
             //Route group preparation
             $route_group = $this->confirm('Has the route group?', true);
             if ($route_group) {

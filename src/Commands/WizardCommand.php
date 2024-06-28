@@ -88,10 +88,7 @@ class WizardCommand extends Command
 
     public function handle()
     {
-       dd(FileModifier::getContent(self::getStubFilePath(self::SERVICE_CLASS))->searchingText('{{model_fdname}}',)
-       ->ifExist()->insertBefore()->insertingText('nobir')
-       ->ifNotExist()->searchingText('{{nafme_space}}')->replace()->insertingText('nobir')
-       ->save(app_path('nobir/text.php')));
+
         //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 
@@ -252,30 +249,66 @@ class WizardCommand extends Command
          *  Service class for controller creation
          * */
         if ($this->confirm('Do you want to create the route  for the module?', true)) {
-
+            $route = [];
             //Route group preparation
-            $route_group = $this->confirm('Has the route group?', true);
-            if ($route_group) {
-                $route_group_first_code .= 'Route::';
-                if ($middleware = $this->ask($this->make_icon . ' ' . 'Enter Middleware for the route group (Presss enter to skip)')) {
-                    $route_group_first_code .= "middleware('$middleware')->";
-                }
-                if ($prefix = $this->ask($this->make_icon . ' ' . 'Enter prefix for the route group (Presss enter to skip)')) {
-                    $route_group_first_code .= "prefix('$prefix')->";
-                    $this->route_group_prefix = $prefix;
-                    $this->view_name .= $prefix . '.';
-                    $this->view_path .= $prefix . '/';
-                    $this->parent_navbar = $prefix;
-                }
-                if ($name = $this->ask($this->make_icon . ' ' . 'Enter name for the route group (Presss enter to skip)')) {
-                    $route_group_first_code .= "name('$name.')->";
-                    $this->route_group_name = $name;
-                    $this->route_name .= $name . '.';
-                }
-                $route_group_first_code .= "group(function () {\n\t";
-                $route_group_last_code = "});\n";
+            $route_group = $this->ask('Enter route group (press enter to skip', );
+
+            $route['group'] = $route_group;
+
+            if($route_group){
+                $middleware = $this->ask('Enter middleware for the group (press enter to skip');
+                $route['group_middleware'] = $middleware;
             }
-            $allFunctionality->createRoute();
+
+            //Route type choice
+            $route_type = $this->choice('Are you want to create resource route or general route', ['resource route', 'generale route']);
+
+            //Resource route collection
+            if($route_type == 'resource route'){
+                $resource_route_url = $this->ask('Enter resource route url');
+                $resource_route_middleware = $this->ask('Enter resource route middleware (press enter to skip)');
+                while(true){
+                    if($resource_route_url){
+                        break;
+                    }
+                    $resource_route_url = $this->ask('Enter resource route name');
+                    $resource_route_middleware = $this->ask('Enter resource route middleware (press enter to skip)');
+                }
+                $resource_route =['route_url'=> $resource_route_url,'route_middleware'=>$resource_route_middleware];
+                $route['resource_route'] = $resource_route;
+            }
+            //non resource (normal) route collection
+            else{
+                $general_route =[];
+
+                $route_url = $this->ask('Enter general route url ');
+                $general_route['route_url']= $route_name;
+                $route_name = $this->ask('Enter general route name ');
+                $general_route['route_name']= $route_name;
+                $route_method = $this->ask('Enter general route method');
+                $general_route['route_method']= $route_name;
+                $route_middleware = $this->ask('Enter general route middlerware (press enter to skip)');
+                $general_route['route_middleware'] = $route_middleware;
+
+                while (true) {
+                    if (!$route_name) {
+                        break;
+                    }
+                    $route_url = $this->ask('Enter general route url (press enter to skip)');
+                    $general_route['route_url'] = $route_url;
+                    $route_name = $this->ask('Enter general route name (press enter to skip)');
+                    $general_route['route_name'] = $route_name;
+                    $route_method = $this->ask('Enter general route method (press enter to skip)');
+                    $general_route['route_method'] = $route_method;
+                    $route_middleware = $this->ask('Enter general route middlerware (press enter to skip)');
+                    $general_route['route_middleware'] = $route_middleware;
+                }
+
+                $route['general_routes'] = $general_route;
+            }
+
+
+            $allFunctionality->createRoute($route);
         }
     }
 }

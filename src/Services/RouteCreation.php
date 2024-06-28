@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\File;
 
 class RouteCreation extends BaseCreation
 {
-    public function generate()
+    public function generate($route_info)
     {
+        dd($route_info);
         /**
          * Service class created if not exists
          */

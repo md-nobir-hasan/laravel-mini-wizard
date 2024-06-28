@@ -37,9 +37,9 @@ class AllFunctionalityClass extends BaseCreation
     {
         (new ServiceClassCreation($this->fields, $this->model_name))->generate();
     }
-    public function createRoute()
+    public function createRoute($route_info)
     {
-        (new RouteCreation($this->fields, $this->model_name))->generate();
+        (new RouteCreation($this->fields, $this->model_name))->generate($route_info);
     }
 
 }

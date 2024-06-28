@@ -88,7 +88,10 @@ class WizardCommand extends Command
 
     public function handle()
     {
-       dd(FileModifier::getContent(self::getStubFilePath(self::SERVICE_CLASS))->searchingText('{{model_name}}',5)->insertBefore()->insertingText('nobir')->save(app_path('nobir/text.php')));
+       dd(FileModifier::getContent(self::getStubFilePath(self::SERVICE_CLASS))->searchingText('{{model_fdname}}',)
+       ->ifExist()->insertBefore()->insertingText('nobir')
+       ->ifNotExist()->searchingText('{{nafme_space}}')->replace()->insertingText('nobir')
+       ->save(app_path('nobir/text.php')));
         //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 

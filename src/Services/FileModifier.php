@@ -46,11 +46,12 @@ class FileModifier
         return $this;
     }
 
-    public function orSearchingText($text)
+    public function orSearchingText($text,$match=0)
     {
-        $text = $this->searchingText;
-        if (strpos($this->content, $text) === false) {
+        $previous_searching_text = $this->searchingText;
+        if (strpos($this->content, $previous_searching_text) === false) {
             $this->searchingText = $text;
+            $this->matching = $match;
         }
 
         return $this;
@@ -90,7 +91,6 @@ class FileModifier
         $this->insertingText = '';
         $this->insertingPosition = 0;
         $this->applyModification();
-
         return $this;
     }
 
@@ -100,7 +100,6 @@ class FileModifier
         if (strpos($this->content, $text) !== false) {
             throw new \Exception("Text '$text' already exists in the content.");
         }
-
         return $this;
     }
 
@@ -177,5 +176,24 @@ class FileModifier
     {
         $pattern = '/' . preg_quote($startText, '/') . '.*?' . preg_quote($endText, '/') . '/s';
         return preg_replace($pattern, '', $content);
+    }
+
+    public function ifExist($msg=''){
+        $text = $this->searchingText;
+        if (strpos($this->content, $text) !== false) {
+            return $this;
+        }
+        $pseudo_modifier = PseudoFileModifier::getContent($this->getContentPath)->searchingText($this->searchingText)->msg($msg);
+        return $pseudo_modifier;
+    }
+
+    public function ifNotExist($msg = '')
+    {
+        $text = $this->searchingText;
+        if (strpos($this->content, $text) === false) {
+            return $this;
+        }
+        $pseudo_modifier = PseudoFileModifier::getContent($this->getContentPath)->searchingText($this->searchingText)->msg($msg);
+        return $pseudo_modifier;
     }
 }

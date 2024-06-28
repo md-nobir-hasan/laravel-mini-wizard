@@ -17,4 +17,7 @@ trait ModuleKeys{
     const SERVICE_CLASS = 'service_class';
     const PARENT_SERVICE_CLASS = 'parent_service_class';
     const VIEW = 'view';
+
+    //keys in route module
+    const ROUTE = 'route';
 }

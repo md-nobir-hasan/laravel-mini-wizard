@@ -238,8 +238,39 @@ class WizardCommand extends Command
         /**
          *  Service class for controller creation
          * */
-        if ($this->confirm('Do you want to create the service class for controller?', true)) {
-            $allFunctionality->createServiceClass();
+        // if ($this->confirm('Do you want to create the service class for controller?', true)) {
+        //     $allFunctionality->createServiceClass();
+        // }
+
+
+        /**
+         *  Service class for controller creation
+         * */
+        if ($this->confirm('Do you want to create the route  for the module?', true)) {
+            
+            //Route group preparation
+            $route_group = $this->confirm('Has the route group?', true);
+            if ($route_group) {
+                $route_group_first_code .= 'Route::';
+                if ($middleware = $this->ask($this->make_icon . ' ' . 'Enter Middleware for the route group (Presss enter to skip)')) {
+                    $route_group_first_code .= "middleware('$middleware')->";
+                }
+                if ($prefix = $this->ask($this->make_icon . ' ' . 'Enter prefix for the route group (Presss enter to skip)')) {
+                    $route_group_first_code .= "prefix('$prefix')->";
+                    $this->route_group_prefix = $prefix;
+                    $this->view_name .= $prefix . '.';
+                    $this->view_path .= $prefix . '/';
+                    $this->parent_navbar = $prefix;
+                }
+                if ($name = $this->ask($this->make_icon . ' ' . 'Enter name for the route group (Presss enter to skip)')) {
+                    $route_group_first_code .= "name('$name.')->";
+                    $this->route_group_name = $name;
+                    $this->route_name .= $name . '.';
+                }
+                $route_group_first_code .= "group(function () {\n\t";
+                $route_group_last_code = "});\n";
+            }
+            $allFunctionality->createRoute();
         }
     }
 }

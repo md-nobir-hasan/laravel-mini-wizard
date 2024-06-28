@@ -11,6 +11,7 @@ trait ModuleKeys{
     const MODEL = 'model';
     const SEEDER = 'seeder';
     const FACTORY = 'factory';
+    const SEEDER_FACTORY = 'seeder_factory';
     const CONTROLLER = 'controller';
     const REQUESTS = 'requests';
     const SERVICE_CLASS = 'service_class';

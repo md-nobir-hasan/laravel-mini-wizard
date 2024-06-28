@@ -7,45 +7,40 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nobir\MiniWizard\Services\BaseCreation;
 
-class SeederCreation extends BaseCreation
+class factoryCreation extends BaseCreation
 {
     public function generate()
     {
-        // Derive file name from seeder name
-        $FileName = $this->model_name . 'Seeder.php';
+        // Derive file name f
+        $FileName = $this->model_name . 'Factory.php';
 
-        //seeder path collection
-        $file_path = self::getModulePath(self::SEEDER, $FileName);
+        //factory path collection
+        $file_path = self::getModulePath(self::FACTORY, $FileName);
 
         //overwrite or skip logic if exist the file
         if (self::fileOverwriteOrNot($file_path)) {
 
             /**
-             * dynamic properties preparation for the seeder
+             * dynamic properties preparation for the factory
              */
 
             //namespace derived
-            $name_space = self::getModuleNamespace(self::SEEDER);
+            $name_space = self::getModuleNamespace(self::FACTORY);
 
-            //table name derived
-            $table_name = self::modelToTableName($this->model_name);
 
             //slot preparation
             $slot = $this->generateSlot();
 
             //Finally the file modification if exist or creation if not exist
-            FileModifier::getContent(self::getStubFilePath(self::SEEDER))
+            FileModifier::getContent(self::getStubFilePath(self::FACTORY))
                 ->searchingText('{{name_space}}')->replace()->insertingText($name_space)
                 ->searchingText('{{model_name}}')->replace()->insertingText($this->model_name)
-                ->searchingText('{{table_name}}')->replace()->insertingText($table_name)
                 ->searchingText('{{slot}}')->replace()->insertingText($slot)
                 ->save($file_path);
-            echo 'seeder created successfully';
+            echo 'Factory created successfully';
 
             //Specific file namespace creation
-            $name_space = $name_space.'\\'.$this->model_name. 'Seeder';
-            //the created file seeding
-            $this->seeding($name_space);
+            $name_space = $name_space . '\\' . $this->model_name . 'Factory';
 
             //// SeederFactory file modification so that when you run any command for seeding such as migrate:fresh --seed, the factory work finely
             $this->seederFactoryModification($name_space);
@@ -54,9 +49,10 @@ class SeederCreation extends BaseCreation
             // include seeder factory to database seeder
             $this->databaseSeederModification($name_space);
 
+
             return true;
         }
-        echo 'Skiped seeder creation';
+        echo 'Skiped factory creation';
         return true;
     }
 
@@ -76,7 +72,7 @@ class SeederCreation extends BaseCreation
             //default value set
             if (isset($fieldFunctions['default']) && $fieldFunctions['default']) {
                 $default_value = $fieldFunctions['default'];
-                $slot .= (in_array($default_value, ['boolean']) ? "$default_value," : "'$default_value'," ). " //Default value";
+                $slot .= (in_array($default_value, ['boolean']) ? "$default_value," : "'$default_value',") . " //Default value";
                 continue;
             }
 
@@ -116,18 +112,6 @@ class SeederCreation extends BaseCreation
         return $slot;
     }
 
-    protected function seeding($name_space){
-        // dd($name_space);
-        echo $name_space;
-       try{
-            Artisan::call('db:seed', [
-                '--class' => $name_space
-            ]);
-            echo Artisan::output();
-       }catch(\Exception $e){
-            echo "Database Seedeing Problem \n";
-       }
-    }
 
     protected function databaseSeederModification($name_space)
     {
@@ -147,11 +131,11 @@ class SeederCreation extends BaseCreation
     {
         $get_content_path = database_path('seeders/SeederFactory.php');
         $put_content_path = $get_content_path;
-        if (!File::exists($put_content_path)) {
+        if(!File::exists($put_content_path)){
             $get_content_path = self::getStubFilePath(self::SEEDER_FACTORY);
         }
         FileModifier::getContent($get_content_path)
-            ->searchingText('///', 1)->insertBefore()->insertingText("\n\t\t\$this->call([\\$name_space::class]);")
+        ->searchingText('///', 2)->insertBefore()->insertingText("\n\t\t\$this->call([\\$name_space::class]);")
             ->save($put_content_path);
 
         echo "$name_space is added to SeederFactory";

@@ -24,4 +24,9 @@ class AllFunctionalityClass extends BaseCreation
         (new SeederCreation($this->fields, $this->model_name))->generate();
     }
 
+    public function createFactory()
+    {
+        (new FactoryCreation($this->fields, $this->model_name))->generate();
+    }
+
 }

@@ -29,4 +29,9 @@ class AllFunctionalityClass extends BaseCreation
         (new FactoryCreation($this->fields, $this->model_name))->generate();
     }
 
+    public function createRequests()
+    {
+        (new RequestsCreation($this->fields, $this->model_name))->generate();
+    }
+
 }

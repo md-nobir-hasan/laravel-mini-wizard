@@ -13,7 +13,13 @@ trait ModuleKeys{
     const FACTORY = 'factory';
     const SEEDER_FACTORY = 'seeder_factory';
     const CONTROLLER = 'controller';
+
+    //reqest paths
     const REQUESTS = 'requests';
+    const STORE_REQUEST = 'store_request';
+    const UPDATE_REQUEST = 'update_request';
+
+
     const SERVICE_CLASS = 'service_class';
     const VIEW = 'view';
 }

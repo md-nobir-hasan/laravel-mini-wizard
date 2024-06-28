@@ -57,7 +57,7 @@ class WizardCommand extends Command
         'nullableUlidMorphs' => ['index'],
         'nullableUuidMorphs' => ['index'],
         'rememberToken' => [],
-        'set' => ['values', 'nullable', 'default'],
+        'set' => ['nullable', 'default'],
         'smallIncrements' => ['autoIncrement', 'unique', 'primary', 'unsigned'],
         'smallInteger' => ['autoIncrement', 'unique', 'primary', 'unsigned', 'nullable', 'default'],
         'softDeletesTz' => ['nullable'],
@@ -87,9 +87,6 @@ class WizardCommand extends Command
 
     public function handle()
     {
-
-
-     
         //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 
@@ -220,6 +217,7 @@ class WizardCommand extends Command
         // if ($this->confirm('Do you want to create the migration?', true)) {
         //     $allFunctionality->createMigration();
         // }
+
         //seeder creation
         if ($this->confirm('Do you want to create the seeder?', true)) {
             $allFunctionality->createSeeder();
@@ -228,6 +226,13 @@ class WizardCommand extends Command
         //factory creation
         if ($this->confirm('Do you want to create the factory?', true)) {
             $allFunctionality->createFactory();
+        }
+
+        /**
+         *  requests creation
+         * */
+        if ($this->confirm('Do you want to create the requests?', true)) {
+            $allFunctionality->createRequests();
         }
     }
 }

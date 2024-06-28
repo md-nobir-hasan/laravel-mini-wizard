@@ -1,10 +1,10 @@
 <?php
 
-namespace $name_space;
+namespace {{name_space}};
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class Store$model_nameRequest extends FormRequest
+class Store{{model_name}}Request extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,8 @@ class Store$model_nameRequest extends FormRequest
     {
         return [
             'title'=> ['required','string','max:255','unique:$table_name,title'],
-            'status' => ['nullable','in:Active,Inactive'],
-            $slot
-            'serial' => ['nullable','integer'],
+            'status' => ['nullable','in:0,1'],{{slot}}
+            'serial' => ['required','integer'],
 
         ];
     }

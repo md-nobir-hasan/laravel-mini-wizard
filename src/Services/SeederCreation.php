@@ -2,6 +2,7 @@
 
 namespace Nobir\MiniWizard\Services;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nobir\MiniWizard\Services\BaseCreation;
@@ -10,14 +11,29 @@ class SeederCreation extends BaseCreation
 {
     public function generate()
     {
-        // Derive table name from seeder name
+        // Derive file name from seeder name
         $FileName = $this->model_name . 'Seeder.php';
+
+        //seeder path collection
         $file_path = self::getModulePath(self::SEEDER, $FileName);
+
+        //overwrite or skip logic if exist the file
         if (self::fileOverwriteOrNot($file_path)) {
+
+            /**
+             * dynamic properties preparation for the seeder
+             */
+
+            //namespace derived
             $name_space = self::getModuleNamespace(self::SEEDER);
+
+            //table name derived
             $table_name = self::modelToTableName($this->model_name);
+
+            //slot preparation
             $slot = $this->generateSlot();
-            //file creation
+
+            //Finally the file modification if exist or creation if not exist
             FileModifier::getContent(self::getStubFilePath(self::SEEDER))
                 ->searchingText('{{name_space}}')->replace()->insertingText($name_space)
                 ->searchingText('{{model_name}}')->replace()->insertingText($this->model_name)
@@ -25,6 +41,14 @@ class SeederCreation extends BaseCreation
                 ->searchingText('{{slot}}')->replace()->insertingText($slot)
                 ->save($file_path);
             echo 'seeder created successfully';
+
+            //Specific file namespace creation
+            $name_space = $name_space.'\\'.$this->model_name. 'Seeder';
+            //the created file seeding
+            $this->seeding($name_space);
+
+            // database modification so that when you run any command for seeding such as migrate:fresh --seed, the seeder work finely
+            $this->databaseSeederModification($name_space);
             return true;
         }
         echo 'Skiped seeder creation';
@@ -85,5 +109,27 @@ class SeederCreation extends BaseCreation
             }
         }
         return $slot;
+    }
+
+    protected function seeding($name_space){
+        // dd($name_space);
+        echo $name_space;
+       try{
+            Artisan::call('db:seed', [
+                '--class' => $name_space
+            ]);
+            echo Artisan::output();
+       }catch(\Exception $e){
+            echo "Database Seedeing Problem \n";
+       }
+    }
+
+    protected function databaseSeederModification($name_space){
+
+        FileModifier::getContent(database_path('seeders/DatabaseSeeder.php'))->searchingText('{', 2)
+            ->insertAfter()->insertingText("\n\t\t\$this->call([\\$name_space::class]);")
+            ->save();
+
+        echo "$name_space is added to database seeder";
     }
 }

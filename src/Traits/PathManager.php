@@ -123,7 +123,7 @@ trait PathManager
         }
     }
 
-    public static function fileCheck($file_path){
+    public static function fileOverwriteOrNot($file_path){
         if(File::exists($file_path)){
             if (ConsoleHelper::confirm("The file {$file_path} already exists. Do you want to overwrite it?", true)) {
                 // Overwrite the file

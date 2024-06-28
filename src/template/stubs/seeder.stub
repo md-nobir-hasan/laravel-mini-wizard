@@ -1,24 +1,23 @@
 <?php
 
-namespace $name_space;
+namespace {{name_space}};
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class $model_nameSeeder extends Seeder
+class {{model_name}}Seeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        DB::table('$table_name')->insert([
+        DB::table('{{table_name}}')->insert([
             [
-                'title' => fake()->title(),
-                $slot
-                'serial' => 25,
-                'status' => 'Active',
+                'title' => fake()->title(),{{slot}}
+                'serial' => 1,
+                'status' => true,
                 'created_at' => Carbon::now(),
             ],
         ]);

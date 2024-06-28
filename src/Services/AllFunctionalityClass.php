@@ -19,4 +19,9 @@ class AllFunctionalityClass extends BaseCreation
         (new MigrationCreation($this->fields, $this->model_name))->generate();
     }
 
+    public function createSeeder()
+    {
+        (new SeederCreation($this->fields, $this->model_name))->generate();
+    }
+
 }

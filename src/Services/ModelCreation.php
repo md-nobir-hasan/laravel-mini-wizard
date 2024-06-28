@@ -13,7 +13,7 @@ class ModelCreation extends BaseCreation
         // Derive table name from model name
         $modelFileName = $this->model_name . '.php';
         $model_file_path = self::getModulePath(self::MODEL, $modelFileName);
-        if (self::fileCheck($model_file_path)) {
+        if (self::fileOverwriteOrNot($model_file_path)) {
             $name_space = self::getModuleNamespace(self::MODEL);
             $fillable_properties = $this->fillable();
             $relationships = $this->generateRelationships();

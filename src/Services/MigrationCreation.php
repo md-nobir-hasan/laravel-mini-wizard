@@ -2,6 +2,7 @@
 
 namespace Nobir\MiniWizard\Services;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nobir\MiniWizard\Services\BaseCreation;
@@ -13,7 +14,7 @@ class MigrationCreation extends BaseCreation
         $table_name = \Illuminate\Support\Str::snake(\Illuminate\Support\Str::plural($this->model_name)); // Derive table name from model name
         $migrationFileName = date('Y_m_d_His') . '_create_' . $table_name . '_table.php';
         $migration_file_path = self::getModulePath(self::MIGRATION,$migrationFileName);
-        if(self::fileCheck($migration_file_path)){
+        if(self::fileOverwriteOrNot($migration_file_path)){
             //file creation
             FileModifier::getContent(self::getStubFilePath(self::MIGRATION))
                 ->searchingText('{{table_name}}')->replace()->insertingText($table_name)
@@ -21,6 +22,12 @@ class MigrationCreation extends BaseCreation
                 ->searchingText('{{slot}}')->replace()->insertingText($this->generateMigrationFields())
                 ->save($migration_file_path);
             echo 'Migration created successfully';
+           try{
+                Artisan::call('migrate');
+                echo Artisan::output();
+           }catch(\Exception $e){
+            echo 'migration fail';
+           }
             return true;
         }
         echo 'Skiped migration creation';

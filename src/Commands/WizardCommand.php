@@ -32,7 +32,7 @@ class WizardCommand extends Command
         'date' => ['nullable', 'default'],
         'decimal' => ['total', 'places', 'nullable', 'default', 'unsigned'],
         'double' => ['total', 'places', 'nullable', 'default', 'unsigned'],
-        'enum' => ['nullable', 'default'],
+        'enum' => ['default','nullable'],
         'float' => ['total', 'places', 'nullable', 'default', 'unsigned'],
         'foreignId' => ['nullable', 'constrained', 'cascadeOnDelete', 'cascadeOnUpdate', 'restrictOnDelete', 'restrictOnUpdate'],
         'foreignIdFor' => ['nullable', 'constrained', 'cascadeOnDelete', 'cascadeOnUpdate', 'restrictOnDelete', 'restrictOnUpdate'],
@@ -87,7 +87,7 @@ class WizardCommand extends Command
 
     public function handle()
     {
-
+        //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 
         //bootstraping the mini-wizard
@@ -95,6 +95,10 @@ class WizardCommand extends Command
 
         //fields collection and making an array
         $this->collectFields();
+
+        //filtering the collected data
+        $this->dataFilter();
+
         //wizard functionality call all together or sequencely and see the mystery
         $this->wizard();
     }
@@ -172,7 +176,10 @@ class WizardCommand extends Command
                 return null;
         }
     }
-
+    protected function dataFilter(){
+        $this->fields = array_filter($this->fields);
+        $this->models_name = array_filter($this->models_name);
+    }
     protected function bootstrap()
     {
         if (!file_exists(config_path('mini-wizard.php'))) {
@@ -202,13 +209,17 @@ class WizardCommand extends Command
         $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name,$this->models_name);
 
         //Model creation
-        if ($this->confirm('Do you want to create the model?', true)) {
-            $allFunctionality->createModel();
-        }
+        // if ($this->confirm('Do you want to create the model?', true)) {
+        //     $allFunctionality->createModel();
+        // }
 
-        //migration creation
-        if ($this->confirm('Do you want to create the migration?', true)) {
-            $allFunctionality->createMigration();
+        // //migration creation
+        // if ($this->confirm('Do you want to create the migration?', true)) {
+        //     $allFunctionality->createMigration();
+        // }
+        //seeder creation
+        if ($this->confirm('Do you want to create the seeder?', true)) {
+            $allFunctionality->createSeeder();
         }
     }
 }

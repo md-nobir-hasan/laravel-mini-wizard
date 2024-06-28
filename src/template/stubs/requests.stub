@@ -4,7 +4,7 @@ namespace {{name_space}};
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class Store{{model_name}}Request extends FormRequest
+class {{request_name}} extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,9 @@ class Store{{model_name}}Request extends FormRequest
     public function rules(): array
     {
         return [
-            'title'=> ['required','string','max:255','unique:$table_name,title'],
+            'title'=> ['required','string','max:255','unique:{{table_name}},title'],
             'status' => ['nullable','in:0,1'],{{slot}}
-            'serial' => ['required','integer'],
+            'serial' => ['required','integer','min:1'],
 
         ];
     }

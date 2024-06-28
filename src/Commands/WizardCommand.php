@@ -218,15 +218,15 @@ class WizardCommand extends Command
         //     $allFunctionality->createMigration();
         // }
 
-        //seeder creation
-        if ($this->confirm('Do you want to create the seeder?', true)) {
-            $allFunctionality->createSeeder();
-        }
+        // //seeder creation
+        // if ($this->confirm('Do you want to create the seeder?', true)) {
+        //     $allFunctionality->createSeeder();
+        // }
 
-        //factory creation
-        if ($this->confirm('Do you want to create the factory?', true)) {
-            $allFunctionality->createFactory();
-        }
+        // //factory creation
+        // if ($this->confirm('Do you want to create the factory?', true)) {
+        //     $allFunctionality->createFactory();
+        // }
 
         /**
          *  requests creation

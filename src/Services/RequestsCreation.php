@@ -2,11 +2,6 @@
 
 namespace Nobir\MiniWizard\Services;
 
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-use Nobir\MiniWizard\Services\BaseCreation;
-
 class RequestsCreation extends BaseCreation
 {
     public function generate()
@@ -33,14 +28,22 @@ class RequestsCreation extends BaseCreation
             //namespace derived
             $name_space = self::getModuleNamespace(self::REQUESTS);
 
+            //namespace derived
+            $table_name = self::modelToTableName($this->model_name);
+
+
+            //request name derived
+            $request_name = "Store{$this->model_name}Request";
+
 
             //slot preparation
             $slot = $this->generateSlot();
 
             //Finally the file modification if exist or creation if not exist
-            FileModifier::getContent(self::getStubFilePath(self::STORE_REQUEST))
+            FileModifier::getContent(self::getStubFilePath(self::REQUESTS))
                 ->searchingText('{{name_space}}')->replace()->insertingText($name_space)
-                ->searchingText('{{model_name}}')->replace()->insertingText($this->model_name)
+                ->searchingText('{{request_name}}')->replace()->insertingText($request_name)
+                ->searchingText('{{table_name}}')->replace()->insertingText($table_name)
                 ->searchingText('{{slot}}')->replace()->insertingText($slot)
                 ->save($file_path);
 
@@ -74,25 +77,30 @@ class RequestsCreation extends BaseCreation
             //namespace derived
             $name_space = self::getModuleNamespace(self::REQUESTS);
 
+            //namespace derived
+            $table_name = self::modelToTableName($this->model_name);
+
+            //request name derived
+            $request_name = "Update{$this->model_name}Request";
 
             //slot preparation
             $slot = $this->generateSlot('update');
 
             //Finally the file modification if exist or creation if not exist
-            FileModifier::getContent(self::getStubFilePath(self::STORE_REQUEST))
+            FileModifier::getContent(self::getStubFilePath(self::REQUESTS))
                 ->searchingText('{{name_space}}')->replace()->insertingText($name_space)
-                ->searchingText('{{model_name}}')->replace()->insertingText($this->model_name)
+                ->searchingText('{{request_name}}')->replace()->insertingText($request_name)
+                ->searchingText('{{table_name}}')->replace()->insertingText($table_name)
                 ->searchingText('{{slot}}')->replace()->insertingText($slot)
                 ->save($file_path);
 
-            $this->info('Store Request created successfully');
-
+            $this->info('Update Request created successfully');
 
             return true;
         }
 
 
-        $this->info('Skiped Store Request creation');
+        $this->info('Skiped Update Request creation');
 
         return true;
     }
@@ -107,7 +115,18 @@ class RequestsCreation extends BaseCreation
         foreach ($this->fields as $fieldName => $fieldFunctions) {
 
             //field name set
-            $slot .= "\n\t\t\t\t'$fieldName' => [";
+            $slot .= "\n\t\t\t'$fieldName' => [";
+
+
+            //set nullable or required validation
+            if (in_array('nullable', $fieldFunctions)) {
+                $slot .= "'nullable',";
+            } else {
+                $slot .= "'required',";
+            }
+
+
+
 
             /**
              * validation  for data types
@@ -121,11 +140,11 @@ class RequestsCreation extends BaseCreation
             foreach ($fieldFunctions as $value) {
                 //value of ('bigInteger', 'decimal', 'double', 'float', 'integer', 'mediumInteger', 'smallInteger', 'tinyInteger') is set if default value is not set
                 if (in_array($value, ['bigInteger', 'decimal', 'double', 'float', 'integer', 'mediumInteger', 'smallInteger', 'tinyInteger'])) {
-                    $slot .= "'numeric'";
+                    $slot .= "'numeric',";
                     break;
                 }
                 if (in_array($value, ['longText', 'macAddress', 'mediumText', 'string', 'text', 'tinyText', 'smallInteger', 'tinyInteger', 'ulid', 'uuid'])) {
-                    $slot .= "'string'";
+                    $slot .= "'string',";
                     break;
                 }
 
@@ -142,7 +161,9 @@ class RequestsCreation extends BaseCreation
              * Other properties validation
              */
 
-            //set nullable or required
+
+
+            //set min validation
             if (in_array('unsigned', $fieldFunctions)) {
                 $slot .= "'min:1',";
             }
@@ -151,15 +172,18 @@ class RequestsCreation extends BaseCreation
             $table_name = self::modelToTableName($this->model_name);
 
             if (in_array('unique', $fieldFunctions)) {
-                $slot .= "'unique:$table_name,$fieldName',";
+                $unique_vali = "'unique:$table_name,$fieldName',";
                 if($update){
-                    $slot .= "'unique:$table_name,$fieldName',";
+                    $m_name_snake = self::modelToBelongsToName($this->model_name);
+                    $unique_vali = "'unique:$table_name,$fieldName'.\$this->{$m_name_snake}->id,";
                 }
+                $slot .= $unique_vali;
             }
 
              //set exist in case of foreing id
             if (in_array('foreignIdFor',$fieldFunctions )) {
-                $slot .= "'exists:$table_name,$fieldName',";
+                $table_name_for_this = self::modelToTableName(self::foreignKeyToModelName($fieldName));
+                $slot .= "'exists:$table_name_for_this,id',";
             }
 
 
@@ -173,7 +197,8 @@ class RequestsCreation extends BaseCreation
 
                 //set max value using length
                 if($key == 'length'){
-                    $slot .= "'max:$key',";
+                    $length_value = $fieldFunctions[$key];
+                    $slot .= "'max:$length_value',";
                 }
 
                 //in value set for enum values
@@ -181,13 +206,13 @@ class RequestsCreation extends BaseCreation
                     $values = $fieldFunctions[$key];
                     $slot .= "'string','in:";
                     foreach ($values as $value) {
-                        $slot .= "'$value'";
+                        $slot .= "$value,";
                     }
                     $slot .= "',";
                 }
 
             }
-
+            $slot .= "],";
 
         }
         return $slot;

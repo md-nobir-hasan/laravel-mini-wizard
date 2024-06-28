@@ -33,5 +33,9 @@ class AllFunctionalityClass extends BaseCreation
     {
         (new RequestsCreation($this->fields, $this->model_name))->generate();
     }
+    public function createServiceClass()
+    {
+        (new ServiceClassCreation($this->fields, $this->model_name))->generate();
+    }
 
 }

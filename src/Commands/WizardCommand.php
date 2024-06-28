@@ -231,8 +231,15 @@ class WizardCommand extends Command
         /**
          *  requests creation
          * */
-        if ($this->confirm('Do you want to create the requests?', true)) {
-            $allFunctionality->createRequests();
+        // if ($this->confirm('Do you want to create the requests?', true)) {
+        //     $allFunctionality->createRequests();
+        // }
+
+        /**
+         *  Service class for controller creation
+         * */
+        if ($this->confirm('Do you want to create the service class for controller?', true)) {
+            $allFunctionality->createServiceClass();
         }
     }
 }

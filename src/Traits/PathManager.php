@@ -35,35 +35,35 @@ trait PathManager
         switch ($module) {
             case self::MIGRATION:
                 $path = database_path('migrations/' . $path_suffix);
-                self::directoryCheck($path);
+                self::directoryCreateIfNot($path);
                 break;
             case self::MODEL:
                 $path = app_path('Models/'.$path_suffix);
-                self::directoryCheck($path);
+                self::directoryCreateIfNot($path);
                 break;
             case self::SEEDER:
                 $path = database_path('seeders/'.$path_suffix);
-                self::directoryCheck($path);
+                self::directoryCreateIfNot($path);
                 break;
             case self::FACTORY:
                 $path = database_path('factories/'.$path_suffix);
-                self::directoryCheck($path);
+                self::directoryCreateIfNot($path);
                 break;
             case self::CONTROLLER:
                 $path = app_path('http/Controllers/'.$path_suffix);
-                self::directoryCheck($path);
+                self::directoryCreateIfNot($path);
                 break;
             case self::SERVICE_CLASS:
-                $path = app_path('ServiceClass/'.$path_suffix);
-                self::directoryCheck($path);
+                $path = app_path('Services/'.$path_suffix);
+                self::directoryCreateIfNot($path);
                 break;
             case self::REQUESTS:
                 $path = app_path('http/Requests/'.$path_suffix);
-                self::directoryCheck($path);
+                self::directoryCreateIfNot($path);
                 break;
             case self::VIEW:
                 $path = resource_path('views/'.$path_suffix);
-                self::directoryCheck($path);
+                self::directoryCreateIfNot($path);
                 break;
         }
         if($fileName){
@@ -104,7 +104,7 @@ trait PathManager
         return $namesapce;
     }
 
-    public static function directoryCheck($path){
+    public static function directoryCreateIfNot($path){
         if (!File::exists($path)) {
             File::makeDirectory($path, 0755, true);
         }

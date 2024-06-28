@@ -15,5 +15,6 @@ trait ModuleKeys{
     const CONTROLLER = 'controller';
     const REQUESTS = 'requests';
     const SERVICE_CLASS = 'service_class';
+    const PARENT_SERVICE_CLASS = 'parent_service_class';
     const VIEW = 'view';
 }

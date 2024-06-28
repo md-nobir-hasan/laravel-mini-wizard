@@ -104,6 +104,17 @@ class FileModifier
         return $this;
     }
 
+    public function isExist($text)
+    {
+        if (strpos($this->content, $text) !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+
     public function remove($startText, $endText, $text = '')
     {
         $this->removeStart = $startText;

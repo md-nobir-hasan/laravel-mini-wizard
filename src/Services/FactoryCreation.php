@@ -37,7 +37,7 @@ class factoryCreation extends BaseCreation
                 ->searchingText('{{model_name}}')->replace()->insertingText($this->model_name)
                 ->searchingText('{{slot}}')->replace()->insertingText($slot)
                 ->save($file_path);
-            echo 'Factory created successfully';
+            $this->info('Factory created successfully');
 
             //Specific file namespace creation
             $name_space = $name_space . '\\' . $this->model_name . 'Factory';
@@ -52,7 +52,7 @@ class factoryCreation extends BaseCreation
 
             return true;
         }
-        echo 'Skiped factory creation';
+        $this->info('Skiped factory creation');
         return true;
     }
 
@@ -112,19 +112,21 @@ class factoryCreation extends BaseCreation
         return $slot;
     }
 
-
-    protected function databaseSeederModification($name_space)
+    protected function databaseSeederModification()
     {
-        $sedder_factory_path = database_path('seeders/SeederFactory.php');
-        if (!File::exists($sedder_factory_path)) {
+        $database_path = database_path('seeders/DatabaseSeeder.php');
+
+        if (!(FileModifier::getContent($database_path)->isExist("include('SeederFactory.php');"))) {
+
             FileModifier::getContent(database_path('seeders/DatabaseSeeder.php'))
-            ->searchingText('{', 2)->insertAfter()->insertingText("\n\n\n\t\tinclude('/SeederFactory.php');")
+            ->searchingText("{", 2)->insertAfter()->insertingText("\n\n\n\t\tinclude('SeederFactory.php');")
             ->save();
+
+            $this->info("Seeder factory  is added to DatabaseSeeder.php file");
+            return true;
         }
 
-
-
-        echo "$name_space is added to database factory";
+        $this->info("Seeder factory  is already added to DatabaseSeeder.php file");
     }
 
     protected function seederFactoryModification($name_space)
@@ -138,6 +140,6 @@ class factoryCreation extends BaseCreation
         ->searchingText('///', 2)->insertBefore()->insertingText("\n\t\t\$this->call([\\$name_space::class]);")
             ->save($put_content_path);
 
-        echo "$name_space is added to SeederFactory";
+        $this->info("$name_space is added to SeederFactory");
     }
 }

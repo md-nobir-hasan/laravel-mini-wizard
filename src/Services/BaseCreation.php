@@ -2,13 +2,14 @@
 
 namespace Nobir\MiniWizard\Services;
 
+use Nobir\MiniWizard\Traits\ConsoleHelper;
 use Nobir\MiniWizard\Traits\ModuleKeys;
 use Nobir\MiniWizard\Traits\PathManager;
 use Nobir\MiniWizard\Traits\StringManipulation;
 
 abstract class BaseCreation
 {
-    use ModuleKeys, PathManager,StringManipulation;
+    use ModuleKeys, PathManager, StringManipulation, ConsoleHelper;
 
     protected $fields;
     protected $model_name;

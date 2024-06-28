@@ -31,8 +31,6 @@ trait PathManager
         $defaultPaths = (include(self::config_path_pakage))['paths'];
         $configPaths = config('mini-wizard.paths', []);
         $path_suffix = $configPaths[$module] ?? $defaultPaths[$module];
-        $configPaths = config('mini-wizard.paths', []);
-        $path_suffix = $configPaths[$module] ?? $defaultPaths[$module];
 
         switch ($module) {
             case self::MIGRATION:
@@ -134,5 +132,17 @@ trait PathManager
             }
         }
         return true;
+    }
+
+    public function getModuleSuffix($module){
+        $defaultPaths = (include(self::config_path_pakage))['paths'];
+        $configPaths = config('mini-wizard.paths', []);
+        $path_suffix = $configPaths[$module] ?? $defaultPaths[$module];
+        return $path_suffix;
+    }
+
+    public function appServiceProviderPath(){
+
+        return app_path('Providers/AppServiceProvider.php');
     }
 }

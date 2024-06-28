@@ -40,23 +40,24 @@ class SeederCreation extends BaseCreation
                 ->searchingText('{{table_name}}')->replace()->insertingText($table_name)
                 ->searchingText('{{slot}}')->replace()->insertingText($slot)
                 ->save($file_path);
-            echo 'seeder created successfully';
+            $this->info("seeder created successfully");
 
             //Specific file namespace creation
-            $name_space = $name_space.'\\'.$this->model_name. 'Seeder';
+            $name_space = $name_space . '\\' . $this->model_name . 'Seeder';
             //the created file seeding
             $this->seeding($name_space);
+
 
             //// SeederFactory file modification so that when you run any command for seeding such as migrate:fresh --seed, the factory work finely
             $this->seederFactoryModification($name_space);
 
 
             // include seeder factory to database seeder
-            $this->databaseSeederModification($name_space);
+            $this->databaseSeederModification();
 
             return true;
         }
-        echo 'Skiped seeder creation';
+        $this->info("Skiped seeder creation");
         return true;
     }
 
@@ -76,7 +77,7 @@ class SeederCreation extends BaseCreation
             //default value set
             if (isset($fieldFunctions['default']) && $fieldFunctions['default']) {
                 $default_value = $fieldFunctions['default'];
-                $slot .= (in_array($default_value, ['boolean']) ? "$default_value," : "'$default_value'," ). " //Default value";
+                $slot .= (in_array($default_value, ['boolean']) ? "$default_value," : "'$default_value',") . " //Default value";
                 continue;
             }
 
@@ -116,31 +117,34 @@ class SeederCreation extends BaseCreation
         return $slot;
     }
 
-    protected function seeding($name_space){
-        // dd($name_space);
-        echo $name_space;
-       try{
+    protected function seeding($name_space)
+    {
+        try {
             Artisan::call('db:seed', [
                 '--class' => $name_space
             ]);
             echo Artisan::output();
-       }catch(\Exception $e){
-            echo "Database Seedeing Problem \n";
-       }
+        } catch (\Exception $e) {
+            $this->info("Database Seedeing Problem");
+        }
     }
 
-    protected function databaseSeederModification($name_space)
+    protected function databaseSeederModification()
     {
-        $sedder_factory_path = database_path('seeders/SeederFactory.php');
-        if (!File::exists($sedder_factory_path)) {
+        $database_path = database_path('seeders/DatabaseSeeder.php');
+
+        if (!(FileModifier::getContent($database_path)->isExist("include('SeederFactory.php');"))) {
+
             FileModifier::getContent(database_path('seeders/DatabaseSeeder.php'))
-            ->searchingText('{', 2)->insertAfter()->insertingText("\n\n\n\t\tinclude('/SeederFactory.php');")
-            ->save();
+                ->searchingText("{", 2)->insertAfter()->insertingText("\n\n\n\t\tinclude('SeederFactory.php');")
+                ->save();
+
+            $this->info("Seeder factory  is added to DatabaseSeeder.php file");
+            return true;
         }
 
 
-
-        echo "$name_space is added to database factory";
+        $this->info("Seeder factory  is already added to DatabaseSeeder.php file");
     }
 
     protected function seederFactoryModification($name_space)
@@ -154,6 +158,6 @@ class SeederCreation extends BaseCreation
             ->searchingText('///', 1)->insertBefore()->insertingText("\n\t\t\$this->call([\\$name_space::class]);")
             ->save($put_content_path);
 
-        echo "$name_space is added to SeederFactory";
+        $this->info("$name_space is added to SeederFactory");
     }
 }

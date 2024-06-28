@@ -21,4 +21,8 @@ trait ConsoleHelper
 
         return strtolower($response) === 'yes';
     }
+
+    public function info($msg){
+         echo "\n$msg";
+    }
 }

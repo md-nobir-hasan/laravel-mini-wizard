@@ -87,6 +87,9 @@ class WizardCommand extends Command
 
     public function handle()
     {
+
+
+     
         //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 
@@ -218,9 +221,9 @@ class WizardCommand extends Command
         //     $allFunctionality->createMigration();
         // }
         //seeder creation
-        // if ($this->confirm('Do you want to create the seeder?', true)) {
-        //     $allFunctionality->createSeeder();
-        // }
+        if ($this->confirm('Do you want to create the seeder?', true)) {
+            $allFunctionality->createSeeder();
+        }
 
         //factory creation
         if ($this->confirm('Do you want to create the factory?', true)) {

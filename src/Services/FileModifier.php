@@ -178,6 +178,14 @@ class FileModifier
         return preg_replace($pattern, '', $content);
     }
 
+    public function isExist($text){
+
+        if (strpos($this->content, $text) !== false) {
+            return true;
+        }
+         return false;
+    }
+
     public function ifExist($msg=''){
         $text = $this->searchingText;
         if (strpos($this->content, $text) !== false) {

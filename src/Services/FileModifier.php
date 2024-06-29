@@ -122,6 +122,10 @@ class FileModifier
         return true;
     }
 
+    public function isSave(){
+       return $this->save();
+    }
+
     protected function applyModification()
     {
         if ($this->removeStart && $this->removeEnd) {

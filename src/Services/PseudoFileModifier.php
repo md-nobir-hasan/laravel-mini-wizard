@@ -50,6 +50,7 @@ class PseudoFileModifier
 
     public function searchingText($text, $match = 0)
     {
+        // $this->instanceof_filemodifier->searchingText = $text;
         return $this;
     }
 
@@ -103,6 +104,10 @@ class PseudoFileModifier
         } else {
             echo "\nthe instance of file modefier execution";
         }
+    }
+    public function isSave()
+    {
+        return false;
     }
 
     protected function applyModification()

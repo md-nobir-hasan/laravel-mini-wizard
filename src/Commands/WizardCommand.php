@@ -268,27 +268,27 @@ class WizardCommand extends Command
         /**
          *  Route creation for the module
          * */
-        // if ($this->confirm('Do you want to create the route  for the module?', true)) {
+        if ($this->confirm('Do you want to create the route  for the module?', true)) {
 
-        //     /**
-        //      * Array will be
-        //      *
-        //      * $routes_info = [
-        //      *                  group_name => '',
-        //      *                  group_middleware => '', //(this middleware for the main route)
-        //      *                  middleware => '', //(this middleware for the main route)
-        //      *                  is_resource => '',
-        //      *                  general_routes => [
-        //      *                         [url=>'',name=>'',route_method=>'',controller_method=>'','middleware'=>'']
-        //      *                          ..........................
-        //      *                          ..........................
-        //      *                  ]
-        //      *                 ]
-        //      */
+            /**
+             * Array will be
+             *
+             * $routes_info = [
+             *                  group_name => '',
+             *                  group_middleware => '', //(this middleware for the main route)
+             *                  middleware => '', //(this middleware for the main route)
+             *                  is_resource => '',
+             *                  general_routes => [
+             *                         [url=>'',name=>'',route_method=>'',controller_method=>'','middleware'=>'']
+             *                          ..........................
+             *                          ..........................
+             *                  ]
+             *                 ]
+             */
             $route_info = $this->routeInfoCollection();
 
-        //     $allFunctionality->createRoute($route_info);
-        // }
+            $allFunctionality->createRoute($route_info);
+        }
 
 
 

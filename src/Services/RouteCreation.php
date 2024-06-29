@@ -95,13 +95,13 @@ class RouteCreation extends BaseCreation
             $general_routes_make = '';
             foreach($general_routes as $general_route){
                 //url should be validate later task
-                $general_routes_make .= "\nRoute::{$general_route['route_method']}('/{$general_route['url']}',[$controller_namespace),'{$general_route['controller_method']}']";
+                $general_routes_make .= "\nRoute::{$general_route['route_method']}('/{$general_route['url']}',['$controller_namespace','{$general_route['controller_method']}'])->name('{$general_route['name']}')";
                 if($middleware = $general_route['middleware']){
                     $general_routes_make .= "->middleware('$middleware')";
                 }
                 $general_routes_make .= ';';
             }
-            $target_route = $general_route;
+            $target_route = $general_routes_make;
         }
 
         /**
@@ -123,7 +123,7 @@ class RouteCreation extends BaseCreation
             $route_group_start .= "group(function () {";
 
             //Final route preparation
-            $final_route = $route_group_start.$target_route.$route_group_end;
+            $final_route = $route_group_start. $general_routes_make.$route_group_end;
 
             //inserting the route
             FileModifier::getContent($get_content_path)
@@ -142,7 +142,6 @@ class RouteCreation extends BaseCreation
             $this->info('route added to mini-wizard.php without route group');
         }
 
-        dd($target_route);
     }
 
     public function parameterPass($route_info)

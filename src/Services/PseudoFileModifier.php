@@ -97,11 +97,11 @@ class PseudoFileModifier
 
     public function save($putContentPath = null)
     {
-        self::$instanceof_filemodifier->save();
+        $this->instanceof_filemodifier->save();
         if ($this->msg) {
             echo "\n{$this->msg}";
         } else {
-            echo "\nPseudo file modifier execution (the instance of file modefier execution)";
+            echo "\nthe instance of file modefier execution";
         }
     }
 

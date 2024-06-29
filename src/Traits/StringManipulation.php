@@ -24,6 +24,10 @@ trait StringManipulation
     {
         return ucfirst(str()->camel($string));
     }
+    public static function PascalToCabab($string)
+    {
+        return str()->kebab($string);
+    }
 
     public static function foreignKeyToModelName($foreing_key)
     {

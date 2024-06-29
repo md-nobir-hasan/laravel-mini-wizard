@@ -183,7 +183,8 @@ class FileModifier
         if (strpos($this->content, $text) !== false) {
             return $this;
         }
-        $pseudo_modifier = PseudoFileModifier::getContent($this->getContentPath)->searchingText($this->searchingText)->msg($msg);
+         $instanceofFileModefier = $this;
+        $pseudo_modifier = PseudoFileModifier::getContent($this->getContentPath)->searchingText($this->searchingText)->msg($msg)->instanceofFileModefier($instanceofFileModefier);
         return $pseudo_modifier;
     }
 
@@ -193,7 +194,8 @@ class FileModifier
         if (strpos($this->content, $text) === false) {
             return $this;
         }
-        $pseudo_modifier = PseudoFileModifier::getContent($this->getContentPath)->searchingText($this->searchingText)->msg($msg);
+        $instanceofFileModefier = $this;
+        $pseudo_modifier = PseudoFileModifier::getContent($this->getContentPath)->searchingText($this->searchingText)->msg($msg)->instanceofFileModefier($instanceofFileModefier);
         return $pseudo_modifier;
     }
 }

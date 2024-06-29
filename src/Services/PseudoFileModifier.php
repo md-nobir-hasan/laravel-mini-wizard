@@ -24,6 +24,9 @@ class PseudoFileModifier
 
     protected $removeText = '';
     protected $msg;
+
+    protected $instanceof_filemodifier;
+
     public function __construct($getContentPath)
     {
         if (!File::exists($getContentPath)) {
@@ -33,6 +36,13 @@ class PseudoFileModifier
         $this->content = File::get($getContentPath);
     }
 
+    public function instanceofFileModefier($instanceofFilemodifier)
+    {
+        $this->instanceof_filemodifier = $instanceofFilemodifier;
+
+        return $this;
+    }
+
     public static function getContent($getContentPath)
     {
         return new static($getContentPath);
@@ -40,19 +50,12 @@ class PseudoFileModifier
 
     public function searchingText($text, $match = 0)
     {
-        $this->searchingText = $text;
-        $this->matching = $match;
-
         return $this;
     }
 
     public function orSearchingText($text, $match = 0)
     {
-        $previous_searching_text = $this->searchingText;
-        if (strpos($this->content, $previous_searching_text) === false) {
-            $this->searchingText = $text;
-            $this->matching = $match;
-        }
+
 
         return $this;
     }
@@ -94,10 +97,11 @@ class PseudoFileModifier
 
     public function save($putContentPath = null)
     {
-        if($this->msg){
+        self::$instanceof_filemodifier->save();
+        if ($this->msg) {
             echo "\n{$this->msg}";
-        }else{
-            echo "\nPseudo file modifier execution";
+        } else {
+            echo "\nPseudo file modifier execution (the instance of file modefier execution)";
         }
     }
 
@@ -130,22 +134,19 @@ class PseudoFileModifier
     }
     public function ifExist($msg = '')
     {
-        $text = $this->searchingText;
-        if (strpos($this->content, $text) !== false) {
-            $real_file_modifier = FileModifier::getContent($this->getContentPath)->searchingText($this->searchingText);
-            return $real_file_modifier;
+        $text = $this->instanceof_filemodifier->searchingText;
+        if (strpos($this->instanceof_filemodifier->content, $text) !== false) {
 
+            return $this->instanceof_filemodifier;
         }
         return $this;
     }
 
     public function ifNotExist($msg = '')
     {
-        $text = $this->searchingText;
-        if (strpos($this->content, $text) === false) {
-            $real_file_modifier = FileModifier::getContent($this->getContentPath)->searchingText($this->searchingText);
-            return $real_file_modifier;
-
+        $text = $this->instanceof_filemodifier->searchingText;
+        if (strpos($this->instanceof_filemodifier->content, $text) === false) {
+            return $this->instanceof_filemodifier;
         }
         return $this;
     }

@@ -272,25 +272,26 @@ class WizardCommand extends Command
     }
 
 
-    public function routeInfoCollection(){
+    public function routeInfoCollection()
+    {
 
         //route array
-        $route_info = ['group_name' => '', 'group_middleware' => '', 'is_resource' => true, 'general_routes' => ''];
+        $route_info = ['group_name' => '', 'group_middleware' => '', 'is_resource' => true, 'middleware'=>'', 'general_routes' => ''];
 
         //Route group preparation
-        $route_group_name = $this->ask('Enter route group (press enter to skip',);
+        $route_group_name = $this->ask('Enter route group (press enter to skip)',);
 
         $route_info['group_name'] = $route_group_name;
 
         if ($route_group_name) {
-            $middleware = $this->ask('Enter middleware for the group (press enter to skip');
+            $middleware = $this->ask('Enter middleware for the group (press enter to skip)');
             $route_info['group_middleware'] = $middleware;
         }
 
         //Route type choice
         $route_type = $this->choice('Are you want to create resource route or general route', ['resource route', 'generale route']);
 
-        if($route_type == 'resource route'){
+        if ($route_type == 'resource route') {
             //set the is_resource value false
             $route_info['is_resource'] = true;
 
@@ -313,13 +314,25 @@ class WizardCommand extends Command
             // $general_route['controller_method'] = $this->ask('Enter general route middlerware (press enter to skip)');
 
             // $general_route_info[] = $general_route;
-
+            $i = 1;
             while (true) {
                 /**
                  *  general route's url collection
                  */
-                $general_route_url = $this->ask('Enter general route url (press enter to skip)');
+                //at first one route url have to provide
+                if ($i == 1) {
+                    $general_route_url_first = $this->ask('Enter general route url');
+                    if (!$general_route_url_first) {
+                        continue;
+                    }
+                    $general_route_url = $general_route_url_first;
+                } else {
+                    $general_route_url = $this->ask('Enter general route url (press enter to skip)');
+                }
 
+                /**
+                 * Stop execution in the basis of empty url
+                 */
                 if (!$general_route_url) {
                     break;
                 }
@@ -341,7 +354,7 @@ class WizardCommand extends Command
                     }
                 }
                 $general_route['name'] = $general_route_name;
-
+                $i++;
 
                 /**
                  *  general route's method collection
@@ -373,7 +386,7 @@ class WizardCommand extends Command
                  */
 
                 //sometimes it need to validate the target route
-                $middleware = $this->ask("Enter middleware for the route '$general_route_url'");
+                $middleware = $this->ask("Enter middleware for the route '$general_route_url' (press enter to skip)");
                 $general_route['middleware'] = $middleware;
 
                 /**

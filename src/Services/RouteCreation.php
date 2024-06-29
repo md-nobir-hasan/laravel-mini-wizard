@@ -6,13 +6,16 @@ use Illuminate\Support\Facades\File;
 
 class RouteCreation extends BaseCreation
 {
-    public function generate($route_info)
+
+    protected $route_info;
+
+    public function generate()
     {
-        dd($route_info);
         /**
-         * Service class created if not exists
+         * logic based on mini-wizard published or not yet
          */
-        $this->miniWizardRouteFileCheck();
+
+        $this->modifyMiniWizardRouteFile();
 
         // Derive file name from model name
         $FileName = $this->model_name . 'Service.php';
@@ -54,16 +57,28 @@ class RouteCreation extends BaseCreation
         return true;
     }
 
-    protected function miniWizardRouteFileCheck()
+    protected function modifyMiniWizardRouteFile()
     {
 
-        $mini_wizard_path = base_path('routes/mini-wizard.php');
+        $put_content_path = base_path('routes/mini-wizard.php');
+        $get_content_path = $put_content_path;
 
-        if (!File::exists($mini_wizard_path)) {
-            FileModifier::getContent(self::getStubFilePath(self::ROUTE))
-                ->searchingText('{{slot}}')->replace()->insertingText($services_dir_namespace)
-                ->save($mini_wizard_path);
-            $this->info('Service class created');
+        if (!File::exists($get_content_path)) {
+            $get_content_path = self::getStubFilePath(self::ROUTE);
         }
+
+        if($this->route_info['group']){
+            
+        }
+        FileModifier::getContent($get_content_path)
+            ->searchingText('{{slot}}')->replace()->insertingText($services_dir_namespace)
+            ->save($mini_wizard_path);
+        $this->info('Service class created');
+    }
+
+    public function parameterPass($route_info)
+    {
+        $this->route_info = $route_info;
+        $this->generate();
     }
 }

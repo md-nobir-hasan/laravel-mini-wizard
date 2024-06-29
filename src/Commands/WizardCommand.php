@@ -33,7 +33,7 @@ class WizardCommand extends Command
         'date' => ['nullable', 'default'],
         'decimal' => ['total', 'places', 'nullable', 'default', 'unsigned'],
         'double' => ['total', 'places', 'nullable', 'default', 'unsigned'],
-        'enum' => ['default','nullable'],
+        'enum' => ['default', 'nullable'],
         'float' => ['total', 'places', 'nullable', 'default', 'unsigned'],
         'foreignId' => ['nullable', 'constrained', 'cascadeOnDelete', 'cascadeOnUpdate', 'restrictOnDelete', 'restrictOnUpdate'],
         'foreignIdFor' => ['nullable', 'constrained', 'cascadeOnDelete', 'cascadeOnUpdate', 'restrictOnDelete', 'restrictOnUpdate'],
@@ -88,7 +88,6 @@ class WizardCommand extends Command
 
     public function handle()
     {
-
         //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 
@@ -178,7 +177,8 @@ class WizardCommand extends Command
                 return null;
         }
     }
-    protected function dataFilter(){
+    protected function dataFilter()
+    {
         $this->fields = array_filter($this->fields);
         $this->models_name = array_filter($this->models_name);
     }
@@ -208,7 +208,7 @@ class WizardCommand extends Command
     protected function wizard()
     {
 
-        $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name,$this->models_name);
+        $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name, $this->models_name);
 
         //Model creation
         // if ($this->confirm('Do you want to create the model?', true)) {
@@ -246,69 +246,149 @@ class WizardCommand extends Command
 
 
         /**
-         *  Service class for controller creation
+         *  Route creation for the module
          * */
         if ($this->confirm('Do you want to create the route  for the module?', true)) {
-            $route = [];
-            //Route group preparation
-            $route_group = $this->ask('Enter route group (press enter to skip', );
 
-            $route['group'] = $route_group;
+            /**
+             * Array will be
+             *
+             * $routes_info = [
+             *                  group_name => '',
+             *                  group_middleware => '', //(this middleware for the main route)
+             *                  middleware => '', //(this middleware for the main route)
+             *                  is_resource => '',
+             *                  general_routes => [
+             *                         [url=>'',name=>'',route_method=>'',controller_method=>'']
+             *                          ..........................
+             *                          ..........................
+             *                  ]
+             *                 ]
+             */
+            $route_info = $this->routeInfoCollection();
 
-            if($route_group){
-                $middleware = $this->ask('Enter middleware for the group (press enter to skip');
-                $route['group_middleware'] = $middleware;
-            }
-
-            //Route type choice
-            $route_type = $this->choice('Are you want to create resource route or general route', ['resource route', 'generale route']);
-
-            //Resource route collection
-            if($route_type == 'resource route'){
-                $resource_route_url = $this->ask('Enter resource route url');
-                $resource_route_middleware = $this->ask('Enter resource route middleware (press enter to skip)');
-                while(true){
-                    if($resource_route_url){
-                        break;
-                    }
-                    $resource_route_url = $this->ask('Enter resource route name');
-                    $resource_route_middleware = $this->ask('Enter resource route middleware (press enter to skip)');
-                }
-                $resource_route =['route_url'=> $resource_route_url,'route_middleware'=>$resource_route_middleware];
-                $route['resource_route'] = $resource_route;
-            }
-            //non resource (normal) route collection
-            else{
-                $general_route =[];
-
-                $route_url = $this->ask('Enter general route url ');
-                $general_route['route_url']= $route_name;
-                $route_name = $this->ask('Enter general route name ');
-                $general_route['route_name']= $route_name;
-                $route_method = $this->ask('Enter general route method');
-                $general_route['route_method']= $route_name;
-                $route_middleware = $this->ask('Enter general route middlerware (press enter to skip)');
-                $general_route['route_middleware'] = $route_middleware;
-
-                while (true) {
-                    if (!$route_name) {
-                        break;
-                    }
-                    $route_url = $this->ask('Enter general route url (press enter to skip)');
-                    $general_route['route_url'] = $route_url;
-                    $route_name = $this->ask('Enter general route name (press enter to skip)');
-                    $general_route['route_name'] = $route_name;
-                    $route_method = $this->ask('Enter general route method (press enter to skip)');
-                    $general_route['route_method'] = $route_method;
-                    $route_middleware = $this->ask('Enter general route middlerware (press enter to skip)');
-                    $general_route['route_middleware'] = $route_middleware;
-                }
-
-                $route['general_routes'] = $general_route;
-            }
-
-
-            $allFunctionality->createRoute($route);
+            $allFunctionality->createRoute($route_info);
         }
+    }
+
+
+    public function routeInfoCollection(){
+
+        //route array
+        $route_info = ['group_name' => '', 'group_middleware' => '', 'is_resource' => true, 'general_routes' => ''];
+
+        //Route group preparation
+        $route_group_name = $this->ask('Enter route group (press enter to skip',);
+
+        $route_info['group_name'] = $route_group_name;
+
+        if ($route_group_name) {
+            $middleware = $this->ask('Enter middleware for the group (press enter to skip');
+            $route_info['group_middleware'] = $middleware;
+        }
+
+        //Route type choice
+        $route_type = $this->choice('Are you want to create resource route or general route', ['resource route', 'generale route']);
+
+        if($route_type == 'resource route'){
+            //set the is_resource value false
+            $route_info['is_resource'] = true;
+
+            //sometimes it need to validate the target route
+            $middleware = $this->ask('Enter middleware for the resource route');
+            $route_info['middleware'] = $middleware;
+        }
+        //In case of generale route
+        else {
+
+            //set the is_resource value false
+            $route_info['is_resource'] = false;
+
+            //general route's url, name, method, controller method collection
+            $general_route_info = [];
+
+            // $general_route['url'] = $this->ask('Enter general route url');
+            // $general_route['name'] = $this->ask('Enter general route name ');
+            // $general_route['route_method'] = $this->ask('Enter general route method');
+            // $general_route['controller_method'] = $this->ask('Enter general route middlerware (press enter to skip)');
+
+            // $general_route_info[] = $general_route;
+
+            while (true) {
+                /**
+                 *  general route's url collection
+                 */
+                $general_route_url = $this->ask('Enter general route url (press enter to skip)');
+
+                if (!$general_route_url) {
+                    break;
+                }
+
+                $general_route['url'] = $general_route_url;
+
+
+                /**
+                 *  general route's name collection
+                 */
+                $general_route_name = $this->ask("Enter general route name for url '$general_route_url'");
+                if (!$general_route_name) {
+                    //contineous looping if route not exist
+                    while (true) {
+                        $general_route_name = $this->ask("Enter general route name for url '$general_route_url'");
+                        if ($general_route_name) {
+                            break;
+                        }
+                    }
+                }
+                $general_route['name'] = $general_route_name;
+
+
+                /**
+                 *  general route's method collection
+                 */
+                $general_route_method = $this->choice("Enter general route method for url '$general_route_url'", ['get', 'post', 'put', 'delete', 'patch']);
+                $general_route['route_method'] = $general_route_method;
+
+
+                /**
+                 *  general route's controller method collection
+                 */
+                $general_route_controller_method = $this->ask("Enter controller method for the route '$general_route_url'");
+
+                if (!$general_route_controller_method) {
+
+                    //contineous looping if  not exist
+                    while (true) {
+                        $general_route_controller_method = $this->ask("Enter controller method for the route '$general_route_url'");
+
+                        if ($general_route_controller_method) {
+                            break;
+                        }
+                    }
+                }
+                $general_route['controller_method'] = $general_route_controller_method;
+
+                /**
+                 * general routes middleware
+                 */
+
+                //sometimes it need to validate the target route
+                $middleware = $this->ask("Enter middleware for the route '$general_route_url'");
+                $general_route['middleware'] = $middleware;
+
+                /**
+                 * push the array in the route info array
+                 */
+                $general_route_info[] = $general_route;
+            }
+
+            //add general routes info to main route
+            $route_info['general_routes'] = $general_route_info;
+        }
+
+
+
+
+        return $route_info;
     }
 }

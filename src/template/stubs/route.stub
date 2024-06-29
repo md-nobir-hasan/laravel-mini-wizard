@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-{{slot}}
+/// don't delete these three forward slash, cause here implement the new route automatically;

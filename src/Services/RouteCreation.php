@@ -8,7 +8,23 @@ class RouteCreation extends BaseCreation
 {
 
     protected $route_info;
+    /**
+     * Array will be
+     *
+     * $routes_info = [
+     *    group_name => '',
+     *     group_middleware => '', //(this middleware for the main route)
+     *     middleware => '', //(this middleware for the main route)
+     *     is_resource => '',
+     *     general_routes => [
+     *        [url=>'',name=>'',route_method=>'',controller_method=>'','middleware'=>'']
+     *        ..........................
+     *        ..........................
+     *    ]
+     * ]
+     */
 
+     
     public function generate()
     {
         /**

@@ -210,25 +210,40 @@ class WizardCommand extends Command
 
         $allFunctionality = new AllFunctionalityClass($this->fields, $this->model_class_name, $this->models_name);
 
+
+
         //Model creation
         // if ($this->confirm('Do you want to create the model?', true)) {
         //     $allFunctionality->createModel();
         // }
+
+
+
 
         // //migration creation
         // if ($this->confirm('Do you want to create the migration?', true)) {
         //     $allFunctionality->createMigration();
         // }
 
+
+
+
         // //seeder creation
         // if ($this->confirm('Do you want to create the seeder?', true)) {
         //     $allFunctionality->createSeeder();
         // }
 
+
+
+
         // //factory creation
         // if ($this->confirm('Do you want to create the factory?', true)) {
         //     $allFunctionality->createFactory();
         // }
+
+
+
+
 
         /**
          *  requests creation
@@ -236,6 +251,9 @@ class WizardCommand extends Command
         // if ($this->confirm('Do you want to create the requests?', true)) {
         //     $allFunctionality->createRequests();
         // }
+
+
+
 
         /**
          *  Service class for controller creation
@@ -245,30 +263,45 @@ class WizardCommand extends Command
         // }
 
 
+
+
         /**
          *  Route creation for the module
          * */
-        if ($this->confirm('Do you want to create the route  for the module?', true)) {
+        // if ($this->confirm('Do you want to create the route  for the module?', true)) {
 
-            /**
-             * Array will be
-             *
-             * $routes_info = [
-             *                  group_name => '',
-             *                  group_middleware => '', //(this middleware for the main route)
-             *                  middleware => '', //(this middleware for the main route)
-             *                  is_resource => '',
-             *                  general_routes => [
-             *                         [url=>'',name=>'',route_method=>'',controller_method=>'']
-             *                          ..........................
-             *                          ..........................
-             *                  ]
-             *                 ]
-             */
+        //     /**
+        //      * Array will be
+        //      *
+        //      * $routes_info = [
+        //      *                  group_name => '',
+        //      *                  group_middleware => '', //(this middleware for the main route)
+        //      *                  middleware => '', //(this middleware for the main route)
+        //      *                  is_resource => '',
+        //      *                  general_routes => [
+        //      *                         [url=>'',name=>'',route_method=>'',controller_method=>'','middleware'=>'']
+        //      *                          ..........................
+        //      *                          ..........................
+        //      *                  ]
+        //      *                 ]
+        //      */
             $route_info = $this->routeInfoCollection();
 
-            $allFunctionality->createRoute($route_info);
+        //     $allFunctionality->createRoute($route_info);
+        // }
+
+
+
+
+
+        /**
+         *  Controller Creation
+         * */
+        if ($this->confirm('Do you want to create Controller?', true)) {
+            $allFunctionality->createController($route_info);
         }
+
+
     }
 
 

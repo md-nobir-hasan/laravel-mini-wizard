@@ -97,8 +97,6 @@ class RouteCreation extends BaseCreation
 
 
 
-
-
         /**
          * code writing for the route if group exist
          */
@@ -116,25 +114,8 @@ class RouteCreation extends BaseCreation
             $group_route_start .= "prefix('/$group')->";
             $group_route_start .= "name('$group.')->";
             $group_route_start .= "group(function () {";
-
-            //Final route preparation
-            // $final_route = $group_route_start . $general_routes_make . $group_route_end;
-
-            //inserting the route
-            // FileModifier::getContent($get_content_path)
-            //     ->searchingText("$group_route_start")
-            //     ->ifExist()->insertAfter()->insertingText($target_route)
-            //     ->ifNotExist()
-            //     ->searchingText('///')->insertBefore()->insertingText($final_route)
-            //     ->save($put_content_path);
-            // $this->info('route added to mini-wizard.php with route group');
         } else {
-            // //inserting the route
-            // FileModifier::getContent($get_content_path)
-            //     ->searchingText('///')->insertBefore()->insertingText($target_route)
-            //     ->save($put_content_path);
 
-            // $this->info('route added to mini-wizard.php without route group');
         }
 
 
@@ -196,11 +177,6 @@ class RouteCreation extends BaseCreation
             }
         }
 
-        // FileModifier::getContent($get_content_path)->searchingText("$group_route_start")
-        //     ->ifExist()->insertAfter()->insertingText($target_route)
-        //     ->ifNotExist()->searchingText("$parent_route_start")
-        //     ->ifExist()->insertingText("$full_route")
-        //     ->save();
     }
 
     public function parameterPass($route_info)

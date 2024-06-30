@@ -308,7 +308,39 @@ class ViewCreation extends BaseCreation
         $fields = $this->fields;
     }
 
-    protected function stringfield(){
-        
+    protected function textInput($field_name){
+        $title = str()->headline($field_name);
+         return <<<HTML
+            <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
+                <label for='$field_name' class='inline-block mb-2'>$title</label>
+                <input type='text' id='$field_name' name='$field_name'
+                    class='relative w-full px-4 py-2 overflow-x-auto leading-5 text-gray-800 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'
+                >
+            </div>
+            HTML;
+    }
+
+    protected function numberInput($field_name){
+        $title = str()->headline($field_name);
+         return <<<HTML
+            <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
+                <label for='$field_name' min='0' step='1' class='inline-block mb-2'>$title</label>
+                <input type='number' id='$field_name' name='$field_name'
+                    class='relative w-full px-4 py-2 overflow-x-auto leading-5 text-gray-800 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'
+                >
+            </div>
+            HTML;
+    }
+
+    protected function textAreaInput($field_name){
+        $title = str()->headline($field_name);
+         return <<<HTML
+            <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
+                <label for='$field_name' min='0' step='1' class='inline-block mb-2'>$title</label>
+                <input type='number' id='$field_name' name='$field_name'
+                    class='relative w-full px-4 py-2 overflow-x-auto leading-5 text-gray-800 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'
+                >
+            </div>
+            HTML;
     }
 }

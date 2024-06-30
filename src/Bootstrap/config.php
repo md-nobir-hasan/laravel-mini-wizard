@@ -16,5 +16,11 @@ return [
          * the route code are store in the mini-wizard.php file
          */
         'route' => 'backend',
+
+        /**
+         * this route path means route global prefix. how many routes you create every routes under these prefix nad name
+         * the route code are store in the mini-wizard.php file
+         */
+        'theme' => 'nobir',
     ],
 ];

@@ -16,6 +16,7 @@ trait ModuleKeys{
     const SERVICE_CLASS = 'service_class';
     const PARENT_SERVICE_CLASS = 'parent_service_class';
     const VIEW = 'view';
+    const THEME = 'theme';
 
     //keys in route module
     const ROUTE = 'route';
@@ -25,9 +26,14 @@ trait ModuleKeys{
     const RESOURCE_CONTROLLER = 'resource_controller';
 
 
-    //stub paths
+    /**
+     * stub paths
+     */
+    //for controller
     const CODE_FOR_GET_METHOD= 'code_for_get_method';
     const CODE_FOR_POST_METHOD= 'code_for_post_method';
     const CODE_FOR_PUT_METHOD= 'code_for_put_method';
     const CODE_FOR_DELETE_METHOD= 'code_for_delete_method';
+
+    //for view (blade file)
 }

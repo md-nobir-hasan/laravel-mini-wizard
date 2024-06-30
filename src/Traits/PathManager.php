@@ -26,6 +26,17 @@ trait PathManager
        }
     }
 
+    public static function stub_path($dir)
+    {
+        $defaultStubFilePath = self::pakage_root_path. '/template/stubs/'.$module.'.stub';
+        $StubFilePath = self::stubDirPath().'/'.$module.'.stub';
+       if(file_exists($StubFilePath)){
+        return $StubFilePath;
+       }else{
+        return $defaultStubFilePath;
+       }
+    }
+
     public static function getModulePath($module,$fileName=null)
     {
         $defaultPaths = (include(self::config_path_pakage))['paths'];
@@ -139,6 +150,13 @@ trait PathManager
         $configPaths = config('mini-wizard.paths', []);
         $path_suffix = $configPaths[$module] ?? $defaultPaths[$module];
         return $path_suffix;
+    }
+
+    public function nameInConfig($key){
+        $defaultPaths = (include(self::config_path_pakage))['paths'];
+        $configPaths = config('mini-wizard.paths', []);
+        $name_in_config = $configPaths[$module] ?? $defaultPaths[$module];
+        return $name_in_config;
     }
 
     public function appServiceProviderPath(){

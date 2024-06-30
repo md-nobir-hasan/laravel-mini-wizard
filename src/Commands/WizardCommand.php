@@ -100,15 +100,9 @@ class WizardCommand extends Command
     {
 
 
-        $allFunctionality = new AllFunctionalityClass($this->fields, 'Product', $this->models_name);
-        if ($this->confirm('Do you want to create Controller?', true)) {
-            $allFunctionality->createController($this->routes_info);
-        }
 
 
-
-
-
+        //Temporary code write above me
 
         //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
@@ -199,11 +193,13 @@ class WizardCommand extends Command
                 return null;
         }
     }
+
     protected function dataFilter()
     {
         $this->fields = array_filter($this->fields);
         $this->models_name = array_filter($this->models_name);
     }
+
     protected function bootstrap()
     {
         if (!file_exists(config_path('mini-wizard.php'))) {
@@ -318,11 +314,21 @@ class WizardCommand extends Command
 
 
 
+        // /**
+        //  *  Controller Creation
+        //  * */
+        // if ($this->confirm('Do you want to create Controller?', true)) {
+        //     $allFunctionality->createController($route_info);
+        // }
+
+
+
+
         /**
-         *  Controller Creation
+         *  view Creation
          * */
-        if ($this->confirm('Do you want to create Controller?', true)) {
-            $allFunctionality->createController($route_info);
+        if ($this->confirm('Do you want to create view?', true)) {
+            $allFunctionality->createView($route_info);
         }
 
 

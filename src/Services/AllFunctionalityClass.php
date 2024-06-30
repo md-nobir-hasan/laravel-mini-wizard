@@ -47,4 +47,9 @@ class AllFunctionalityClass extends BaseCreation
         (new ControllerCreation($this->fields, $this->model_name))->parameterPass($route_info);
     }
 
+    public function createView($route_info)
+    {
+        (new ViewCreation($this->fields, $this->model_name))->parameterPass($route_info);
+    }
+
 }

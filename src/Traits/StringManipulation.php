@@ -39,4 +39,23 @@ trait StringManipulation
 
         return $modelName;
     }
+
+    public function removeAfterBefore($haystack, $remove = null)
+    {
+        // Default to '/' if $remove is null
+        if (is_null($remove)) {
+            $remove = '/';
+        }
+
+        // Escape special characters in the $remove string for use in the regular expression
+        $escapedRemove = preg_quote($remove, '/');
+
+        // Create a regular expression pattern to match the text at the start and end of the string
+        $pattern = '/^' . $escapedRemove . '|' . $escapedRemove . '$/';
+
+        // Replace the matched parts with an empty string
+        $text = preg_replace($pattern, '', $haystack);
+
+        return $text;
+    }
 }

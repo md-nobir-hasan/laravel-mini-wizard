@@ -9,10 +9,13 @@
     "homepage": "https://github.com/md-nobir-hasan/laravel-mini-wizard.git",
     "license": "MIT",
     "autoload": {
+        "files": [
+            "src/bootstrap/helpers.php"
+        ],
         "psr-4": {
             "Nobir\\CurdByCommand\\": "src/"
-        }
-    },
+        },
+
     "authors": [
         {
             "name": "Md. Nobir Hasan",

@@ -40,10 +40,22 @@ class ViewCreation extends BaseCreation
 
     public function generate()
     {
-        $theme_name = self::nameInConfig(self::THEME);
-        $this->$theme_name = self::stub_path();
         /**
-         * logic based on mini-wizard published or not yet
+         * Theme seraching
+         */
+        $theme_name = self::nameInConfig(self::THEME) ?? 'nobir';
+        $theme_path = self::stub_path("view/$theme_name");
+        if ($theme_path) {
+            $this->theme_path = $theme_path;
+        } else {
+            $this->info('Your providing theme is not found');
+            return false;
+        }
+
+
+
+        /**
+         * logic based on routes . is the routes resourece or not
          */
         $this->route_info['is_resource'] ? $this->generateViewForResourceMethod() : $this->generateViewForGeneralMethod();
     }
@@ -55,60 +67,7 @@ class ViewCreation extends BaseCreation
         // $this->CreateViewCreation();
         // $this->EditViewCreation();
 
-        // Derive controller name from model name
-        $file_name = $this->model_name . 'Controller.php';
 
-        //derive get content path (the stub file for the resource controller)
-        $get_content_path = self::getStubFilePath(self::RESOURCE_CONTROLLER);
-
-        //derive the put content path which is the target controller
-        $put_content_path = self::getModulePath(self::CONTROLLER, $file_name);
-
-        //if the file exist overright or not
-        if (self::fileOverwriteOrNot($put_content_path)) {
-
-            /**
-             * preparation of of the dynamic values for the resource controller
-             */
-            //prepare the namespace
-
-            //Own namspace
-            $name_space = self::getModuleNamespace(self::CONTROLLER);
-
-            //request namspace
-            $request_namespace = self::getModuleNamespace(self::REQUESTS);
-
-            //Own namspace
-            $model_namespace = self::getModuleNamespace(self::MODEL);
-
-            //Own namspace
-            $service_class_namespace = self::getModuleNamespace(self::SERVICE_CLASS);
-
-            //geting model name
-            $model_name = $this->model_name;
-
-            //view directory path preparation
-            $view_dir_path = $this->viewDirPathPrepare();
-
-
-            //Base route preparation
-            $route_name = $this->BaseRouteNamePrepare();
-
-            //file creation
-            FileModifier::getContent($get_content_path)
-                ->searchingText('{{name_space}}')->replace()->insertingText($name_space)
-                ->searchingText('{{request_namespace}}')->replace()->insertingText($request_namespace)
-                ->searchingText('{{model_namespace}}')->replace()->insertingText($model_namespace)
-                ->searchingText('{{service_class_namespace}}')->replace()->insertingText($service_class_namespace)
-                ->searchingText('{{model_name}}')->replace()->insertingText($model_name)
-                ->searchingText('{{view_dir_path}}')->replace()->insertingText($view_dir_path)
-                ->searchingText('{{route_name}}')->replace()->insertingText($route_name)
-                ->save($put_content_path);
-            echo 'Resource Controller created successfully';
-            return true;
-        }
-        echo 'Skiped Resource Controller creation';
-        return true;
     }
 
 
@@ -231,8 +190,89 @@ class ViewCreation extends BaseCreation
     }
 
 
-    protected function indexViewCreation(){
+    protected function indexViewCreation()
+    {
+        // Derive controller name from model name
+        $file_name = 'index.blade.php';
+        $folder_for_group = self::removeAfterBefore(str_replace('.', '/', $this->viewDirPathPrepare())); //assuming backend/setup/ return
+        //derive get content path (the stub file for the resource controller)
+        $get_content_path = $this->theme_path . '/index.stub';
 
+        //derive the put content path which is the target controller
+        $put_content_path = self::getModulePath(self::VIEW, $folder_for_group);
+        self::directoryCreateIfNot($put_content_path);
+
+        $put_content_file_path = $put_content_path . "/$file_name";
+        //if the file exist overright or not
+        if (self::fileOverwriteOrNot($put_content_file_path)) {
+            /**
+             * preparation of of the dynamic values for the resource controller
+             */
+            //prepare the namespace
+
+            //Own namspace
+            $page_title = str()->headline($this->model_name) . " List";
+
+
+            //Base route preparation
+            $route_name = $this->BaseRouteNamePrepare();
+
+            //file creation
+            FileModifier::getContent($get_content_path)
+                ->searchingText('{{page_title}}')->replace()->insertingText($page_title)
+                ->searchingText('{{route_name}}')->replace()->insertingText($route_name)
+                ->save($put_content_file_path);
+
+            $this->info("$file_name file created successfully");
+
+            return true;
+        }
+        $this->info("Skiped $file_name creation");
+        return true;
+    }
+
+    protected function createViewCreation()
+    {
+        // Derive controller name from model name
+        $file_name = 'create.blade.php';
+        $folder_for_group = self::removeAfterBefore(str_replace('.', '/', $this->viewDirPathPrepare())); //assuming backend/setup/ return
+        //derive get content path (the stub file for the resource controller)
+        $get_content_path = $this->theme_path . '/create.stub';
+
+        //derive the put content path which is the target controller
+        $put_content_path = self::getModulePath(self::VIEW, $folder_for_group);
+        self::directoryCreateIfNot($put_content_path);
+
+        $put_content_file_path = $put_content_path . "/$file_name";
+        //if the file exist overright or not
+        if (self::fileOverwriteOrNot($put_content_file_path)) {
+            /**
+             * preparation of of the dynamic values for the resource controller
+             */
+            //prepare the namespace
+
+            //Own namspace
+            $page_title = str()->headline($this->model_name) . " List";
+
+            //Base route preparation
+            $route_name = $this->BaseRouteNamePrepare();
+
+            //Base route preparation
+            $slot = $this->slotCreation();
+
+            //file creation
+            FileModifier::getContent($get_content_path)
+                ->searchingText('{{page_title}}')->replace()->insertingText($page_title)
+                ->searchingText('{{route_name}}')->replace()->insertingText($route_name)
+                ->searchingText('{{slot}}')->replace()->insertingText($slot)
+                ->save($put_content_file_path);
+
+            $this->info("$file_name file created successfully");
+
+            return true;
+        }
+        $this->info("Skiped $file_name creation");
+        return true;
     }
 
     public function parameterPass($route_info)
@@ -245,9 +285,6 @@ class ViewCreation extends BaseCreation
     protected function viewDirPathPrepare()
     {
         $view = '';
-        if ($suffix = self::getModuleSuffix(self::VIEW)) {
-            $view .= $suffix . '.';
-        }
         if ($group_name = $this->route_info['group_name']) {
             $view .= $group_name . '.';
         }
@@ -265,5 +302,13 @@ class ViewCreation extends BaseCreation
             $base_route_name .= $group_name . '.';
         }
         return $base_route_name;
+    }
+
+    protected function slotCreation(){
+        $fields = $this->fields;
+    }
+
+    protected function stringfield(){
+        
     }
 }

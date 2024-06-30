@@ -2,7 +2,7 @@
 
 {{-- Page Title  --}}
 @push('title')
-    $page_title -
+    {{page_title}} -
 @endpush
 
 {{-- Custom Css  --}}
@@ -35,20 +35,20 @@
 
 {{-- Page Main Content  --}}
 @section('main')
-    <div class="mx-auto py-2 sm:px-2">
+    <div class="py-2 mx-auto sm:px-2">
         <!-- row -->
-        <div class="flex flex-wrap flex-row">
-            <div class="flex-shrink max-w-full px-4 w-full">
-                <p class="text-xl font-bold mt-3 mb-5">$page_title</p>
+        <div class="flex flex-row flex-wrap">
+            <div class="flex-shrink w-full max-w-full px-4">
+                <p class="mt-3 mb-5 text-xl font-bold">{{page_title}}</p>
             </div>
-            <div class="flex-shrink max-w-full px-4 w-full mb-6">
-                <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full">
-                    <div class="flex flex-wrap flex-row -mx-4">
-                        <div class="flex-shrink max-w-full px-4 w-full">
+            <div class="flex-shrink w-full max-w-full px-4 mb-6">
+                <div class="h-full p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+                    <div class="flex flex-row flex-wrap -mx-4">
+                        <div class="flex-shrink w-full max-w-full px-4">
                             <div class="md:flex md:justify-between">
                                 <div>
-                                    <a href="{{ route('$route_namecreate') }}"
-                                        class="py-2 px-4 mb-3 block lg:inline-block text-center rounded leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-0">Add
+                                    <a href="{{ route('{{route_name}}create') }}"
+                                        class="block px-4 py-2 mb-3 leading-5 text-center text-gray-100 bg-indigo-500 border border-indigo-500 rounded lg:inline-block hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-0">Add
                                         new <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                             fill="currentColor" class="inline-block ltr:ml-1 rtl:mr-1 bi bi-plus-lg"
                                             viewBox="0 0 16 16">
@@ -60,9 +60,9 @@
 
                                 <div>
                                     <div id="bulk-actions">
-                                        <label class="flex flex-wrap flex-row">
+                                        <label class="flex flex-row flex-wrap">
                                             <select id="bulk_actions" name="bulk_actions"
-                                                class="inline-block leading-5 relative py-2 ltr:pl-3 ltr:pr-8 rtl:pr-3 rtl:pl-8 mb-3 rounded bg-gray-100 border border-gray-200 overflow-x-auto focus:outline-none focus:border-gray-300 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600 select-caret appearance-none">
+                                                class="relative inline-block py-2 mb-3 overflow-x-auto leading-5 bg-gray-100 border border-gray-200 rounded appearance-none ltr:pl-3 ltr:pr-8 rtl:pr-3 rtl:pl-8 focus:outline-none focus:border-gray-300 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600 select-caret">
                                                 <option>Action</option>
                                                 <option value="activate">In stock</option>
                                                 <option value="deactivate">Deactivate</option>
@@ -70,7 +70,7 @@
                                                 <option value="delete">Delete</option>
                                             </select>
                                             <input type="submit" id="bulk_apply"
-                                                class="ltr:ml-2 rtl:mr-2 py-2 px-4 inline-block text-center mb-3 rounded leading-5 border hover:bg-gray-300 dark:bg-gray-900 dark:bg-opacity-40 dark:border-gray-800 dark:hover:bg-gray-900 focus:outline-none focus:ring-0 cursor-pointer"
+                                                class="inline-block px-4 py-2 mb-3 leading-5 text-center border rounded cursor-pointer ltr:ml-2 rtl:mr-2 hover:bg-gray-300 dark:bg-gray-900 dark:bg-opacity-40 dark:border-gray-800 dark:hover:bg-gray-900 focus:outline-none focus:ring-0"
                                                 value="Apply">
                                         </label>
                                     </div>
@@ -95,12 +95,12 @@
                                         @if (count($data) > 0)
                                             <div class="dataTable-container">
                                                 <table
-                                                    class="table-sorter table-bordered w-full ltr:text-left rtl:text-right text-gray-600 dark:text-gray-400 dataTable-table">
+                                                    class="w-full text-gray-600 table-sorter table-bordered ltr:text-left rtl:text-right dark:text-gray-400 dataTable-table">
                                                     <thead>
                                                         <tr class="bg-gray-100 dark:bg-gray-900 dark:bg-opacity-40">
                                                             <th data-sortable="false" style="width: 4.1988%;"><input
                                                                     id="check_all" type="checkbox"
-                                                                    class="form-checkbox w-4 h-4 text-indigo-500 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-700">
+                                                                    class="w-4 h-4 text-indigo-500 border border-gray-300 rounded form-checkbox dark:bg-gray-700 dark:border-gray-700">
                                                             </th>
                                                             <th class="min-w-[250px]" data-sortable=""
                                                                 style="width: 49.5287%;">
@@ -126,17 +126,17 @@
                                                             <tr>
                                                                 <td>
                                                                     <input type="checkbox"
-                                                                        class="checkedall form-checkbox w-4 h-4 text-indigo-500 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-700">
+                                                                        class="w-4 h-4 text-indigo-500 border border-gray-300 rounded checkedall form-checkbox dark:bg-gray-700 dark:border-gray-700">
                                                                 </td>
                                                                 <td>
                                                                     <a href="javascript:;">
-                                                                        <div class="flex flex-wrap flex-row items-center">
+                                                                        <div class="flex flex-row flex-wrap items-center">
 
                                                                             <div
-                                                                                class="leading-5 dark:text-gray-300 flex-1 ltr:ml-2 rtl:mr-2 mb-1">
+                                                                                class="flex-1 mb-1 leading-5 dark:text-gray-300 ltr:ml-2 rtl:mr-2">
                                                                                 {{ $datum->title }}
                                                                                 {{-- <div
-                                                                            class="pt-1 text-sm italic text-gray-500 w-full">
+                                                                            class="w-full pt-1 text-sm italic text-gray-500">
                                                                             {{$datum->category}}
                                                                         </div> --}}
                                                                             </div>
@@ -152,7 +152,7 @@
                                                                 </td>
 
                                                                 <td class="text-center">
-                                                                    <form method="POST" action="{{ route('$route_namedestroy', [$datum->id]) }}">
+                                                                    <form method="POST" action="{{ route('{{route_name}}destroy', [$datum->id]) }}">
                                                                         @csrf
                                                                         @method('delete')
                                                                         <button
@@ -171,7 +171,7 @@
                                                                             </svg>
                                                                         </button>
                                                                     </form>
-                                                                    <a href="{{ route('$route_nameedit', $datum->id) }}"
+                                                                    <a href="{{ route('{{route_name}}edit', $datum->id) }}"
                                                                         class="inline-block ltr:mr-2 rtl:ml-2 hover:text-green-500"
                                                                         title="Edit">
                                                                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -196,7 +196,7 @@
                                             </div>
                                             <span>{{ $data->links('vendor.pagination.tailwind') }}</span>
                                         @else
-                                            <h6 class="text-center">No $page_titles found!!! Please create $page_title</h6>
+                                            <h6 class="text-center">No {{page_title}}s found!!! Please create {{page_title}}</h6>
                                         @endif
                                     </div>
 

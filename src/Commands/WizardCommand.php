@@ -85,6 +85,7 @@ class WizardCommand extends Command
         'uuid' => ['nullable', 'default', 'unique'],
         'year' => ['nullable', 'default']
     ];
+    //delete me
     protected $routes_info = [
         'group_name' => 'setup',
         'group_middleware' => 'admin', //(this middleware for the main route)
@@ -98,9 +99,10 @@ class WizardCommand extends Command
     ];
     public function handle()
     {
-
-
-
+        $allFunctionality = new AllFunctionalityClass($this->fields, 'Product', $this->models_name);
+        if ($this->confirm('Do you want to create view?', true)) {
+            $allFunctionality->createView($this->routes_info);
+        }
 
         //Temporary code write above me
 

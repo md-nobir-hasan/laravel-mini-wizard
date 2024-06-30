@@ -37,6 +37,10 @@ class FileModifier
     {
         return new static($getContentPath);
     }
+    public  function gettingContent()
+    {
+        return $this->content;
+    }
 
     public function searchingText($text, $match = 0)
     {

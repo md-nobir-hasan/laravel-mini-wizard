@@ -1,0 +1,13 @@
+public function {{method}}({{model_name}} ${{model_name}})
+{
+    $title = ${{model_name}}->title;
+    $status = $this->service->delete(${{model_name}});
+
+    if ($status) {
+        request()->session()->flash('success', "$title successfully deleted");
+    } else {
+        request()->session()->flash('error', 'Error while deleting {{model_name}}s');
+    }
+
+    return back();
+}

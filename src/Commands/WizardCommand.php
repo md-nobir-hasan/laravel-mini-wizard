@@ -85,9 +85,31 @@ class WizardCommand extends Command
         'uuid' => ['nullable', 'default', 'unique'],
         'year' => ['nullable', 'default']
     ];
-
+    protected $routes_info = [
+        'group_name' => 'setup',
+        'group_middleware' => 'admin', //(this middleware for the main route)
+        'middleware' => '', //(this middleware for the main route)
+        'is_resource' => false,
+        'general_routes' => [
+            ['url' => 'index', 'name' => 'index', 'route_method' => 'get', 'controller_method' => 'index', 'middleware' => ''],
+            ['url' => 'create', 'name' => 'create', 'route_method' => 'get', 'controller_method' => 'create', 'middleware' => ''],
+            ['url' => 'store', 'name' => 'store', 'route_method' => 'post', 'controller_method' => 'store', 'middleware' => 'auth'],
+        ]
+    ];
     public function handle()
     {
+
+
+        $allFunctionality = new AllFunctionalityClass($this->fields, 'Product', $this->models_name);
+        if ($this->confirm('Do you want to create Controller?', true)) {
+            $allFunctionality->createController($this->routes_info);
+        }
+
+
+
+
+
+
         //Store model class name
         $this->model_class_name = self::mdoelNameFormat($this->argument('model'));
 
@@ -262,14 +284,7 @@ class WizardCommand extends Command
         //     $allFunctionality->createServiceClass();
         // }
 
-
-
-
-        /**
-         *  Route creation for the module
-         * */
-        if ($this->confirm('Do you want to create the route  for the module?', true)) {
-
+        if ($this->confirm('You have to give some information about route(url) for further operation?', true)) {
             /**
              * Array will be
              *
@@ -286,9 +301,18 @@ class WizardCommand extends Command
              *                 ]
              */
             $route_info = $this->routeInfoCollection();
-
-            $allFunctionality->createRoute($route_info);
+        }else{
+            return false;
         }
+
+
+
+        /**
+         *  Route creation for the module
+         * */
+        // if ($this->confirm('Do you want to create the route  for the module?', true)) {
+        //     $allFunctionality->createRoute($route_info);
+        // }
 
 
 

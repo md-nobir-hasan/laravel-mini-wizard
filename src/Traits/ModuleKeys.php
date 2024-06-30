@@ -23,4 +23,11 @@ trait ModuleKeys{
     //keys in controller
     const CONTROLLER = 'controller';
     const RESOURCE_CONTROLLER = 'resource_controller';
+
+
+    //stub paths
+    const CODE_FOR_GET_METHOD= 'code_for_get_method';
+    const CODE_FOR_POST_METHOD= 'code_for_post_method';
+    const CODE_FOR_PUT_METHOD= 'code_for_put_method';
+    const CODE_FOR_DELETE_METHOD= 'code_for_delete_method';
 }

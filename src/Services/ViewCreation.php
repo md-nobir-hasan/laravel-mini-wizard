@@ -233,17 +233,30 @@ class ViewCreation extends BaseCreation
 
     protected function createViewCreation()
     {
-        // Derive controller name from model name
-        $file_name = 'create.blade.php';
-        $folder_for_group = self::removeAfterBefore(str_replace('.', '/', $this->viewDirPathPrepare())); //assuming backend/setup/ return
-        //derive get content path (the stub file for the resource controller)
+        /**
+         * Preparation of get content file path
+         */
         $get_content_path = $this->theme_path . '/create.stub';
+
+
+
+        /**
+         * Preparation of put content file path
+         */
+
+        // file name
+        $file_name = 'create.blade.php';
+
+        $folder_for_group = self::removeAfterBefore(str_replace('.', '/', $this->viewDirPathPrepare())); //assuming backend/setup/ return
 
         //derive the put content path which is the target controller
         $put_content_path = self::getModulePath(self::VIEW, $folder_for_group);
+
         self::directoryCreateIfNot($put_content_path);
 
+        //finally prepared
         $put_content_file_path = $put_content_path . "/$file_name";
+
         //if the file exist overright or not
         if (self::fileOverwriteOrNot($put_content_file_path)) {
             /**
@@ -306,6 +319,14 @@ class ViewCreation extends BaseCreation
 
     protected function slotCreation(){
         $fields = $this->fields;
+        foreach ($fields as $field_name =>$field_properties){
+            $field_properties_key = array_keys($field_properties);
+
+            /**
+             * operation on field properties which contain value such as enum
+             */
+            
+        }
     }
 
     protected function textInput($field_name){

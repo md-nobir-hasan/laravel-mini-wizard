@@ -19,6 +19,11 @@ class WizardCommand extends Command
 
     protected $model_class_name;
     protected $models_name = [];
+
+    /**
+     * Fields mean table column name. there are there namining, field means table column, data_type means the collumn's
+     * data type and finally properties means the attributes based on field name and it datatype
+     */
     protected $fields = [];
 
     protected $data_type_functions = [
@@ -113,6 +118,9 @@ class WizardCommand extends Command
         $this->bootstrap();
 
         //fields collection and making an array
+        /**
+         * dataType which contain values => enum,set,
+         */
         $this->collectFields();
 
         //filtering the collected data
@@ -125,64 +133,71 @@ class WizardCommand extends Command
     protected function collectFields()
     {
         while (true) {
-            $type = $this->choice('Choose the data type', array_keys($this->data_type_functions));
+            //data type collection
+            $data_type = $this->choice('Choose the data type', array_keys($this->data_type_functions));
 
-            if ($type == 'stop') {
+            //finishing the process
+            if ($data_type == 'stop') {
                 break;
             }
 
-            $fieldNameValues = $this->getFieldName($type);
-            $fieldName = $fieldNameValues['fname'];
-            if (isset($fieldNameValues['values'])) {
-                $fieldData = [$type => $fieldNameValues['values']];
+            //field name collection
+            $fieldNameAndValues = $this->getFieldNameAndValues($data_type);
+            $fieldName = $fieldNameAndValues['fname'];
+
+            //values assining to data type
+            if (isset($fieldNameAndValues['values'])) {
+                $field_properties_array = [$data_type => $fieldNameAndValues['values']];
             } else {
-                $fieldData = [$type];
+                $field_properties_array = [$data_type];
             }
 
-            $options = $this->data_type_functions[$type];
-            foreach ($options as $option) {
-                $dataTypeProperty = $this->dataTypeProperty($option, $type);
-                if ($dataTypeProperty) {
-                    if ($dataTypeProperty === true) {
-                        $fieldData[] = $option;
+            $properties = $this->data_type_functions[$data_type];
+            foreach ($properties as $property) {
+
+                //it return value which will be a string or boolean
+                $propertyValue = $this->propertyValueCollection($property, $data_type);
+                if ($propertyValue) {
+                    if ($propertyValue === true) {
+                        $field_properties_array[] = $property;
                     } else {
-                        $fieldData[$option] = $dataTypeProperty;
+                        $field_properties_array[$property] = $propertyValue;
                     }
                 }
             }
 
-            $this->fields[$fieldName] = $fieldData;
+            $this->fields[$fieldName] = $field_properties_array;
         }
     }
 
-    protected function getFieldName($type)
+    protected function getFieldNameAndValues($data_type)
     {
-        if ($type === 'foreignIdFor') {
-            $modelClass = self::mdoelNameFormat($this->ask("Enter the related model name for $type")); //we transfer it to field name when we need
+        if ($data_type === 'foreignIdFor') {
+            $modelClass = self::mdoelNameFormat($this->ask("Enter the related model name for $data_type")); //we transfer it to field name when we need
             array_push($this->models_name, $modelClass);
             return ['fname' => self::modelToForeignKey($modelClass)];
-        } elseif (in_array($type, ['enum', 'set'])) {
-            $fieldName = $this->ask("Enter the field name for $type");
-            $fieldvlaue = explode(',', $this->ask("Enter the values for $type (comma separated)"));
+        } elseif (in_array($data_type, ['enum', 'set'])) {
+            $fieldName = $this->ask("Enter the field name for $data_type");
+            $fieldvlaue = explode(',', $this->ask("Enter the values for $data_type (comma separated)"));
             return ['fname' => $fieldName, 'values' => $fieldvlaue];
         } else {
             return ['fname' => $this->ask("Enter the field name")];
         }
     }
 
-    protected function dataTypeProperty($option, $type)
+    protected function propertyValueCollection($property, $data_type)
     {
-        switch ($option) {
+        switch ($property) {
             case 'default':
             case 'length':
             case 'total':
             case 'places':
-                return $this->ask("Enter the $option value for $type");
+                return $this->ask("Enter the $property value for $data_type");
             case 'unsigned':
             case 'constrained':
             case 'cascadeOnDelete':
             case 'cascadeOnUpdate':
-                return $this->confirm("Is this field $option?", true);
+                return $this->confirm("Is this field $property?", true);
             case 'nullable':
             case 'primary':
             case 'unique':
@@ -190,7 +205,7 @@ class WizardCommand extends Command
             case 'index':
             case 'restrictOnDelete':
             case 'restrictOnUpdate':
-                return $this->confirm("Is this field $option?", false);
+                return $this->confirm("Is this field $property?", false);
             default:
                 return null;
         }

@@ -23,9 +23,14 @@ class WizardCommand extends Command
     /**
      * Fields mean table column name. there are there namining, field means table column, data_type means the collumn's
      * data type and finally properties means the attributes based on field name and it datatype
+     * every datatype is an array of properties, some properties used as key which have value such as enum,set, default, length, place, total.
      */
     protected $fields = [];
 
+    
+    /**
+     * datatypes. every data types are array of their posssible properties. Actually data types and their properties are according to migration function in laravel
+     */
     protected $data_type_functions = [
         'stop' => [],
         'bigIncrements' => ['autoIncrement', 'unique', 'primary', 'unsigned'],

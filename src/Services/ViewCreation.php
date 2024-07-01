@@ -317,21 +317,31 @@ class ViewCreation extends BaseCreation
         return $base_route_name;
     }
 
-    protected function slotCreation(){
+    protected function slotCreation()
+    {
         $fields = $this->fields;
-        foreach ($fields as $field_name =>$field_properties){
-            $field_properties_key = array_keys($field_properties);
+        foreach ($fields as $field_name => $field_properties) {
+
+          $properties_contain_value = array_keys($field_properties);
+
 
             /**
-             * operation on field properties which contain value such as enum
+             * determining the input types
              */
-            
+            $input_types = '';
+            foreach($field_properties as $key => $value){
+                    //input types search in key
+                    if($key == 'foreignIdFor'){
+                        $this->select2();
+                    }
+            }
         }
     }
 
-    protected function textInput($field_name){
+    protected function textInput($field_name)
+    {
         $title = str()->headline($field_name);
-         return <<<HTML
+        return <<<HTML
             <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
                 <label for='$field_name' class='inline-block mb-2'>$title</label>
                 <input type='text' id='$field_name' name='$field_name'
@@ -341,9 +351,10 @@ class ViewCreation extends BaseCreation
             HTML;
     }
 
-    protected function numberInput($field_name){
+    protected function numberInput($field_name)
+    {
         $title = str()->headline($field_name);
-         return <<<HTML
+        return <<<HTML
             <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
                 <label for='$field_name' min='0' step='1' class='inline-block mb-2'>$title</label>
                 <input type='number' id='$field_name' name='$field_name'
@@ -353,9 +364,10 @@ class ViewCreation extends BaseCreation
             HTML;
     }
 
-    protected function textAreaInput($field_name){
+    protected function textAreaInput($field_name)
+    {
         $title = str()->headline($field_name);
-         return <<<HTML
+        return <<<HTML
             <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
                 <label for='$field_name' min='0' step='1' class='inline-block mb-2'>$title</label>
                 <input type='number' id='$field_name' name='$field_name'

@@ -30,8 +30,8 @@ Class MiniWizardServiceProvider extends ServiceProvider{
         $theme_name = self::nameInConfig(self::THEME) ?? 'nobir';
         // dd(self::pakage_root_path );
         $this->publishes([
-           self::pakage_root_path. '/bootstrap/theme/nobir/form' => resource_path('/views/components/form'),
-        ], 'wizard-compnent');
+           self::pakage_root_path. "/bootstrap/theme/$theme_name/form" => resource_path('/views/components/form'),
+        ], 'wizard-compnents');
 
         //publishing stub files
         $this->publishes([

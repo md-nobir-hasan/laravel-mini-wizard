@@ -268,34 +268,34 @@ class WizardCommand extends Command
 
 
 
-        //Model creation
-        // if ($this->confirm('Do you want to create the model?', true)) {
-        //     $allFunctionality->createModel();
-        // }
+        // Model creation
+        if ($this->confirm('Do you want to create the model?', true)) {
+            $allFunctionality->createModel();
+        }
 
 
 
 
-        // //migration creation
-        // if ($this->confirm('Do you want to create the migration?', true)) {
-        //     $allFunctionality->createMigration();
-        // }
+        //migration creation
+        if ($this->confirm('Do you want to create the migration?', true)) {
+            $allFunctionality->createMigration();
+        }
 
 
 
 
-        // //seeder creation
-        // if ($this->confirm('Do you want to create the seeder?', true)) {
-        //     $allFunctionality->createSeeder();
-        // }
+        //seeder creation
+        if ($this->confirm('Do you want to create the seeder?', true)) {
+            $allFunctionality->createSeeder();
+        }
 
 
 
 
-        // //factory creation
-        // if ($this->confirm('Do you want to create the factory?', true)) {
-        //     $allFunctionality->createFactory();
-        // }
+        //factory creation
+        if ($this->confirm('Do you want to create the factory?', true)) {
+            $allFunctionality->createFactory();
+        }
 
 
 
@@ -304,9 +304,9 @@ class WizardCommand extends Command
         /**
          *  requests creation
          * */
-        // if ($this->confirm('Do you want to create the requests?', true)) {
-        //     $allFunctionality->createRequests();
-        // }
+        if ($this->confirm('Do you want to create the requests?', true)) {
+            $allFunctionality->createRequests();
+        }
 
 
 
@@ -314,10 +314,13 @@ class WizardCommand extends Command
         /**
          *  Service class for controller creation
          * */
-        // if ($this->confirm('Do you want to create the service class for controller?', true)) {
-        //     $allFunctionality->createServiceClass();
-        // }
+        if ($this->confirm('Do you want to create the service class for controller?', true)) {
+            $allFunctionality->createServiceClass();
+        }
 
+        /**
+         * Route info collection
+         */
         if ($this->confirm('You have to give some information about route(url) for further operation?', true)) {
             /**
              * Array will be
@@ -344,9 +347,9 @@ class WizardCommand extends Command
         /**
          *  Route creation for the module
          * */
-        // if ($this->confirm('Do you want to create the route  for the module?', true)) {
-        //     $allFunctionality->createRoute($route_info);
-        // }
+        if ($this->confirm('Do you want to create the route  for the module?', true)) {
+            $allFunctionality->createRoute($route_info);
+        }
 
 
 
@@ -355,19 +358,19 @@ class WizardCommand extends Command
         // /**
         //  *  Controller Creation
         //  * */
-        // if ($this->confirm('Do you want to create Controller?', true)) {
-        //     $allFunctionality->createController($route_info);
-        // }
+        if ($this->confirm('Do you want to create Controller?', true)) {
+            $allFunctionality->createController($route_info);
+        }
 
 
 
 
-        // /**
-        //  *  view Creation
-        //  * */
-        // if ($this->confirm('Do you want to create view?', true)) {
-        //     $allFunctionality->createView($route_info);
-        // }
+        /**
+         *  view Creation
+         * */
+        if ($this->confirm('Do you want to create view?', true)) {
+            $allFunctionality->createView($route_info);
+        }
 
         /**
          *  admin menue seeder

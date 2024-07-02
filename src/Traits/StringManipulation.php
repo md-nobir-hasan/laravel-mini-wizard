@@ -28,6 +28,10 @@ trait StringManipulation
     {
         return str()->kebab($string);
     }
+    public static function PascalToSnacke($string)
+    {
+        return str()->snake($string);
+    }
 
     public static function foreignKeyToModelName($foreing_key)
     {

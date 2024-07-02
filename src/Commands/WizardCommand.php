@@ -27,7 +27,7 @@ class WizardCommand extends Command
      */
     protected $fields = [];
 
-    
+
     /**
      * datatypes. every data types are array of their posssible properties. Actually data types and their properties are according to migration function in laravel
      */
@@ -95,6 +95,7 @@ class WizardCommand extends Command
         'uuid' => ['nullable', 'default', 'unique'],
         'year' => ['nullable', 'default']
     ];
+
     //delete me
     protected $routes_info = [
         'group_name' => 'setup',
@@ -107,9 +108,22 @@ class WizardCommand extends Command
             ['url' => 'store', 'name' => 'store', 'route_method' => 'post', 'controller_method' => 'store', 'middleware' => 'auth'],
         ]
     ];
+
+    //delete me (this is return for demo purpose and also for example of fields array)
+    protected $field_info = [
+            'order_no' => ['string', 'unique','length'=>255],
+            'description' => ['longText', 'nullable'],
+            'price' => ['integer','default'=>0],
+            'user_id' => ['foreignIdFor','nullable'],
+            'order_status' => ['enum'=>['pending','canceled','delivered'],'default'=> 'pending'],
+            'is_confirmed' => ['boolean','default'=> '0'],
+            'default_image' => ['string','nullable'],
+            'images' => ['string','nullable'],
+    ];
     public function handle()
     {
-        $allFunctionality = new AllFunctionalityClass($this->fields, 'Product', $this->models_name);
+
+        $allFunctionality = new AllFunctionalityClass($this->field_info, 'Product', $this->models_name);
         if ($this->confirm('Do you want to create view?', true)) {
             $allFunctionality->createView($this->routes_info);
         }
@@ -319,7 +333,7 @@ class WizardCommand extends Command
              *                 ]
              */
             $route_info = $this->routeInfoCollection();
-        }else{
+        } else {
             return false;
         }
 
@@ -352,8 +366,6 @@ class WizardCommand extends Command
         if ($this->confirm('Do you want to create view?', true)) {
             $allFunctionality->createView($route_info);
         }
-
-
     }
 
 
@@ -361,7 +373,7 @@ class WizardCommand extends Command
     {
 
         //route array
-        $route_info = ['group_name' => '', 'group_middleware' => '', 'is_resource' => true, 'middleware'=>'', 'general_routes' => ''];
+        $route_info = ['group_name' => '', 'group_middleware' => '', 'is_resource' => true, 'middleware' => '', 'general_routes' => ''];
 
         //Route group preparation
         $route_group_name = $this->ask('Enter route group (press enter to skip)',);

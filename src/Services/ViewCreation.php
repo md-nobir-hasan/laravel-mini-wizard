@@ -63,8 +63,8 @@ class ViewCreation extends BaseCreation
     protected function generateViewForResourceMethod()
     {
 
-        $this->indexViewCreation();
-        // $this->CreateViewCreation();
+        // $this->indexViewCreation();
+        $this->CreateViewCreation();
         // $this->EditViewCreation();
 
 
@@ -73,120 +73,9 @@ class ViewCreation extends BaseCreation
 
     protected function generateViewForGeneralMethod()
     {
-        $this->indexViewCreation();
-        // $this->CreateViewCreation();
-        // $this->EditViewCreation();
-
-        // Derive controller name from model name
-        $file_name = $this->model_name . 'Controller.php';
-
-        //derive get content path (the stub file for the resource controller)
-        $get_content_path = self::getStubFilePath(self::CONTROLLER);
-
-        //derive the put content path which is the target controller
-        $put_content_path = self::getModulePath(self::CONTROLLER, $file_name);
-
-        //if the file exist overright or not
-        if (self::fileOverwriteOrNot($put_content_path)) {
-
-            /**
-             * preparation of of the dynamic values for the resource controller
-             */
-            //prepare the namespace
-
-            //Own namspace
-            $name_space = self::getModuleNamespace(self::CONTROLLER);
-
-            //request namspace
-            $request_namespace = self::getModuleNamespace(self::REQUESTS);
-
-            //Own namspace
-            $model_namespace = self::getModuleNamespace(self::MODEL);
-
-            //Own namspace
-            $service_class_namespace = self::getModuleNamespace(self::SERVICE_CLASS);
-
-            //geting model name
-            $model_name = $this->model_name;
-
-            //view directory path preparation
-            $view_dir_path = $this->viewDirPathPrepare();
-
-
-            //Base route preparation
-            $route_name = $this->BaseRouteNamePrepare();
-
-            /**
-             * Slot preparation
-             */
-            $slot = '';
-            foreach ($this->route_info['general_routes'] as $general_route) {
-                switch ($general_route['route_method']) {
-                    case 'get':
-                        $slot .= "\n\n" . FileModifier::getContent(self::getStubFilePath(self::CODE_FOR_GET_METHOD))
-                            ->searchingText('{{method}}')->replace()->insertingText($general_route['controller_method'])
-                            ->searchingText('{{model_name}}')->replace()->insertingText($model_name)
-                            ->searchingText('{{view_dir_path}}')->replace()->insertingText($view_dir_path)
-                            // ->searchingText('{{route_name}}')->replace()->insertingText($route_name)
-                            // ->searchingText('{{request_namespace}}')->replace()->insertingText($request_namespace)
-                            ->gettingContent();
-                        break;
-
-                    case 'post':
-                        $slot .= "\n\n" . FileModifier::getContent(self::getStubFilePath(self::CODE_FOR_POST_METHOD))
-                            ->searchingText('{{method}}')->replace()->insertingText($general_route['controller_method'])
-                            ->searchingText('{{request_namespace}}')->replace()->insertingText($request_namespace)
-                            ->searchingText('{{model_name}}')->replace()->insertingText($model_name)
-                            ->searchingText('{{route_name}}')->replace()->insertingText($route_name)
-                            ->gettingContent();
-                        break;
-
-                    case 'put':
-                        $slot .= "\n\n" . FileModifier::getContent(self::getStubFilePath(self::CODE_FOR_PUT_METHOD))
-                            ->searchingText('{{method}}')->replace()->insertingText($general_route['controller_method'])
-                            ->searchingText('{{model_name}}')->replace()->insertingText($model_name)
-                            ->searchingText('{{view_dir_path}}')->replace()->insertingText($view_dir_path)
-                            ->gettingContent();
-                        break;
-
-                    case 'put':
-                        $slot .= "\n\n" . FileModifier::getContent(self::getStubFilePath(self::CODE_FOR_PUT_METHOD))
-                            ->searchingText('{{method}}')->replace()->insertingText($general_route['controller_method'])
-                            ->searchingText('{{model_name}}')->replace()->insertingText($model_name)
-                            ->searchingText('{{view_dir_path}}')->replace()->insertingText($view_dir_path)
-                            ->gettingContent();
-                        break;
-
-                    case 'patch':
-                        $slot .= "\n\n" . FileModifier::getContent(self::getStubFilePath(self::CODE_FOR_PUT_METHOD))
-                            ->searchingText('{{method}}')->replace()->insertingText($general_route['controller_method'])
-                            ->searchingText('{{model_name}}')->replace()->insertingText($model_name)
-                            ->searchingText('{{view_dir_path}}')->replace()->insertingText($view_dir_path)
-                            ->gettingContent();
-                        break;
-
-                    case 'delete':
-                        $slot .= "\n\n" . FileModifier::getContent(self::getStubFilePath(self::CODE_FOR_DELETE_METHOD))
-                            ->searchingText('{{method}}')->replace()->insertingText($general_route['controller_method'])
-                            ->searchingText('{{model_name}}')->replace()->insertingText($model_name)
-                            ->gettingContent();
-                        break;
-                }
-            }
-
-            //file creation
-            FileModifier::getContent($get_content_path)
-                ->searchingText('{{name_space}}')->replace()->insertingText($name_space)
-                ->searchingText('{{model_namespace}}')->replace()->insertingText($model_namespace)
-                ->searchingText('{{service_class_namespace}}')->replace()->insertingText($service_class_namespace)
-                ->searchingText('{{model_name}}')->replace()->insertingText($model_name)
-                ->searchingText('{{slot}}')->replace()->insertingText($slot)
-                ->save($put_content_path);
-            $this->info("Generel Controller ({$model_name}Controller) created successfully. method code of this controller userd by GPT please modify the code according to your need");
-            return true;
-        }
-        $this->info("Skiped General Controller creation");
-        return true;
+        // $this->indexViewCreation();
+        $this->CreateViewCreation();
+        // $this->EditViewCreation()
     }
 
 
@@ -297,10 +186,14 @@ class ViewCreation extends BaseCreation
 
     protected function viewDirPathPrepare()
     {
-        $view = '';
+        $view = 'pages.';
+
         if ($group_name = $this->route_info['group_name']) {
-            $view .= $group_name . '.';
+            $view .= "$group_name.";
         }
+        $model_name_as_dir = self::PascalToCabab($this->model_name);
+        $view .= "$model_name_as_dir.";
+
         return $view;
     }
 
@@ -314,66 +207,145 @@ class ViewCreation extends BaseCreation
         if ($group_name = $this->route_info['group_name']) {
             $base_route_name .= $group_name . '.';
         }
+
+        $model_name_as_dir = self::PascalToSnacke($this->model_name);
+        $base_route_name .= $model_name_as_dir . '.';
+
         return $base_route_name;
     }
 
-    protected function slotCreation()
+    protected function slotCreation($is_update=null)
     {
         $fields = $this->fields;
+        // dd($fields);
+        $slot = '';
         foreach ($fields as $field_name => $field_properties) {
-
-          $properties_contain_value = array_keys($field_properties);
-
-
-            /**
-             * determining the input types
-             */
-            $input_types = '';
-            foreach($field_properties as $key => $value){
-                    //input types search in key
-                    if($key == 'foreignIdFor'){
-                        $this->select2();
-                    }
+            $input_type = '';
+            $i = 0;
+            if (strpos($field_name, 'image') !== false) {
+                $input_type = $this->dropzoneSingle($field_name);
+                $i = 1;
             }
+
+            if (strpos($field_name, 'images') !== false) {
+                $input_type = $this->dropzoneMultiple($field_name);
+                $i = 1;
+            }
+
+
+            foreach ($field_properties as $key => $value) {
+                /**
+                 * determining the input types
+                 */
+                if ($i == 0) {
+                    //input types search in key
+                    if (in_array($key, ['enum', 'set'])) {
+                        $options = [];
+                        foreach ($field_properties[$key] as $value) {
+                            $option_obj = (object)['id' => $value, 'title' => $value];
+                            array_push($options, $option_obj);
+                        }
+                        // $options = (object) $options;
+                        $input_type = $this->select($field_name, $options);
+                        continue;
+                    }
+
+                    //select input type (use select 2)
+                    if ($value == 'foreignIdFor') {
+                        $input_type = $this->select2($field_name);
+                        continue;
+                    }
+
+                    //text input types
+                    if (in_array($value, ['longText', 'macAddress', 'mediumText', 'string', 'text', 'tinyText', 'smallInteger', 'tinyInteger', 'ulid', 'uuid'])) {
+
+                        $input_type = $this->textInput($field_name);
+                        continue;
+                    }
+
+                    //textarea input types
+                    if (in_array($value, ['longText', 'mediumText', 'text'])) {
+                        $input_type = $this->textarea($field_name);
+                        continue;
+                    }
+
+                    //number input types
+                    if (in_array($value, ['bigInteger', 'decimal', 'double', 'float', 'integer', 'mediumInteger', 'smallInteger', 'tinyInteger'])) {
+                        $input_type = $this->numberInput($field_name);
+                        continue;
+                    }
+
+                    //boolean input types
+                    if (in_array($value, ['boolean'])) {
+                        $input_type = $this->checkbox($field_name);
+                        continue;
+                    }
+                }
+
+                $i++;
+                break;
+            }
+            // nullable check input types
+            if (!in_array('nullable', $field_properties)) {
+                $input_type = str_replace("is_required='0'", '', $input_type);
+            }
+
+            //ir update replace according to create or update file
+            if(!$is_update){
+                $input_type = str_replace("is_update='0'", '', $input_type);
+            }
+
+            $slot .= $input_type;
         }
+        return $slot;
+    }
+
+    protected function select($field_name, $options)
+    {
+        $title = str()->headline($field_name);
+        return "\n{{--  $title --}}\n<x-form.select name='$field_name' options='" . json_encode($options) . "' is_required='0' is_update='0' />";
+    }
+
+    protected function select2($field_name)
+    {
+        $title = str()->headline($field_name);
+        $model = self::foreignKeyToModelName($field_name);
+        return "\n{{-- $title --}}\n<x-form.select2 name='$field_name' :options='{{\$$model}}' is_required='0' is_update='0' />";
     }
 
     protected function textInput($field_name)
     {
         $title = str()->headline($field_name);
-        return <<<HTML
-            <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
-                <label for='$field_name' class='inline-block mb-2'>$title</label>
-                <input type='text' id='$field_name' name='$field_name'
-                    class='relative w-full px-4 py-2 overflow-x-auto leading-5 text-gray-800 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'
-                >
-            </div>
-            HTML;
+        return  "\n{{--  $title --}} \n <x-form.text name='$field_name' is_required='0' is_update='0'/>";
+    }
+
+    protected function textarea($field_name)
+    {
+        $title = str()->headline($field_name);
+        return  "\n{{--  $title --}} \n <x-form.textarea name='$field_name' is_required='0' is_update='0'/>";
     }
 
     protected function numberInput($field_name)
     {
         $title = str()->headline($field_name);
-        return <<<HTML
-            <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
-                <label for='$field_name' min='0' step='1' class='inline-block mb-2'>$title</label>
-                <input type='number' id='$field_name' name='$field_name'
-                    class='relative w-full px-4 py-2 overflow-x-auto leading-5 text-gray-800 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'
-                >
-            </div>
-            HTML;
+        return  "\n{{--  $title --}} \n <x-form.number name='$field_name' is_required='0' is_update='0'/>";
     }
 
-    protected function textAreaInput($field_name)
+    protected function checkbox($field_name)
     {
         $title = str()->headline($field_name);
-        return <<<HTML
-            <div class='flex-shrink w-full max-w-full px-4 mb-6 md:w-1/2'>
-                <label for='$field_name' min='0' step='1' class='inline-block mb-2'>$title</label>
-                <input type='number' id='$field_name' name='$field_name'
-                    class='relative w-full px-4 py-2 overflow-x-auto leading-5 text-gray-800 bg-white border border-gray-300 rounded focus:outline-none focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600'
-                >
-            </div>
-            HTML;
+        return  "\n{{--  $title --}} \n <x-form.checkbox name='$field_name' is_required='0' is_update='0'/>";
+    }
+
+    protected function dropzoneSingle($field_name)
+    {
+        $title = str()->headline($field_name);
+        return  "\n{{--  $title --}} \n <x-form.dropzone-single name='$field_name' is_required='0' is_update='0'/>";
+    }
+
+    protected function dropzoneMultiple($field_name)
+    {
+        $title = str()->headline($field_name);
+        return  "\n{{--  $title --}} \n <x-form.dropzone-multiple name='$field_name' is_required='0' is_update='0'/>";
     }
 }

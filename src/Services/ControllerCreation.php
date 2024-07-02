@@ -226,13 +226,15 @@ class ControllerCreation extends BaseCreation
 
     protected function viewDirPathPrepare()
     {
-        $view = '';
+        $view = 'pages.';
         if ($suffix = self::getModuleSuffix(self::VIEW)) {
             $view .= $suffix . '.';
         }
         if ($group_name = $this->route_info['group_name']) {
             $view .= $group_name . '.';
         }
+        $model_name_as_dir = self::PascalToCabab($this->model_name);
+        $view.= $model_name_as_dir.'.';
         return $view;
     }
 
@@ -240,12 +242,17 @@ class ControllerCreation extends BaseCreation
     protected function BaseRouteNamePrepare()
     {
         $base_route_name = '';
+
         if ($suffix = self::getModuleSuffix(self::ROUTE)) {
             $base_route_name .= $suffix . '.';
         }
+
         if ($group_name = $this->route_info['group_name']) {
             $base_route_name .= $group_name . '.';
         }
+
+        $model_name_as_dir = self::PascalToSnacke($this->model_name);
+        $base_route_name .= $model_name_as_dir . '.';
         return $base_route_name;
     }
 }

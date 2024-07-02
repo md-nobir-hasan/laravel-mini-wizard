@@ -55,6 +55,17 @@ The mini-wizard package is a Laravel package designed to streamline the creation
     6. Every migration default contain title, status, serial field. You can modified these from the migration stub file.
     7. For automatice implementation of seeder or factory you have to use  in the DatabaseSeeder.php 
     8. in parent module relationship added after  '];'
+    9. namiming convention for ervery module
+        - model = pascal
+        - view = cabab
+        - url = cabab
+        - route name = snack
+        - controller = pascal
+        - requess = pascal
+        - service = pascal
+        - seeder = pascal
+        - factory = pascal
+
 
 ### Improveable note
     1. every datatype validation will added

@@ -26,13 +26,12 @@ Class MiniWizardServiceProvider extends ServiceProvider{
            self::pakage_root_path.'/bootstrap/config.php' => config_path('mini-wizard.php'), //configure files
         ], 'wizard-config');
 
-        //publishing bootstraping files
+        //publishing form for blade view
+        $theme_name = self::nameInConfig(self::THEME) ?? 'nobir';
+        // dd(self::pakage_root_path );
         $this->publishes([
-           self::pakage_root_path.'/template/sidebar/NSidebarModel.php' => $this->getModulePath(self::MODEL),
-           self::pakage_root_path.'/template/sidebar/2024_05_31_085644_create_n_sidebars_table.php' => $this->getModulePath(self::MIGRATION),
-           self::pakage_root_path.'/template/sidebar/nSidebarSeeder.php' => $this->getModulePath(self::SEEDER),
-           self::pakage_root_path.'/template/sidebar/2024_05_31_085644_create_n_sidebars_table.php' => $this->getModulePath(self::MIGRATION),
-        ], 'wizard-sidebar');
+           self::pakage_root_path. '/bootstrap/theme/nobir/form' => resource_path('/views/components/form'),
+        ], 'wizard-compnent');
 
         //publishing stub files
         $this->publishes([

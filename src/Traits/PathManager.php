@@ -8,7 +8,7 @@ trait PathManager
 {
     use ModuleKeys;
 
-    const pakage_root_path = __DIR__ . '/..';
+    const pakage_root_path = __DIR__ . '/../';
     const config_path_pakage = __DIR__ . '/../bootstrap/config.php';
 
     public static function stubDirPath()

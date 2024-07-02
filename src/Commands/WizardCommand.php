@@ -97,35 +97,38 @@ class WizardCommand extends Command
     ];
 
     //delete me
-    protected $routes_info = [
-        'group_name' => 'setup',
-        'group_middleware' => 'admin', //(this middleware for the main route)
-        'middleware' => '', //(this middleware for the main route)
-        'is_resource' => false,
-        'general_routes' => [
-            ['url' => 'index', 'name' => 'index', 'route_method' => 'get', 'controller_method' => 'index', 'middleware' => ''],
-            ['url' => 'create', 'name' => 'create', 'route_method' => 'get', 'controller_method' => 'create', 'middleware' => ''],
-            ['url' => 'store', 'name' => 'store', 'route_method' => 'post', 'controller_method' => 'store', 'middleware' => 'auth'],
-        ]
-    ];
+    // protected $routes_info = [
+    //     'group_name' => 'setup',
+    //     'group_middleware' => 'admin', //(this middleware for the main route)
+    //     'middleware' => '', //(this middleware for the main route)
+    //     'is_resource' => false,
+    //     'general_routes' => [
+    //         ['url' => 'index', 'name' => 'index', 'route_method' => 'get', 'controller_method' => 'index', 'middleware' => ''],
+    //         ['url' => 'create', 'name' => 'create', 'route_method' => 'get', 'controller_method' => 'create', 'middleware' => ''],
+    //         ['url' => 'store', 'name' => 'store', 'route_method' => 'post', 'controller_method' => 'store', 'middleware' => 'auth'],
+    //     ]
+    // ];
 
     //delete me (this is return for demo purpose and also for example of fields array)
-    protected $field_info = [
-        'order_no' => ['string', 'unique', 'length' => 255],
-        'description' => ['longText', 'nullable'],
-        'price' => ['integer', 'default' => 0],
-        'user_id' => ['foreignIdFor', 'nullable'],
-        'order_status' => ['enum' => ['pending', 'canceled', 'delivered'], 'default' => 'pending'],
-        'is_confirmed' => ['boolean', 'default' => '0'],
-        'default_image' => ['string', 'nullable'],
-        'images' => ['string', 'nullable'],
-    ];
+    // protected $field_info = [
+    //     'order_no' => ['string', 'unique', 'length' => 255],
+    //     'description' => ['longText', 'nullable'],
+    //     'price' => ['integer', 'default' => 0],
+    //     'user_id' => ['foreignIdFor', 'nullable'],
+    //     'order_status' => ['enum' => ['pending', 'canceled', 'delivered'], 'default' => 'pending'],
+    //     'is_confirmed' => ['boolean', 'default' => '0'],
+    //     'default_image' => ['string', 'nullable'],
+    //     'images' => ['string', 'nullable'],
+    // ];
+
+
     public function handle()
     {
-        $allFunctionality = new AllFunctionalityClass($this->field_info, 'Product', $this->models_name);
-        if ($this->confirm('Do you want to admin menue?', true)) {
-            $allFunctionality->createAdminMenue($this->routes_info);
-        }
+        //I am gurbadge, delet me before temporary
+        // $allFunctionality = new AllFunctionalityClass($this->field_info, 'Product', $this->models_name);
+        // if ($this->confirm('Do you want to admin menue?', true)) {
+        //     $allFunctionality->createAdminMenue($this->routes_info);
+        // }
 
         //Temporary code write above me
 

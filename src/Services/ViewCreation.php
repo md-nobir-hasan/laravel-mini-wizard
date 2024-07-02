@@ -62,20 +62,33 @@ class ViewCreation extends BaseCreation
 
     protected function generateViewForResourceMethod()
     {
-
-        // $this->indexViewCreation();
+        dd('re');
+        $this->indexViewCreation();
         $this->CreateViewCreation();
-        // $this->EditViewCreation();
-
-
+        $this->editViewCreation();
     }
 
 
     protected function generateViewForGeneralMethod()
     {
-        // $this->indexViewCreation();
-        $this->CreateViewCreation();
-        // $this->EditViewCreation()
+        $general_routes_array = $this->route_info['general_routes'];
+        $routes = collect($general_routes_array)->pluck('route_method')->unique();
+        foreach ($routes as $route) {
+            switch ($route) {
+                case 'get':
+                    $this->indexViewCreation();
+                    break;
+                case 'post':
+                    $this->createViewCreation();
+                    break;
+                case 'put':
+                    $this->editViewCreation();
+                    break;
+                case 'patch':
+                    $this->editViewCreation();
+                    break;
+            }
+        }
     }
 
 
@@ -177,6 +190,63 @@ class ViewCreation extends BaseCreation
         return true;
     }
 
+    protected function editViewCreation()
+    {
+        /**
+         * Preparation of get content file path
+         */
+        $get_content_path = $this->theme_path . '/create.stub';
+
+
+
+        /**
+         * Preparation of put content file path
+         */
+
+        // file name
+        $file_name = 'edit.blade.php';
+
+        $folder_for_group = self::removeAfterBefore(str_replace('.', '/', $this->viewDirPathPrepare())); //assuming backend/setup/ return
+
+        //derive the put content path which is the target controller
+        $put_content_path = self::getModulePath(self::VIEW, $folder_for_group);
+
+        self::directoryCreateIfNot($put_content_path);
+
+        //finally prepared
+        $put_content_file_path = $put_content_path . "/$file_name";
+
+        //if the file exist overright or not
+        if (self::fileOverwriteOrNot($put_content_file_path)) {
+            /**
+             * preparation of of the dynamic values for the resource controller
+             */
+            //prepare the namespace
+
+            //Own namspace
+            $page_title = str()->headline($this->model_name) . " List";
+
+            //Base route preparation
+            $route_name = $this->BaseRouteNamePrepare();
+
+            //Base route preparation
+            $slot = $this->slotCreation(true);
+
+            //file creation
+            FileModifier::getContent($get_content_path)
+                ->searchingText('{{page_title}}')->replace()->insertingText($page_title)
+                ->searchingText('{{route_name}}')->replace()->insertingText($route_name)
+                ->searchingText('{{slot}}')->replace()->insertingText($slot)
+                ->save($put_content_file_path);
+
+            $this->info("$file_name file created successfully");
+
+            return true;
+        }
+        $this->info("Skiped $file_name creation");
+        return true;
+    }
+
     public function parameterPass($route_info)
     {
         $this->route_info = $route_info;
@@ -214,7 +284,7 @@ class ViewCreation extends BaseCreation
         return $base_route_name;
     }
 
-    protected function slotCreation($is_update=null)
+    protected function slotCreation($is_update = null)
     {
         $fields = $this->fields;
         // dd($fields);
@@ -285,67 +355,77 @@ class ViewCreation extends BaseCreation
                 $i++;
                 break;
             }
+
             // nullable check input types
             if (!in_array('nullable', $field_properties)) {
                 $input_type = str_replace("is_required='0'", '', $input_type);
             }
 
+            // default value implements
+            if (in_array('default', array_keys($field_properties))) {
+                $default_value = $field_properties['default'];
+                $input_type = str_replace("default", "default='$default_value'", $input_type);
+            } else {
+                $input_type = str_replace("default", "", $input_type);
+            }
+
             //ir update replace according to create or update file
-            if(!$is_update){
-                $input_type = str_replace("is_update='0'", '', $input_type);
+            if (!$is_update) {
+                $input_type = str_replace("is_update='1'", '', $input_type);
             }
 
             $slot .= $input_type;
         }
+
         return $slot;
     }
 
     protected function select($field_name, $options)
     {
         $title = str()->headline($field_name);
-        return "\n{{--  $title --}}\n<x-form.select name='$field_name' options='" . json_encode($options) . "' is_required='0' is_update='0' />";
+        return "\n\n{{--  $title --}}\n<x-form.select name='$field_name' options='" . json_encode($options) . "' is_required='0' is_update='1' default />";
     }
 
     protected function select2($field_name)
     {
         $title = str()->headline($field_name);
         $model = self::foreignKeyToModelName($field_name);
-        return "\n{{-- $title --}}\n<x-form.select2 name='$field_name' :options='{{\$$model}}' is_required='0' is_update='0' />";
+        return "\n\n{{-- $title --}}\n<x-form.select2 name='$field_name' :options='{{\$$model}}' is_required='0' is_update='1' default />";
     }
 
     protected function textInput($field_name)
     {
         $title = str()->headline($field_name);
-        return  "\n{{--  $title --}} \n <x-form.text name='$field_name' is_required='0' is_update='0'/>";
+        return  "\n\n{{--  $title --}} \n <x-form.text name='$field_name' is_required='0' is_update='1'default />";
     }
 
     protected function textarea($field_name)
     {
         $title = str()->headline($field_name);
-        return  "\n{{--  $title --}} \n <x-form.textarea name='$field_name' is_required='0' is_update='0'/>";
+        return  "\n\n{{--  $title --}} \n <x-form.textarea name='$field_name' is_required='0' is_update='1'default />";
     }
 
     protected function numberInput($field_name)
     {
         $title = str()->headline($field_name);
-        return  "\n{{--  $title --}} \n <x-form.number name='$field_name' is_required='0' is_update='0'/>";
+        return  "\n\n{{--  $title --}} \n <x-form.number name='$field_name' is_required='0' is_update='1'default />";
     }
 
     protected function checkbox($field_name)
     {
         $title = str()->headline($field_name);
-        return  "\n{{--  $title --}} \n <x-form.checkbox name='$field_name' is_required='0' is_update='0'/>";
+        return  "\n\n{{--  $title --}} \n <x-form.checkbox name='$field_name' is_required='0' is_update='1'default />";
     }
 
     protected function dropzoneSingle($field_name)
     {
         $title = str()->headline($field_name);
-        return  "\n{{--  $title --}} \n <x-form.dropzone-single name='$field_name' is_required='0' is_update='0'/>";
+        return  "\n\n{{--  $title --}} \n <x-form.dropzone-single name='$field_name' is_required='0' is_update='1'default />";
     }
 
     protected function dropzoneMultiple($field_name)
     {
         $title = str()->headline($field_name);
-        return  "\n{{--  $title --}} \n <x-form.dropzone-multiple name='$field_name' is_required='0' is_update='0'/>";
+        return  "\n\n{{--  $title --}} \n <x-form.dropzone-multiple name='$field_name' is_required='0' is_update='1'default />";
     }
 }

@@ -51,5 +51,9 @@ class AllFunctionalityClass extends BaseCreation
     {
         (new ViewCreation($this->fields, $this->model_name))->parameterPass($route_info);
     }
+    public function createAdminMenue($route_info)
+    {
+        (new AdminMenuCreation($this->fields, $this->model_name))->parameterPass($route_info);
+    }
 
 }

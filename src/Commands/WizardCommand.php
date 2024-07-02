@@ -111,21 +111,20 @@ class WizardCommand extends Command
 
     //delete me (this is return for demo purpose and also for example of fields array)
     protected $field_info = [
-            'order_no' => ['string', 'unique','length'=>255],
-            'description' => ['longText', 'nullable'],
-            'price' => ['integer','default'=>0],
-            'user_id' => ['foreignIdFor','nullable'],
-            'order_status' => ['enum'=>['pending','canceled','delivered'],'default'=> 'pending'],
-            'is_confirmed' => ['boolean','default'=> '0'],
-            'default_image' => ['string','nullable'],
-            'images' => ['string','nullable'],
+        'order_no' => ['string', 'unique', 'length' => 255],
+        'description' => ['longText', 'nullable'],
+        'price' => ['integer', 'default' => 0],
+        'user_id' => ['foreignIdFor', 'nullable'],
+        'order_status' => ['enum' => ['pending', 'canceled', 'delivered'], 'default' => 'pending'],
+        'is_confirmed' => ['boolean', 'default' => '0'],
+        'default_image' => ['string', 'nullable'],
+        'images' => ['string', 'nullable'],
     ];
     public function handle()
     {
-
         $allFunctionality = new AllFunctionalityClass($this->field_info, 'Product', $this->models_name);
-        if ($this->confirm('Do you want to create view?', true)) {
-            $allFunctionality->createView($this->routes_info);
+        if ($this->confirm('Do you want to admin menue?', true)) {
+            $allFunctionality->createAdminMenue($this->routes_info);
         }
 
         //Temporary code write above me
@@ -360,11 +359,35 @@ class WizardCommand extends Command
 
 
 
+        // /**
+        //  *  view Creation
+        //  * */
+        // if ($this->confirm('Do you want to create view?', true)) {
+        //     $allFunctionality->createView($route_info);
+        // }
+
         /**
-         *  view Creation
+         *  admin menue seeder
          * */
-        if ($this->confirm('Do you want to create view?', true)) {
-            $allFunctionality->createView($route_info);
+
+        //admin menue seeder array demo. title must be unique of the tables
+        /**
+         *
+         *  $admin_mene = [
+         *                 title' => 'District',
+         *                 'access' => 'District',
+         *                 'route' => 'setup.district.',
+         *                 'n_sidebar_id' => 1,
+         *                 'is_parent' => false,
+         *                 'serial' => 2,
+         *                 'status' => '1'
+         *           ];
+
+         */
+
+
+        if ($this->confirm('Do you want to admin menue?', true)) {
+            $allFunctionality->createAdminMenue($route_info);
         }
     }
 

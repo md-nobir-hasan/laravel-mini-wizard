@@ -23,6 +23,7 @@ class ViewCreation extends BaseCreation
      *    ]
      * ]
      */
+    
     // protected $routes_info = [
     //     'group_name' => 'setup',
     //     'group_middleware' => 'admin', //(this middleware for the main route)
@@ -62,7 +63,6 @@ class ViewCreation extends BaseCreation
 
     protected function generateViewForResourceMethod()
     {
-        dd('re');
         $this->indexViewCreation();
         $this->CreateViewCreation();
         $this->editViewCreation();

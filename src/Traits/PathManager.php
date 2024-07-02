@@ -161,9 +161,9 @@ trait PathManager
 
     public function nameInConfig($key)
     {
-        $defaultPaths = (include(self::config_path_pakage))['paths'];
-        $configPaths = config('mini-wizard.paths', []);
-        $name_in_config = $configPaths[$key] ?? $defaultPaths[$key];
+        $default_suffix = (include(self::config_path_pakage))['paths'];
+        $config_suffix = config('mini-wizard.paths', []);
+        $name_in_config = $config_suffix[$key] ?? $default_suffix[$key];
         return $name_in_config;
     }
 

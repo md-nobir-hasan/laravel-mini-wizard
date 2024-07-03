@@ -1,0 +1,101 @@
+<?php
+
+namespace {{name_space}};
+
+use App\Http\Controllers\Controller;
+use {{model_namespace}}\{{model_name}};
+use {{service_class_namespace}}\{{model_name}}Service;
+use {{request_namespace}}\Store{{model_name}}Request;
+use {{request_namespace}}\Update{{model_name}}Request;
+
+class {{model_name}}Controller extends Controller
+{
+    public function __construct(protected {{model_name}}Service $service)
+    {
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $n['data'] = {{model_name}}::where('status','Active')->orderBy('serial', 'desc')
+                                ->paginate(10);
+        $n['count'] = {{model_name}}::all();
+        return view('{{view_dir_path}}index', $n);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $n['serial'] = {{model_name}}::count()+1;
+        return view('{{view_dir_path}}create', $n);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Store{{model_name}}Request $request)
+    {
+        $data = $request->validated();
+        $status = $this->service->store($data);
+
+        //Redirection decission
+        if($request->redirect == 'back'){
+            $redirect_route = '{{route_name}}index';
+        }else{
+            $redirect_route = '{{route_name}}create';
+        }
+
+        if(!$status){
+            return redirect()->route($redirect_route)->with('error', "Something went wrong");
+        }
+        return redirect()->route($redirect_route)->with('success', "$request->title is created successfully");
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show({{model_name}} ${{model_name}})
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit({{model_name}} ${{model_name}})
+    {
+        $n['datum'] = ${{model_name}};
+        return view('{{view_dir_path}}edit', $n);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Update{{model_name}}Request $request, {{model_name}} ${{model_name}})
+    {
+        $data = $request->validated();
+        $this->service->update(${{model_name}},$data);
+
+        return redirect()->route('{{route_name}}index')->with('success', "$request->title is Update successfully");
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy({{model_name}} ${{model_name}})
+    {
+        $title = ${{model_name}}->title;
+        $status = $this->service->delete(${{model_name}});
+
+        if ($status) {
+            request()->session()->flash('success', "$title successfully deleted");
+        } else {
+            request()->session()->flash('error', 'Error while deleting {{model_name}}s');
+        }
+
+        return back();
+    }
+}

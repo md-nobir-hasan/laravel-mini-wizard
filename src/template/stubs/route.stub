@@ -1,0 +1,5 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/// don't delete these three forward slash, cause here implement the new route automatically;

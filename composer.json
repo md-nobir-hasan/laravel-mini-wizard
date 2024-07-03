@@ -6,13 +6,16 @@
         "laravel-mini-wizard",
         "mini-wizard"
     ],
-    "homepage": "https://github.com/md-nobir-hasan/laravel-curd-by-command.git",
+    "homepage": "https://github.com/md-nobir-hasan/laravel-mini-wizard.git",
     "license": "MIT",
     "autoload": {
+        "files": [
+            "src/bootstrap/helpers.php"
+        ],
         "psr-4": {
             "Nobir\\CurdByCommand\\": "src/"
-        }
-    },
+        },
+
     "authors": [
         {
             "name": "Md. Nobir Hasan",
@@ -25,7 +28,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Nobir\\CurdByCommand\\CurdServiceProvider"
+                "Nobir\\MiniWizard\\MiniWizardServiceProvider"
             ]
         }
     }

@@ -1,0 +1,36 @@
+<?php
+
+namespace {{name_space}};
+
+use {{model_name_space}};
+
+class {{model_name}}Service extends Service
+{
+
+    public function store($data)
+    {
+        $status = {{model_name}}::create($data);
+        return $status;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(${{model_name}},$data)
+    {
+
+        $status = ${{model_name}}->update($data);
+        return $status;
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function delete(${{model_name}})
+    {
+        $title = ${{model_name}}->title;
+        $status = ${{model_name}}->delete();
+
+        return  $status;
+    }
+}

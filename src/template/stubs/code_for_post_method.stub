@@ -1,0 +1,17 @@
+  public function {{method}}({{request_namespace}}\Store{{model_name}}Request $request)
+    {
+        $data = $request->validated();
+        $status = $this->service->store($data);
+
+        //Redirection decission
+        if($request->redirect == 'back'){
+            $redirect_route = '{{route_name}}index';
+        }else{
+            $redirect_route = '{{route_name}}create';
+        }
+
+        if(!$status){
+            return redirect()->route($redirect_route)->with('error', "Something went wrong");
+        }
+        return redirect()->route($redirect_route)->with('success', "$request->title is created successfully");
+    }

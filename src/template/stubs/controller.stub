@@ -1,0 +1,17 @@
+<?php
+
+namespace {{name_space}};
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use {{model_namespace}}\{{model_name}};
+use {{service_class_namespace}}\{{model_name}}Service;
+
+class {{model_name}}Controller extends Controller
+{
+     public function __construct(protected {{model_name}}Service $service)
+    {
+    }
+
+    {{slot}}
+}

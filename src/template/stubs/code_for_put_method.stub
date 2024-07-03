@@ -1,0 +1,5 @@
+  public function {{method}}({{model_name}} ${{model_name}})
+    {
+        $n['datum'] = ${{model_name}};
+        return view('{{view_dir_path}}edit', $n);
+    }

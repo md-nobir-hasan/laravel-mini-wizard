@@ -14,8 +14,8 @@
         ],
         "psr-4": {
             "Nobir\\CurdByCommand\\": "src/"
-        },
-
+        }
+    },
     "authors": [
         {
             "name": "Md. Nobir Hasan",

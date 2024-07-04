@@ -23,8 +23,8 @@ class AdminMenuCreation extends BaseCreation
      *                 title' => 'District',
      *                 'access' => 'District',
      *                 'route' => 'setup.district.',
-     *                 'n_sidebar_id' => 1,
-     *                 'is_parent' => false,
+     *                 'parent_id' =>'1',
+	 *			       'is_parent' =>'',
      *                 'serial' => 2,
      *                 'status' => '1'
      *           ];
@@ -159,7 +159,6 @@ class AdminMenuCreation extends BaseCreation
 
         $slot .= "\n\t\t\t\t'title' => '$title',";
         $slot .= "\n\t\t\t\t'access' =>'$model_name',";
-        $slot .= "\n\t\t\t\t'route' =>'$route',";
         $slot .= "\n\t\t\t\t'route' =>'$route',";
         $slot .= "\n\t\t\t\t'parent_id' =>'$parent_id',";
         $slot .= "\n\t\t\t\t'is_parent' =>'$is_parent',";

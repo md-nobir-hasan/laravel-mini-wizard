@@ -392,7 +392,7 @@ class WizardCommand extends Command
          */
 
 
-        if ($this->confirm('Do you want to admin menue?', true)) {
+        if ($this->confirm('Do you want to create admin menue?', true)) {
             $allFunctionality->createAdminMenue($route_info);
         }
     }

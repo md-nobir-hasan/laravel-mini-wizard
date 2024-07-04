@@ -13,7 +13,7 @@
             "src/bootstrap/helpers.php"
         ],
         "psr-4": {
-            "Nobir\\CurdByCommand\\": "src/"
+            "Nobir\\MiniWizard\\": "src/"
         }
     },
     "authors": [

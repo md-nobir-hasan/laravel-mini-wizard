@@ -44,7 +44,20 @@ The mini-wizard package is a Laravel package designed to streamline the creation
         │         ├── show.stub
         │         ├── store-request.stub
         │         └── update-request.stub
-
+## Rules
+    Model Creation/Modification:
+    Migration Creation/Modification:
+    Seeder Creation/Modification:
+    Factory Creation/Modification:
+    Route Creation/Modification: it create mini-wizard.php.
+    Controller Creation/Modification:
+    Request Creation/Modification:
+    Service Class Creation/Modification:
+    Index Creation/Modification:
+    create Creation/Modification:
+    edit Creation/Modification:
+    Admin Menue Seeder Creation/Modification:
+    Model Creation/Modification:
 ### Some notes
     1. Don't use name field. Always try to use title field instead of name which will use to session message. and try to use title field for every table.
     1. Just one name only model name will use for the all name. Example shows for "(Photo), (OrderItem)".

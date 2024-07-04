@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nobir\MiniWizard\Services\BaseCreation;
 
-class factoryCreation extends BaseCreation
+class FactoryCreation extends BaseCreation
 {
     public function generate()
     {

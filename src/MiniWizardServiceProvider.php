@@ -31,7 +31,7 @@ Class MiniWizardServiceProvider extends ServiceProvider{
         // dd(self::pakage_root_path );
         $this->publishes([
            self::pakage_root_path. "/bootstrap/theme/$theme_name/form" => resource_path('/views/components/form'),
-        ], 'wizard-compnents');
+        ], 'wizard-components');
 
         //publishing stub files
         $this->publishes([
